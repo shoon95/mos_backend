@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class UserRepositoryImpl {
+public class UserRepositoryImpl implements UserRepository{
     private final UserJpaRepository userJpaRepository;
     private final UserRedisRepository userRedisRepository;
 }
