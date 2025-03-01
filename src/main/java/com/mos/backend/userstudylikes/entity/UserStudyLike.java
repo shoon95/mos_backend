@@ -22,7 +22,7 @@ public class UserStudyLike extends BaseAuditableEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
+    private User user;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "study_id", nullable = false)
