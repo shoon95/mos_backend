@@ -1,6 +1,7 @@
 package com.mos.backend.users.presentation.controller.api;
 
-import com.mos.backend.users.application.exception.UserNotFoundException;
+import com.mos.backend.common.exception.MosException;
+import com.mos.backend.users.entity.exception.UserErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,7 @@ public class UserController {
     @GetMapping("/hello/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public UserResponse hello(@PathVariable Long userId) {
-        if (userId == 1L) throw new UserNotFoundException();
+        if (userId == 1L) throw new MosException(UserErrorCode.USER_NOT_FOUND_EXCEPTION);
         return new UserResponse(userId) ;
     }
 
