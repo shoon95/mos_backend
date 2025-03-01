@@ -38,6 +38,6 @@ public class StudyMaterial extends BaseAuditableEntity {
     private String originName;
 
     @Column(nullable = false)
-    private Long fileSize;
+    private Double fileSize;
 
 }
