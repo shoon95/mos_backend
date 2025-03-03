@@ -36,6 +36,12 @@ public class Study extends BaseAuditableEntity {
     @Enumerated(EnumType.STRING)
     private Category category;
 
+    @Column(nullable = true)
+    private String schedule;
+
+    @Column(nullable = false)
+    private LocalDateTime recruitmentStartDate;
+
     @Column(nullable = false)
     private LocalDateTime recruitmentEndDate;
 
@@ -51,6 +57,9 @@ public class Study extends BaseAuditableEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MeetingType meetingType;
+
+    @Column(nullable = true)
+    private String requirements;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
