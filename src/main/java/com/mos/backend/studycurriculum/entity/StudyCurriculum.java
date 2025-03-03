@@ -22,7 +22,7 @@ public class StudyCurriculum extends BaseAuditableEntity {
     private Long title;
 
     @Lob
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
