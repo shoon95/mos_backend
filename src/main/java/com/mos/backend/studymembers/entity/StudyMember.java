@@ -28,4 +28,8 @@ public class StudyMember extends BaseAuditableEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StudyParticipationStatus status;
 }
