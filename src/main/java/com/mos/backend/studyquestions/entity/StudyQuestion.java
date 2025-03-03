@@ -33,4 +33,6 @@ public class StudyQuestion extends BaseAuditableEntity {
     @Embedded
     private QuestionOption options;
 
+    @Column(nullable = false)
+    private boolean required;
 }
