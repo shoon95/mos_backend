@@ -13,7 +13,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "study_benefits")
-public class StudyBenefits extends BaseAuditableEntity {
+public class StudyBenefit extends BaseAuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +26,13 @@ public class StudyBenefits extends BaseAuditableEntity {
 
     @Column(nullable = false)
     private String content;
+
+    public static StudyBenefit create(Study study, String content) {
+        StudyBenefit studyBenefit = new StudyBenefit();
+        studyBenefit.study = study;
+        studyBenefit.content = content;
+        return studyBenefit;
+    }
+
+
 }
