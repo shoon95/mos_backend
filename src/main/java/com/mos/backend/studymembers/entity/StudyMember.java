@@ -30,6 +30,14 @@ public class StudyMember extends BaseAuditableEntity {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ParticipationStatus status;
+    @Column(nullable = false, length = 20)
+    private ParticipationStatus status = ParticipationStatus.ACTIVATED;
+
+    public static StudyMember create(Study study, User user) {
+        StudyMember studyMember = new StudyMember();
+        studyMember.study = study;
+        studyMember.user = user;
+        studyMember.status = ParticipationStatus.ACTIVATED;
+        return studyMember;
+    }
 }

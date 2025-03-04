@@ -35,4 +35,14 @@ public class StudyQuestion extends BaseAuditableEntity {
 
     @Column(nullable = false)
     private boolean required;
+
+    public static StudyQuestion create(Study study, String question, QuestionType type, QuestionOption options, boolean required) {
+        StudyQuestion studyQuestion = new StudyQuestion();
+        studyQuestion.study = study;
+        studyQuestion.question = question;
+        studyQuestion.type = type;
+        studyQuestion.options = options;
+        studyQuestion.required = required;
+        return studyQuestion;
+    }
 }

@@ -17,6 +17,6 @@ public enum Category {
     public static Category fromDescription(String description) {
         return Arrays.stream(Category.values())
                 .filter(c -> c.description.equals(description))
-                .findFirst().orElseThrow(()-> new MosException(StudyErrorCode.USER_NOT_FOUND_EXCEPTION));
+                .findFirst().orElseThrow(()-> new MosException(StudyErrorCode.CATEGORY_NOT_FOUND));
     }
 }

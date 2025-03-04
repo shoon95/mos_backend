@@ -9,9 +9,10 @@ import java.util.Locale;
 
 @RequiredArgsConstructor
 public enum StudyErrorCode implements ErrorCode {
-
-    USER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "study.category.not-found");
-
+    STUDY_NOT_FOUND(HttpStatus.NOT_FOUND, "study.not-found"),
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "study.category.not-found"),
+    INVALID_MEETING_TYPE(HttpStatus.BAD_REQUEST, "study.meeting-type.invalid"),
+    ;
     private final HttpStatus httpStatus;
     private final String messageKey;
 

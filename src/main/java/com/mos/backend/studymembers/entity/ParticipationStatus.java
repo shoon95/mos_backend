@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ParticipationStatus {
 
-    ACTIVE("참여 중"),
+    ACTIVATED("참여 중"),
     COMPLETED("완료"),
     WITHDRAWN("탈퇴");
 

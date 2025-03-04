@@ -26,4 +26,11 @@ public class StudyRule extends BaseAuditableEntity {
     @Column(nullable = false)
     private String content;
 
+    public static StudyRule create(Study study, String content) {
+        StudyRule studyRule = new StudyRule();
+        studyRule.study = study;
+        studyRule.content = content;
+        return studyRule;
+    }
+
 }

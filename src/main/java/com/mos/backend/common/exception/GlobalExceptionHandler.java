@@ -1,6 +1,5 @@
 package com.mos.backend.common.exception;
 
-import com.mos.backend.common.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -16,33 +15,33 @@ public class GlobalExceptionHandler {
 
     private final MessageSource messageSource;
     @ExceptionHandler(MosException.class)
-    public ResponseEntity<ResponseDto<String>> handleMosException(MosException e) {
+    public ResponseEntity<String> handleMosException(MosException e) {
         ErrorCode errorCode = e.getErrorCode();
         HttpStatus status = errorCode.getStatus();
         String message = errorCode.getMessage(messageSource);
         return ResponseEntity
                 .status(status)
-                .body(ResponseDto.error(message));
+                .body(message);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ResponseDto<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 
         ObjectError first = e.getBindingResult().getAllErrors().stream().findFirst().get();
         String message = first.getDefaultMessage();
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ResponseDto.error(message));
+                .body(message);
     }
 
     @ExceptionHandler(ClientException.class)
-    public ResponseEntity<ResponseDto<String>> handleClientException(ClientException e) {
+    public ResponseEntity<String> handleClientException(ClientException e) {
         String message = e.getMessage();
         HttpStatus status = e.getStatus();
 
         return ResponseEntity
                 .status(status)
-                .body(ResponseDto.error(message));
+                .body(message);
     }
 }

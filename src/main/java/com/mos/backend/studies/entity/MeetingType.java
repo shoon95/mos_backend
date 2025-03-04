@@ -19,6 +19,6 @@ public enum MeetingType {
     public static MeetingType fromDescription(String description) {
         return Arrays.stream(MeetingType.values())
                 .filter(m -> m.description.equals(description))
-                .findFirst().orElseThrow(()-> new MosException(StudyErrorCode.USER_NOT_FOUND_EXCEPTION));
+                .findFirst().orElseThrow(()-> new MosException(StudyErrorCode.INVALID_MEETING_TYPE));
     }
 }

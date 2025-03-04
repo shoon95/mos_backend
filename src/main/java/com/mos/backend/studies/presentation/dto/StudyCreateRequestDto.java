@@ -1,5 +1,7 @@
 package com.mos.backend.studies.presentation.dto;
 
+import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCreateRequestDto;
+import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,25 +23,9 @@ public class StudyCreateRequestDto {
   private String content;
   private String notice;
   private String requirements;
-  private List<CurriculumDto> curriculums;
+  private List<StudyCurriculumCreateRequestDto> curriculums;
   private List<String> rules;
   private List<String> benefits;
-  private List<ApplicationQuestionDto> applicationQuestions;
-
-  @Getter
-  @Setter
-  public static class CurriculumDto {
-    private String title;
-    private String content;
-  }
-
-  @Getter
-  @Setter
-  public static class ApplicationQuestionDto {
-    private String question;
-    private boolean isRequired;
-    private String answerType;
-    private List<String> options;
-  }
+  private List<StudyQuestionCreateRequestDto> applicationQuestions;
 
 }

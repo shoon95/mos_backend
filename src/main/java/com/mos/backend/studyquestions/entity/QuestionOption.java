@@ -23,6 +23,10 @@ public class QuestionOption {
 
     public static QuestionOption fromList(List<String> options) {
         QuestionOption questionOption = new QuestionOption();
+        if (options.isEmpty()) {
+            questionOption.value = null;
+            return questionOption;
+        }
         questionOption.value = String.join(",", options);
         return questionOption;
     }

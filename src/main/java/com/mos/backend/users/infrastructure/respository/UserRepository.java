@@ -9,4 +9,6 @@ public interface UserRepository {
     User save(User user);
 
     Optional<User> findByOauthProviderAndSocialId(OauthProvider oauthProvider, String socialId);
+
+    Optional<User> findById(Long userId);
 }

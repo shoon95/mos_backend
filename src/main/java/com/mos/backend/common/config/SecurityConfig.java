@@ -21,7 +21,6 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final MessageSource messageSource;
 
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
