@@ -2,16 +2,17 @@ package com.mos.backend.studies.entity;
 
 import com.mos.backend.common.entity.BaseAuditableEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "studies")
+@Builder
+@AllArgsConstructor
 public class Study extends BaseAuditableEntity {
 
     @Id
@@ -40,15 +41,16 @@ public class Study extends BaseAuditableEntity {
     private String schedule;
 
     @Column(nullable = false)
-    private LocalDateTime recruitmentStartDate;
+    private LocalDate recruitmentStartDate;
 
     @Column(nullable = false)
-    private LocalDateTime recruitmentEndDate;
+    private LocalDate recruitmentEndDate;
 
     @Embedded
     private StudyTag tags;
 
     @Column(nullable = false)
+    @Builder.Default
     private int viewCount = 0;
 
     @Column(nullable = false)
@@ -63,10 +65,12 @@ public class Study extends BaseAuditableEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private ProgressStatus progressStatus = ProgressStatus.NOT_STARTED;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private RecruitmentStatus recruitmentStatus = RecruitmentStatus.OPEN;
 
 }
