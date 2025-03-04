@@ -31,5 +31,5 @@ public class StudyMember extends BaseAuditableEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StudyParticipationStatus status;
+    private ParticipationStatus status;
 }

@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum StudyParticipationStatus {
+public enum ParticipationStatus {
 
     ACTIVE("참여 중"),
     COMPLETED("완료"),
