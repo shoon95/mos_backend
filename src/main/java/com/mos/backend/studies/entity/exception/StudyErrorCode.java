@@ -12,6 +12,7 @@ public enum StudyErrorCode implements ErrorCode {
     STUDY_NOT_FOUND(HttpStatus.NOT_FOUND, "study.not-found"),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "study.category.not-found"),
     INVALID_MEETING_TYPE(HttpStatus.BAD_REQUEST, "study.meeting-type.invalid"),
+    INVALID_RECRUITMENT_DATES(HttpStatus.BAD_REQUEST, "study.invalid-recruitment-dates"),
     ;
     private final HttpStatus httpStatus;
     private final String messageKey;
