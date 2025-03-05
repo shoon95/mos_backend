@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class StudyCurriculumCreateRequestDto {
+    private Long sectionId;
     private String title;
     private String content;
 

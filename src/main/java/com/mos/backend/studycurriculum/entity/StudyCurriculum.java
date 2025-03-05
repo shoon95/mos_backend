@@ -21,6 +21,9 @@ public class StudyCurriculum extends BaseAuditableEntity {
     @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false)
+    private Long sectionId;
+
     @Lob
     @Column(nullable = true)
     private String content;
@@ -29,10 +32,11 @@ public class StudyCurriculum extends BaseAuditableEntity {
     @JoinColumn(name = "study_id", nullable = false)
     private Study study;
 
-    public static StudyCurriculum create(Study study, String title, String content) {
+    public static StudyCurriculum create(Study study, String title, Long sectionId, String content) {
         StudyCurriculum studyCurriculum = new StudyCurriculum();
         studyCurriculum.study = study;
         studyCurriculum.title = title;
+        studyCurriculum.sectionId = sectionId;
         studyCurriculum.content = content;
         return studyCurriculum;
     }

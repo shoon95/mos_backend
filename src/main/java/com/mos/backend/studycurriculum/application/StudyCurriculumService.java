@@ -30,7 +30,7 @@ public class StudyCurriculumService {
         Study study = studyRepository.findById(studyId).orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
 
         List<StudyCurriculum> studyCurriculumList = requestDtoList.stream().map(c ->
-                StudyCurriculum.create(study, c.getTitle(), c.getContent())).toList();
+                StudyCurriculum.create(study, c.getTitle(), c.getSectionId(), c.getContent())).toList();
 
         studyCurriculumRepository.saveAll(studyCurriculumList);
     }
