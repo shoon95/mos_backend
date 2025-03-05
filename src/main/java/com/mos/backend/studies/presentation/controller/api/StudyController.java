@@ -2,6 +2,7 @@ package com.mos.backend.studies.presentation.controller.api;
 
 import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.presentation.dto.StudyCreateRequestDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,7 +23,7 @@ public class StudyController {
     private final StudyService studyService;
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody StudyCreateRequestDto requestDto, @AuthenticationPrincipal Long userId) {
+    public ResponseEntity<Void> create(@RequestBody @Valid StudyCreateRequestDto requestDto, @AuthenticationPrincipal Long userId) {
         Long studyId = studyService.create(userId, requestDto);
         return ResponseEntity.created(URI.create(BASE_URL + studyId)).build();
     }
