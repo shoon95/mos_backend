@@ -10,14 +10,19 @@ spring:
     database: mysql
     generate-ddl: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+    defer-datasource-initialization: true
   data:
     redis:
       host: 127.0.0.1
       port: 6379
+
+  sql:
+    init:
+      mode: always # 항상 실행
 
 jwt:
   secret: ${JWT_SECRET}
