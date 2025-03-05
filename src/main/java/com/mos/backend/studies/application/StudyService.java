@@ -31,10 +31,18 @@ public class StudyService {
     private final StudyMemberService studyMemberService;
 
     public Long create(Long userId, StudyCreateRequestDto requestDto) {
-
         validateStudyCreateRequest(requestDto);
 
-        Study study = Study.builder()
+        Study study = convertToEntity(requestDto);
+        Study savedStudy = studyRepository.save(study);
+
+        handleStudyRelations(userId, requestDto, savedStudy.getId());
+        return savedStudy.getId();
+    }
+
+
+    private static Study convertToEntity(StudyCreateRequestDto requestDto) {
+        return Study.builder()
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
                 .maxParticipantsCount(requestDto.getMaxParticipants())
@@ -47,26 +55,19 @@ public class StudyService {
                 .meetingType(MeetingType.fromDescription(requestDto.getMeetingType()))
                 .requirements(requestDto.getRequirements())
                 .build();
-        Study savedStudy = studyRepository.save(study);
-
-        // 스터디 생성 이벤트 발행
-
-        studyRuleService.create(savedStudy.getId(), requestDto.getRules());
-        studyBenefitService.create(savedStudy.getId(), requestDto.getBenefits());
-        studyQuestionService.create(savedStudy.getId(), requestDto.getApplicationQuestions());
-        studyCurriculumService.create(savedStudy.getId(), requestDto.getCurriculums());
-        studyMemberService.create(savedStudy.getId(), userId);
-        return savedStudy.getId();
     }
 
     private void validateStudyCreateRequest(StudyCreateRequestDto requestDto) {
-        // 모집 날짜 논리적 검증
-        System.out.println("requestDto.getRecruitmentStartDate() = " + requestDto.getRecruitmentStartDate());
-        System.out.println("requestDto.getRecruitmentEndDate() = " + requestDto.getRecruitmentEndDate());
-
-        System.out.println("boolean = " + requestDto.getRecruitmentStartDate().isAfter(requestDto.getRecruitmentEndDate()));
         if (requestDto.getRecruitmentStartDate().isAfter(requestDto.getRecruitmentEndDate())) {
             throw new MosException(StudyErrorCode.INVALID_RECRUITMENT_DATES);
         }
+    }
+
+    private void handleStudyRelations(Long userId, StudyCreateRequestDto requestDto, Long savedStudyId) {
+        studyRuleService.create(savedStudyId, requestDto.getRules());
+        studyBenefitService.create(savedStudyId, requestDto.getBenefits());
+        studyQuestionService.create(savedStudyId, requestDto.getApplicationQuestions());
+        studyCurriculumService.create(savedStudyId, requestDto.getCurriculums());
+        studyMemberService.create(savedStudyId, userId);
     }
 }

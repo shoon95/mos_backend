@@ -23,9 +23,17 @@ public class StudyMemberService {
     private final StudyMemberRepository studyMemberRepository;
 
     public void create(Long studyId, Long userId) {
-        Study study = studyRepository.findById(studyId).orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
-        User user = userRepository.findById(userId).orElseThrow(() -> new MosException(UserErrorCode.USER_NOT_FOUND));
+        Study study = getStudyById(studyId);
+        User user = getUserById(userId);
 
         studyMemberRepository.save(StudyMember.create(study, user));
+    }
+
+    private Study getStudyById(Long studyId) {
+        return studyRepository.findById(studyId).orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
+    }
+
+    private User getUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new MosException(UserErrorCode.USER_NOT_FOUND));
     }
 }

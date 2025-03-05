@@ -27,11 +27,15 @@ public class StudyCurriculumService {
             return;
         }
 
-        Study study = studyRepository.findById(studyId).orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
+        Study study = getStudyById(studyId);
 
         List<StudyCurriculum> studyCurriculumList = requestDtoList.stream().map(c ->
                 StudyCurriculum.create(study, c.getTitle(), c.getSectionId(), c.getContent())).toList();
 
         studyCurriculumRepository.saveAll(studyCurriculumList);
+    }
+
+    private Study getStudyById(Long studyId) {
+        return studyRepository.findById(studyId).orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
     }
 }

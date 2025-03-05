@@ -25,11 +25,14 @@ public class StudyRuleService {
             return;
         }
 
-        Study study = studyRepository.findById(studyId).orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
+        Study study = getStudyById(studyId);
 
-        contents.forEach(c -> {
-            StudyRule studyRule = StudyRule.create(study, c);
-            studyRuleRepository.save(studyRule);
-        });
+        List<StudyRule> studyRuleList = contents.stream().map(c -> StudyRule.create(study, c)).toList();
+
+        studyRuleRepository.saveAll(studyRuleList);
+    }
+
+    private Study getStudyById(Long studyId) {
+        return studyRepository.findById(studyId).orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
     }
 }
