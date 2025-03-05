@@ -3,14 +3,22 @@ package com.mos.backend.studies.presentation.dto;
 import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCreateRequestDto;
 import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.time.LocalDate;
 import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class StudyCreateRequestDto {
 
   @NotBlank(message = "title 필수입니다.")
@@ -45,8 +53,10 @@ public class StudyCreateRequestDto {
   @Valid
   @NotNull(message = "curriculums 필수입니다.")
   private List<StudyCurriculumCreateRequestDto> curriculums;
+
   private List<String> rules;
   private List<String> benefits;
+
   @Valid
   @NotNull
   private List<StudyQuestionCreateRequestDto> applicationQuestions;
