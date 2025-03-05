@@ -1,7 +1,11 @@
 package com.mos.backend.studies.application;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.Random;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RandomColorGenerator {
 
     private static final int COLOR_BOUND = 256;
