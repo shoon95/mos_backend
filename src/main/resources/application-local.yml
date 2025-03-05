@@ -2,7 +2,7 @@ spring:
   config:
     import: optional:classpath:local.env[.properties]
   datasource:
-    url: jdbc:mysql://localhost:3306/mos_db?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/mos_db?&useSSL=false&allowPublicKeyRetrieval=true
     username: root
     password: ${DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -14,6 +14,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+
     defer-datasource-initialization: ${DATA_SOURCE_INITIALIZATION}
   data:
     redis:
