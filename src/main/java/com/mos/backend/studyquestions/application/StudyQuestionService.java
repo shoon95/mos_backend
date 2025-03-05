@@ -4,11 +4,12 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
-import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
 import com.mos.backend.studyquestions.entity.QuestionOption;
 import com.mos.backend.studyquestions.entity.QuestionType;
 import com.mos.backend.studyquestions.entity.StudyQuestion;
+import com.mos.backend.studyquestions.entity.StudyQuestionErrorCode;
 import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
+import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,10 +29,47 @@ public class StudyQuestionService {
             return;
         }
 
-        Study study = studyRepository.findById(studyId).orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
+        Study study = getStudyById(studyId);
 
-        List<StudyQuestion> studyQuestionList = studyQuestionCreateRequestDtoList.stream().map(q ->
-                StudyQuestion.create(study, q.getQuestionId(), q.getQuestion(), QuestionType.fromDescription(q.getType()), QuestionOption.fromList(q.getOptions()), q.isRequired())).toList();
-        studyQuestionRepository.saveAll(studyQuestionList);
+        // 검증 메서드 호출
+        validateStudyQuestions(studyQuestionCreateRequestDtoList);
+
+        // DTO -> Entity 변환 후 저장
+        List<StudyQuestion> studyQuestions = studyQuestionCreateRequestDtoList.stream()
+                .map(dto -> convertToEntity(study, dto))
+                .toList();
+
+        studyQuestionRepository.saveAll(studyQuestions);
+    }
+
+    private Study getStudyById(Long studyId) {
+        return studyRepository.findById(studyId)
+                .orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
+    }
+
+    private void validateStudyQuestions(List<StudyQuestionCreateRequestDto> studyQuestionCreateRequestDtoList) {
+        for (StudyQuestionCreateRequestDto dto : studyQuestionCreateRequestDtoList) {
+            validateStudyQuestion(dto);
+        }
+    }
+
+    private void validateStudyQuestion(StudyQuestionCreateRequestDto dto) {
+        QuestionType questionType = QuestionType.fromDescription(dto.getType());
+        List<String> options = dto.getOptions();
+
+        if (QuestionType.MULTIPLE_CHOICE.equals(questionType) && (options == null || options.size() < 2)) {
+            throw new MosException(StudyQuestionErrorCode.INVALID_MULTIPLE_CHOICE_OPTIONS);
+        }
+    }
+
+    private StudyQuestion convertToEntity(Study study, StudyQuestionCreateRequestDto dto) {
+        return StudyQuestion.create(
+                study,
+                dto.getQuestionId(),
+                dto.getQuestion(),
+                QuestionType.fromDescription(dto.getType()),
+                QuestionOption.fromList(dto.getOptions()),
+                dto.isRequired()
+        );
     }
 }
