@@ -35,7 +35,6 @@ public class StudyService {
         Study study = Study.builder()
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
-                .notice(requestDto.getNotice())
                 .maxParticipantsCount(requestDto.getMaxParticipants())
                 .category(Category.fromDescription(requestDto.getCategory()))
                 .schedule(requestDto.getSchedule())
