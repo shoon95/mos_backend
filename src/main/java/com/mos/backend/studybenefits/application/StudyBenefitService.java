@@ -25,8 +25,14 @@ public class StudyBenefitService {
             return;
         }
 
-        Study study = studyRepository.findById(studyId).orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
+        Study study = getStudyById(studyId);
         List<StudyBenefit> studyBenefitList = contents.stream().map(c -> StudyBenefit.create(study, c)).toList();
         studyBenefitRepository.saveAll(studyBenefitList);
     }
+
+    private Study getStudyById(Long studyId) {
+        return studyRepository.findById(studyId).orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
+    }
+
+
 }
