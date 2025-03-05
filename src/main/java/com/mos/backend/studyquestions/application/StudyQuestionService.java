@@ -31,7 +31,7 @@ public class StudyQuestionService {
         Study study = studyRepository.findById(studyId).orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
 
         List<StudyQuestion> studyQuestionList = studyQuestionCreateRequestDtoList.stream().map(q ->
-                StudyQuestion.create(study, q.getQuestion(), QuestionType.fromDescription(q.getAnswerType()), QuestionOption.fromList(q.getOptions()), q.isRequired())).toList();
+                StudyQuestion.create(study, q.getQuestionId(), q.getQuestion(), QuestionType.fromDescription(q.getType()), QuestionOption.fromList(q.getOptions()), q.isRequired())).toList();
         studyQuestionRepository.saveAll(studyQuestionList);
     }
 }

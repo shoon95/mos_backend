@@ -10,7 +10,8 @@ import java.util.List;
 public class StudyQuestionCreateRequestDto {
 
     private String question;
+    private Long questionId;
     private boolean isRequired;
-    private String answerType;
+    private String type;
     private List<String> options;
 }
