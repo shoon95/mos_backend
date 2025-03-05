@@ -31,7 +31,7 @@ public class Study extends BaseAuditableEntity {
     private String notice;
 
     @Column(nullable = false)
-    private int maxParticipantsCount;
+    private Integer maxParticipantsCount;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
