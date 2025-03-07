@@ -1,6 +1,7 @@
 package com.mos.backend.studies.application;
 
 import com.mos.backend.common.exception.MosException;
+import com.mos.backend.studies.application.responsedto.StudyResponseDto;
 import com.mos.backend.studies.entity.Category;
 import com.mos.backend.studies.entity.MeetingType;
 import com.mos.backend.studies.entity.Study;
@@ -38,6 +39,16 @@ public class StudyService {
 
         handleStudyRelations(userId, requestDto, savedStudy.getId());
         return savedStudy.getId();
+    }
+
+    public StudyResponseDto get(long studyId) {
+        studyRepository.increaseViewCount(studyId);
+        Study study = findStudyById(studyId);
+        return StudyResponseDto.from(study);
+    }
+
+    private Study findStudyById(long studyId) {
+        return studyRepository.findById(studyId).orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
     }
 
 
