@@ -1,0 +1,8 @@
+= Study API
+:toc: left
+
+== Study 조회
+operation::studies-get-success[snippets="http-request, http-response"]
+
+== Study 생성
+operation::studies-create-success[snippets="http-request, http-response"]

@@ -38,6 +38,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
 	// query 보기
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.10.0'
 
@@ -61,6 +63,11 @@ dependencies {
 	// api 문서 html 자동 생성기
 	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
+	// Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// JWT
+	implementation 'com.auth0:java-jwt:4.2.1'
 }
 
 tasks.named('test') {
@@ -70,6 +77,8 @@ tasks.named('test') {
 asciidoctor {
 	inputs.dir snippetsDir
 	configurations 'asciidoctorExt'
+	sourceDir file('src/docs/asciidoc') // 문서 기본 디렉토리 설정
+	outputDir file("build/docs/asciidoc")
 	dependsOn test
 }
 

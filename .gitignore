@@ -16,6 +16,8 @@
 .env.prod
 .env
 .env.**
+**.env.**
+**.env
 ### Images ###
 # JPEG
 *.jpg

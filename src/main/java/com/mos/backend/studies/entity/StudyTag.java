@@ -1,6 +1,5 @@
 package com.mos.backend.studies.entity;
 
-import com.mos.backend.studyquestions.entity.QuestionOption;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 

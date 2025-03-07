@@ -1,7 +1,11 @@
 package com.mos.backend.studies.entity;
 
+import com.mos.backend.common.exception.MosException;
+import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
 
 @Getter
 @RequiredArgsConstructor
@@ -11,4 +15,10 @@ public enum MeetingType {
     HYBRID("혼합");
 
     private final String description;
+
+    public static MeetingType fromDescription(String description) {
+        return Arrays.stream(MeetingType.values())
+                .filter(m -> m.description.equals(description))
+                .findFirst().orElseThrow(()-> new MosException(StudyErrorCode.INVALID_MEETING_TYPE));
+    }
 }

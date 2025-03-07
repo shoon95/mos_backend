@@ -19,14 +19,25 @@ public class StudyCurriculum extends BaseAuditableEntity {
     private Long id;
 
     @Column(nullable = false)
-    private Long title;
+    private String title;
+
+    @Column(nullable = false)
+    private Long sectionId;
 
     @Lob
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_id", nullable = false)
     private Study study;
 
+    public static StudyCurriculum create(Study study, String title, Long sectionId, String content) {
+        StudyCurriculum studyCurriculum = new StudyCurriculum();
+        studyCurriculum.study = study;
+        studyCurriculum.title = title;
+        studyCurriculum.sectionId = sectionId;
+        studyCurriculum.content = content;
+        return studyCurriculum;
+    }
 }

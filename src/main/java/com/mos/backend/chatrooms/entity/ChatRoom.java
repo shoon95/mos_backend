@@ -1,7 +1,6 @@
 package com.mos.backend.chatrooms.entity;
 
 import com.mos.backend.common.entity.BaseAuditableEntity;
-import com.mos.backend.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

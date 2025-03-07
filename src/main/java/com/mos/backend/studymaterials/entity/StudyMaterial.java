@@ -3,7 +3,6 @@ package com.mos.backend.studymaterials.entity;
 import com.mos.backend.common.entity.BaseAuditableEntity;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studymembers.entity.StudyMember;
-import com.mos.backend.users.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
