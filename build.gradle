@@ -43,6 +43,12 @@ dependencies {
 	// query 보기
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.10.0'
 
+	// queryDSL
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
 	compileOnly 'org.projectlombok:lombok'
 
 	// 테스트 용도
@@ -94,4 +100,8 @@ task copyDocument(type: Copy) {
 
 build {
 	dependsOn copyDocument
+}
+
+clean {
+	delete file('src/main/generated')
 }
