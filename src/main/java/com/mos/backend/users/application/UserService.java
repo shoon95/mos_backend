@@ -2,6 +2,7 @@ package com.mos.backend.users.application;
 
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Category;
+import com.mos.backend.users.application.responsedto.UserDetailRes;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.users.presentation.requestdto.UserUpdateReq;
 import lombok.RequiredArgsConstructor;
@@ -24,5 +25,10 @@ public class UserService {
                 .collect(Collectors.joining(","));
 
         user.update(req.getNickname(), req.getIntroduction(), categories);
+    }
+
+    public UserDetailRes getDetail(Long userId) {
+        User user = entityFacade.getUser(userId);
+        return UserDetailRes.from(user);
     }
 }
