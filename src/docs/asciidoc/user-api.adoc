@@ -1,0 +1,10 @@
+= User API
+:toc: left
+
+== User 조회
+operation::{snippets}/users-get-success/http-request.adoc[]
+operation::{snippets}/users-get-success/http-response.adoc[]
+
+== User 생성
+operation::{snippets}/users-create-success/http-request.adoc[]
+operation::{snippets}/users-create-success/http-response.adoc[]

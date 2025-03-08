@@ -2,16 +2,16 @@ package com.mos.backend.studies.entity;
 
 import com.mos.backend.common.entity.BaseAuditableEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "studies")
+@Builder
+@AllArgsConstructor
 public class Study extends BaseAuditableEntity {
 
     @Id
@@ -30,19 +30,26 @@ public class Study extends BaseAuditableEntity {
     private String notice;
 
     @Column(nullable = false)
-    private int maxParticipantsCount;
+    private Integer maxParticipantsCount;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Category category;
 
+    @Column(nullable = true)
+    private String schedule;
+
     @Column(nullable = false)
-    private LocalDateTime recruitmentEndDate;
+    private LocalDate recruitmentStartDate;
+
+    @Column(nullable = false)
+    private LocalDate recruitmentEndDate;
 
     @Embedded
     private StudyTag tags;
 
     @Column(nullable = false)
+    @Builder.Default
     private int viewCount = 0;
 
     @Column(nullable = false)
@@ -52,12 +59,17 @@ public class Study extends BaseAuditableEntity {
     @Column(nullable = false)
     private MeetingType meetingType;
 
+    @Column(nullable = true)
+    private String requirements;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private ProgressStatus progressStatus = ProgressStatus.NOT_STARTED;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private RecruitmentStatus recruitmentStatus = RecruitmentStatus.OPEN;
 
 }

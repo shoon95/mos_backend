@@ -3,12 +3,15 @@
 :icons: front
 :source-highlighter: highlighsjs
 :toc: left
-:toclevels: 1
-:snippets: build/generated-snippets
+:toclevels: 2
 
-[[User-get]]
-== User-get
 
-operation::users-get-success[]
-operation::users-get-fail[]
+== User API
+=== user get
+operation::users-get[]
+
+
+== Study API
+=== study create
+operation::studies-create-success[]
 

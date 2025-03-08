@@ -2,8 +2,6 @@ package com.mos.backend.studyparticipationanswers.entity;
 
 import com.mos.backend.common.entity.BaseAuditableEntity;
 import com.mos.backend.studies.entity.Study;
-import com.mos.backend.studyparticipations.entity.StudyParticipation;
-import com.mos.backend.studyquestions.entity.StudyQuestion;
 import com.mos.backend.users.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
