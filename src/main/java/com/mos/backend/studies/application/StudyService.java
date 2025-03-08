@@ -31,6 +31,9 @@ public class StudyService {
     private final StudyCurriculumService studyCurriculumService;
     private final StudyMemberService studyMemberService;
 
+    /**
+     * 스터디 생성
+     */
     public Long create(Long userId, StudyCreateRequestDto requestDto) {
         validateStudyCreateRequest(requestDto);
 
@@ -41,10 +44,18 @@ public class StudyService {
         return savedStudy.getId();
     }
 
+    /**
+     * 스터디 단 건 조회
+     */
+
     public StudyResponseDto get(long studyId) {
-        studyRepository.increaseViewCount(studyId);
+        increaseViewCount(studyId);
         Study study = findStudyById(studyId);
         return StudyResponseDto.from(study);
+    }
+
+    private void increaseViewCount(long studyId) {
+        studyRepository.increaseViewCount(studyId);
     }
 
     private Study findStudyById(long studyId) {
