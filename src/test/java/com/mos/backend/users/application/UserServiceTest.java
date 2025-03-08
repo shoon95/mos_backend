@@ -3,6 +3,7 @@ package com.mos.backend.users.application;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Category;
+import com.mos.backend.users.application.responsedto.UserDetailRes;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.users.entity.exception.UserErrorCode;
 import com.mos.backend.users.infrastructure.respository.UserRepositoryImpl;
@@ -96,4 +97,46 @@ class UserServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("유저 정보 조회 성공 시나리오")
+    class UserGetSuccess {
+        @Test
+        @DisplayName("유저 정보 조회 성공")
+        void getDetail_Success() {
+            // Given
+            User user = User.builder()
+                    .id(userId)
+                    .nickname(NICKNAME)
+                    .introduction(INTRODUCTION)
+                    .categories(CATEGORIES)
+                    .build();
+
+            when(entityFacade.getUser(userId)).thenReturn(user);
+
+            // When
+            UserDetailRes detailRes = userService.getDetail(userId);
+
+            // Then
+            assertThat(detailRes.getNickname()).isEqualTo(NICKNAME);
+            assertThat(detailRes.getIntroduction()).isEqualTo(INTRODUCTION);
+            assertThat(detailRes.getCategories()).isEqualTo(CATEGORIES);
+        }
+    }
+
+    @Nested
+    @DisplayName("유저 정보 조회 실패 시나리오")
+    class UserGetFail {
+        @Test
+        @DisplayName("존재하지 않은 userId 입력 시 예외 발생")
+        void getDetail_Fail_UserIdNotFound() {
+            // Given
+            when(entityFacade.getUser(any(Long.class))).thenThrow(new MosException(UserErrorCode.USER_NOT_FOUND));
+
+            // When
+            MosException e = assertThrows(MosException.class, () -> userService.getDetail(userId));
+
+            // Then
+            assertThat(e.getErrorCode()).isEqualTo(UserErrorCode.USER_NOT_FOUND);
+        }
+    }
 }
