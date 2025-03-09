@@ -65,7 +65,7 @@ dependencies {
 	testImplementation 'org.testcontainers:mysql'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// Asciidoctor 확장 (API 문서 html 생성)
+	// Asciidoctor 확장 (API 문서 HTML 자동 생성)
 	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
 	// Redis (이미 포함되어 있지만 중복되지 않도록 확인)
@@ -107,10 +107,7 @@ task copyDocument(type: Copy) {
 	into file("src/main/resources/static/docs")
 }
 
-// processResources 작업이 copyDocument 작업의 결과물을 사용하도록 명시적 의존성 추가
-processResources.dependsOn(copyDocument)
-
-// build task가 copyDocument에 의존하도록 설정
+// build 태스크가 copyDocument에 의존하도록 설정 (processResources와의 순환 의존성 문제로 인해 별도 의존성은 제거)
 build {
 	dependsOn copyDocument
 }
