@@ -21,27 +21,27 @@ jobs:
           
           echo "GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}}" >> .env
           echo "GOOGLE_CLIENT_SECRET=${{secrets.GOOGLE_CLIENT_SECRET}}" >> .env
-          echo "GOOGLE_REDIRECT_URI=${{GOOGLE_REDIRECT_URI}}" >> .env
+          echo "GOOGLE_REDIRECT_URI=${{secrets.GOOGLE_REDIRECT_URI}}" >> .env
           
-          echo "NAVER_CLIENT_ID=${{NAVER_CLIENT_ID}}" >> .env
-          echo "NAVER_CLIENT_SECRET=${{NAVER_CLIENT_SECRET}}" >> .env
-          echo "NAVER_REDIRECT_URI=${{NAVER_REDIRECT_URI}}" >> .env
+          echo "NAVER_CLIENT_ID=${{secrets.NAVER_CLIENT_ID}}" >> .env
+          echo "NAVER_CLIENT_SECRET=${{secrets.NAVER_CLIENT_SECRET}}" >> .env
+          echo "NAVER_REDIRECT_URI=${{secrets.NAVER_REDIRECT_URI}}" >> .env
           
-          echo "JWT_SECRET=${{JWT_SECRET}}" >> .env
-          echo "JWT_ACCESS_EXPIRATION=${{JWT_ACCESS_EXPIRATION}}" >> .env
-          echo "JWT_ACCESS_COOKIE=${{JWT_ACCESS_COOKIE}}" >> .env
-          echo "JWT_REFRESH_EXPIRATION=${{JWT_REFRESH_EXPIRATION}}" >> .env
-          echo "JWT_REFRESH_COOKIE=${{JWT_REFRESH_COOKIE}}" >> .env
+          echo "JWT_SECRET=${{secrets.JWT_SECRET}}" >> .env
+          echo "JWT_ACCESS_EXPIRATION=${{secrets.JWT_ACCESS_EXPIRATION}}" >> .env
+          echo "JWT_ACCESS_COOKIE=${{secrets.JWT_ACCESS_COOKIE}}" >> .env
+          echo "JWT_REFRESH_EXPIRATION=${{secrets.JWT_REFRESH_EXPIRATION}}" >> .env
+          echo "JWT_REFRESH_COOKIE=${{secrets.JWT_REFRESH_COOKIE}}" >> .env
           
-          echo "DATASOURCE_URL=${{DATASOURCE_URL}}" >> .env
-          echo "GENERATE_DDL=${{GENERATE_DDL}}" >> .env
-          echo "DATABASE_USERNAME=${{DATABASE_USERNAME}}" >> .env
-          echo "DATABASE_PASSWORD=${{DATABASE_PASSWORD}}" >> .env
+          echo "DATASOURCE_URL=${{secrets.DATASOURCE_URL}}" >> .env
+          echo "GENERATE_DDL=${{secrets.GENERATE_DDL}}" >> .env
+          echo "DATABASE_USERNAME=${{secrets.DATABASE_USERNAME}}" >> .env
+          echo "DATABASE_PASSWORD=${{secrets.DATABASE_PASSWORD}}" >> .env
           
-          echo "DDL_AUTO=${{DDL_AUTH}}" >> .env
+          echo "DDL_AUTO=${{secrets.DDL_AUTH}}" >> .env
           
-          echo "REDIS_HOST=${{REDIS_HOST}}" >> .env
-          echo "REDIS_PORT=${{REDIS_PORT}}" >> .env
+          echo "REDIS_HOST=${{secrets.REDIS_HOST}}" >> .env
+          echo "REDIS_PORT=${{secrets.REDIS_PORT}}" >> .env
 
       # 도커 로그인
       - name: Log in to Docker Hub
