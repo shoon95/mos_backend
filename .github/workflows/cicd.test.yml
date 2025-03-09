@@ -2,7 +2,7 @@ name: 🚀 Deploy workflow on test environment
 
 on:
   push:
-    branches: ['release/v**', 'release']
+    branches: ['release/**', 'release']
 
 jobs:
   deploy:
