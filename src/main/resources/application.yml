@@ -8,7 +8,7 @@ spring:
     cache-duration: 3600
 
   config:
-    import: optional:classpath:.env[.properties]
+    import: optional:file:.env[.properties]
   datasource:
     url: ${DATASOURCE_URL}
     username: ${DATABASE_USERNAME}
