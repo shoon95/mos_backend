@@ -8,6 +8,11 @@ plugins {
 group = 'com.mos'
 version = '0.0.1-SNAPSHOT'
 
+bootJar {
+	archiveFileName = "sikyozo.jar"
+}
+
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
