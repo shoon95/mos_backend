@@ -8,10 +8,10 @@ plugins {
 group = 'com.mos'
 version = '0.0.1-SNAPSHOT'
 
+// bootJar 파일 이름 설정
 bootJar {
-	archiveFileName = "sikyozo.jar"
+	archiveFileName = "mos.jar"
 }
-
 
 java {
 	toolchain {
@@ -31,40 +31,33 @@ repositories {
 }
 
 ext {
+	// 스니펫 디렉토리 경로를 상수로 선언
 	set('snippetsDir', file("build/generated-snippets"))
 }
 
 dependencies {
-
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 
-	// query 보기
+	// QueryDSL 관련
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.10.0'
-
-	// queryDSL
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
 	compileOnly 'org.projectlombok:lombok'
-
-	// 테스트 용도
-	runtimeOnly 'com.h2database:h2'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-
 	annotationProcessor 'org.projectlombok:lombok'
 
+	// 테스트 의존성
+	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-	// restdoc api 문서
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
@@ -72,13 +65,13 @@ dependencies {
 	testImplementation 'org.testcontainers:mysql'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// api 문서 html 자동 생성기
+	// Asciidoctor 확장 (API 문서 html 생성)
 	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
-	// Redis
+	// Redis (이미 포함되어 있지만 중복되지 않도록 확인)
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-	// JWT
+	// JWT 라이브러리
 	implementation 'com.auth0:java-jwt:4.2.1'
 }
 
@@ -86,28 +79,43 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+// 스니펫 디렉토리를 미리 생성하는 task
+task createSnippetsDir {
+	doLast {
+		file("$buildDir/generated-snippets").mkdirs()
+	}
+}
+
+// Asciidoctor task 설정
 asciidoctor {
+	dependsOn test, createSnippetsDir
 	inputs.dir snippetsDir
 	configurations 'asciidoctorExt'
-	sourceDir file('src/docs/asciidoc') // 문서 기본 디렉토리 설정
-	outputDir file("build/docs/asciidoc")
-	dependsOn test
+	sourceDir file('src/docs/asciidoc') // 문서 원본 디렉토리
+	outputDir file("build/docs/asciidoc") // 생성될 문서 디렉토리
 }
 
 asciidoctor.doFirst {
+	// 문서가 저장될 디렉토리를 삭제하여 깨끗한 상태에서 시작
 	delete file('src/main/resources/static/docs')
 }
 
+// API 문서 파일을 복사하는 task
 task copyDocument(type: Copy) {
 	dependsOn asciidoctor
 	from file("build/docs/asciidoc")
 	into file("src/main/resources/static/docs")
 }
 
+// processResources 작업이 copyDocument 작업의 결과물을 사용하도록 명시적 의존성 추가
+processResources.dependsOn(copyDocument)
+
+// build task가 copyDocument에 의존하도록 설정
 build {
 	dependsOn copyDocument
 }
 
+// clean task에서 추가 디렉토리 삭제 (필요 시)
 clean {
 	delete file('src/main/generated')
 }

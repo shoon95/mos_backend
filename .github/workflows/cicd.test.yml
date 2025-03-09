@@ -15,7 +15,7 @@ jobs:
 
       - name: Create .env file
         run: |
-          
+        
           echo "KAKAO_CLIENT_ID=${{secrets.KAKAO_CLIENT_ID}}" >> .env
           echo "KAKAO_REDIRECT_URI=${{secrets.KAKAO_REDIRECT_URI}}" >> .env
           
@@ -33,14 +33,14 @@ jobs:
           echo "JWT_REFRESH_EXPIRATION=${{secrets.JWT_REFRESH_EXPIRATION}}" >> .env
           echo "JWT_REFRESH_COOKIE=${{secrets.JWT_REFRESH_COOKIE}}" >> .env
           
-          echo "DATASOURCE_URL=${{secrets.DATASOURCE_URL}}" >> .env
+          echo "DATASOURCE_URL=${{secrets.DATASOURCE_RELEASE_URL}}" >> .env
           echo "GENERATE_DDL=${{secrets.GENERATE_DDL}}" >> .env
           echo "DATABASE_USERNAME=${{secrets.DATABASE_USERNAME}}" >> .env
           echo "DATABASE_PASSWORD=${{secrets.DATABASE_PASSWORD}}" >> .env
           
           echo "DDL_AUTO=${{secrets.DDL_AUTH}}" >> .env
           
-          echo "REDIS_HOST=${{secrets.REDIS_HOST}}" >> .env
+          echo "REDIS_HOST=${{secrets.REDIS_RELEASE_HOST}}" >> .env
           echo "REDIS_PORT=${{secrets.REDIS_PORT}}" >> .env
 
       # 도커 로그인
