@@ -10,6 +10,11 @@ version = '0.0.1-SNAPSHOT'
 
 bootJar {
 	archiveFileName = "mos.jar"
+	// asciidoctor 결과를 static/docs에 포함
+	dependsOn asciidoctor
+	from("${asciidoctor.outputDir}/html5") {
+		into 'static/docs'
+	}
 }
 
 java {
@@ -43,6 +48,7 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.10.0'
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	implementation 'com.auth0:java-jwt:4.2.1'
 
 	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
@@ -53,6 +59,7 @@ dependencies {
 
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 	testImplementation 'org.springframework.security:spring-security-test'
@@ -62,9 +69,6 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
-
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	implementation 'com.auth0:java-jwt:4.2.1'
 }
 
 tasks.named('test') {
@@ -78,6 +82,7 @@ task createSnippetsDir {
 	}
 }
 
+// Asciidoctor 설정
 asciidoctor {
 	dependsOn test, createSnippetsDir
 	configurations 'asciidoctorExt'
@@ -86,36 +91,12 @@ asciidoctor {
 	outputDir file("build/docs/asciidoc")
 }
 
-// 변경된 부분: copyDocument에서 resources 디렉터리를 충돌하지 않도록 변경
-task copyDocument(type: Copy) {
-	dependsOn asciidoctor
-	from file("build/docs/asciidoc")
-	into file("build/generated-resources/static/docs")  // build/resources/main이 아닌 별도의 폴더 사용
+// processResources에서 asciidoctor 의존성 제거
+processResources {
+	// asciidoctor 결과를 직접 의존하지 않음
 }
 
-// processResources와 무관하게 copyDocument를 설정
-build {
-	dependsOn copyDocument
-}
-
-// 리소스 처리에 추가 디렉토리 포함 (스프링에서 제공할 수 있도록 설정)
-sourceSets {
-	main {
-		resources {
-			srcDir("build/generated-resources")
-		}
-	}
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
-// Clean 작업 시 추가 폴더 삭제
+// clean 태스크
 clean {
-	delete file('src/main/generated'), file('build/generated-resources')
-}
-
-ext {
-	set('snippetsDir', file("build/generated-snippets"))
+	delete file('src/main/generated')
 }

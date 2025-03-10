@@ -23,13 +23,6 @@ public class AbstractTestContainer {
         registry.add("spring.datasource.password", mySQLContainer::getPassword);
         registry.add("spring.datasource.driver-class-name", mySQLContainer::getDriverClassName);
         registry.add("spring.jpa.database-platform", () -> "org.hibernate.dialect.MySQL8Dialect");
-        registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
-
-        // HikariCP 설정: 테스트 환경에서 커넥션 풀의 안정성을 위해 짧은 값 사용
-        registry.add("spring.datasource.hikari.maxLifetime", () -> "30000");         // 30초
-        registry.add("spring.datasource.hikari.connectionTimeout", () -> "30000");     // 30초
-        registry.add("spring.datasource.hikari.idleTimeout", () -> "10000");           // 10초
-        registry.add("spring.datasource.hikari.connectionTestQuery", () -> "SELECT 1");
-
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
     }
 }
