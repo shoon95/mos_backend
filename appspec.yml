@@ -7,6 +7,8 @@ files:
     destination: /home/ubuntu/deployment/scripts
   - source: /docker-compose.yml
     destination: /home/ubuntu/deployment/scripts
+  - source: /.env
+    destination: /home/ubuntu/deployment/scripts
 hooks:
   AfterInstall:
     - location: scripts/after_install.sh
