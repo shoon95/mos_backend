@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -31,6 +32,7 @@ class StudyRepositoryTest extends AbstractTestContainer {
 
     @Test
     @DisplayName("동시성 테스트 - ViewCount 증가")
+    @DirtiesContext
     void testIncreaseViewCountConcurrency() throws InterruptedException {
 
         Study study = Study.builder()
