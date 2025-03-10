@@ -2,11 +2,11 @@
 os: linux
 files:
   - source: /appspec.yml
-    destination: /home/ubuntu/app
+    destination: /home/ubuntu/deployment
   - source: /scripts
-    destination: /home/ubuntu/app/scripts
+    destination: /home/ubuntu/deployment/scripts
   - source: /docker-compose.yml
-    destination : /home/ubuntu/app
+    destination: /home/ubuntu/deployment/scripts
 hooks:
   AfterInstall:
     - location: scripts/after_install.sh
