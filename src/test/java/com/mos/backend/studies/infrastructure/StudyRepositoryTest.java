@@ -38,7 +38,7 @@ class StudyRepositoryTest extends AbstractTestContainer {
         Study study = Study.builder()
                 .title("Concurrency Test")
                 .content("Test Content")
-                .maxParticipantsCount(5)
+                .maxStudyMemberCount(5)
                 .category(Category.PROGRAMMING)
                 .schedule("Test Schedule")
                 .recruitmentStartDate(now())
