@@ -61,7 +61,7 @@ class StudyControllerTest {
         StudyCreateRequestDto dto = new StudyCreateRequestDto();
         dto.setTitle("Spring 스터디");
         dto.setCategory("프로그래밍");
-        dto.setMaxParticipants(5);
+        dto.setMaxStudyMemberCount(5);
         dto.setRecruitmentStartDate(LocalDate.now().plusDays(1));
         dto.setRecruitmentEndDate(LocalDate.now().plusDays(7));
         dto.setTags(List.of("Java", "Spring"));
@@ -105,7 +105,7 @@ class StudyControllerTest {
                         requestFields(
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("스터디 제목"),
                                 fieldWithPath("category").type(JsonFieldType.STRING).description("스터디 카테고리"),
-                                fieldWithPath("maxParticipants").type(JsonFieldType.NUMBER).description("최대 참여 인원"),
+                                fieldWithPath("maxStudyMemberCount").type(JsonFieldType.NUMBER).description("최대 참여 인원"),
                                 fieldWithPath("recruitmentStartDate").type(JsonFieldType.STRING).description("모집 시작 날짜"),
                                 fieldWithPath("recruitmentEndDate").type(JsonFieldType.STRING).description("모집 종료 날짜"),
                                 fieldWithPath("tags").type(JsonFieldType.ARRAY).description("스터디 태그 목록"),
