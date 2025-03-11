@@ -3,7 +3,7 @@ package com.mos.backend.common.infrastructure;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.users.entity.exception.UserErrorCode;
-import com.mos.backend.users.infrastructure.respository.UserRepositoryImpl;
+import com.mos.backend.users.infrastructure.respository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Service
 public class EntityFacade {
-    private final UserRepositoryImpl userRepository;
+    private final UserRepository userRepository;
 
     public User getUser(Long userId) {
         return userRepository.findById(userId)
