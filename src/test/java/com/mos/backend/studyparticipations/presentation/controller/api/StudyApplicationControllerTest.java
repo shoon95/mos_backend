@@ -49,4 +49,19 @@ class StudyApplicationControllerTest {
                         )
                 );
     }
+
+    @Test
+    @DisplayName("스터디 신청 거절 성공 문서화")
+    void rejectStudyApplication_Success_Documentation() throws Exception {
+        mockMvc.perform(
+                        put("/study-applications/1/rejection")
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andDo(document("study-applications-reject-success",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint())
+                        )
+                );
+    }
 }

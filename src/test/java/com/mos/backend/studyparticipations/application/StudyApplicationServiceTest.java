@@ -123,4 +123,29 @@ public class StudyApplicationServiceTest {
             verify(studyMemberRepository, never()).save(any(StudyMember.class));
         }
     }
+
+    @Nested
+    @DisplayName("스터디 신청 거절 성공 시나리오")
+    class RejectSuccessScenarios {
+        @Test
+        @DisplayName("스터디 신청 거절")
+        void rejectStudyMember_Success() {
+            // Given
+            Long userId = 1L;
+            Long studyApplicationId = 1L;
+            User mockUser = mock(User.class);
+            StudyApplication mockStudyApplication = mock(StudyApplication.class);
+
+            when(entityFacade.getUser(userId)).thenReturn(mockUser);
+            when(entityFacade.getStudyApplication(studyApplicationId)).thenReturn(mockStudyApplication);
+
+            // When
+            studyApplicationService.rejectStudyApplication(userId, studyApplicationId);
+
+            // Then
+            verify(entityFacade).getUser(userId);
+            verify(entityFacade).getStudyApplication(studyApplicationId);
+            verify(mockStudyApplication).reject();
+        }
+    }
 }
