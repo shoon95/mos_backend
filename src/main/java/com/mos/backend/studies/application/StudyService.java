@@ -64,7 +64,7 @@ public class StudyService {
 
     /**
      * 스터디 다 건 조회
-//     */
+     */
     public StudyCardListResponseDto findStudies(Pageable pageable, String categoryCond, String meetingTypeCond, String recruitmentStatusCond, String progressStatusCond) {
         Page<StudiesResponseDto> studies = studyRepository.findStudies(pageable, categoryCond, meetingTypeCond, recruitmentStatusCond, progressStatusCond);
         return new StudyCardListResponseDto(studies.getTotalElements(), studies.getNumber(), studies.getTotalPages(), studies.getContent());
