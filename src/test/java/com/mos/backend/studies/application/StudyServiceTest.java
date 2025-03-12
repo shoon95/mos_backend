@@ -2,10 +2,7 @@ package com.mos.backend.studies.application;
 
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studies.application.responsedto.StudyResponseDto;
-import com.mos.backend.studies.entity.Category;
-import com.mos.backend.studies.entity.MeetingType;
-import com.mos.backend.studies.entity.Study;
-import com.mos.backend.studies.entity.StudyTag;
+import com.mos.backend.studies.entity.*;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
 import com.mos.backend.studies.presentation.dto.StudyCreateRequestDto;

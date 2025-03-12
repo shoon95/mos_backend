@@ -1,6 +1,9 @@
 package com.mos.backend.studies.application;
 
 import com.mos.backend.common.exception.MosException;
+import com.mos.backend.common.utils.RandomColorGenerator;
+import com.mos.backend.studies.application.responsedto.StudiesResponseDto;
+import com.mos.backend.studies.application.responsedto.StudyCardListResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyResponseDto;
 import com.mos.backend.studies.entity.Category;
 import com.mos.backend.studies.entity.MeetingType;
@@ -15,8 +18,11 @@ import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studyquestions.application.StudyQuestionService;
 import com.mos.backend.studyrules.application.StudyRuleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -58,9 +64,10 @@ public class StudyService {
 
     /**
      * 스터디 다 건 조회
-     */
-    public void getAll() {
-
+//     */
+    public StudyCardListResponseDto findStudies(Pageable pageable, String categoryCond, String meetingTypeCond, String recruitmentStatusCond, String progressStatusCond) {
+        Page<StudiesResponseDto> studies = studyRepository.findStudies(pageable, categoryCond, meetingTypeCond, recruitmentStatusCond, progressStatusCond);
+        return new StudyCardListResponseDto(studies.getTotalElements(), studies.getNumber(), studies.getTotalPages(), studies.getContent());
     }
 
     private void increaseViewCount(long studyId) {
