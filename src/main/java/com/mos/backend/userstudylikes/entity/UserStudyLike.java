@@ -27,4 +27,11 @@ public class UserStudyLike extends BaseAuditableEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "study_id", nullable = false)
     private Study study;
+
+    public static UserStudyLike create(User user, Study study) {
+        UserStudyLike userStudyLike = new UserStudyLike();
+        userStudyLike.user = user;
+        userStudyLike.study = study;
+        return userStudyLike;
+    }
 }
