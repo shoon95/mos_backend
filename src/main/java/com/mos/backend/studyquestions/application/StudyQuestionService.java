@@ -65,7 +65,7 @@ public class StudyQuestionService {
     private StudyQuestion convertToEntity(Study study, StudyQuestionCreateRequestDto dto) {
         return StudyQuestion.create(
                 study,
-                dto.getQuestionId(),
+                dto.getQuestionNum(),
                 dto.getQuestion(),
                 QuestionType.fromDescription(dto.getType()),
                 QuestionOption.fromList(dto.getOptions()),
