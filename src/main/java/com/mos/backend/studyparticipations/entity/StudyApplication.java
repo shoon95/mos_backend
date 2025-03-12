@@ -36,4 +36,8 @@ public class StudyApplication extends BaseAuditableEntity {
     public void approve() {
         this.status = StudyApplicationStatus.APPROVED;
     }
+
+    public void reject() {
+        this.status = StudyApplicationStatus.REJECTED;
+    }
 }

@@ -41,6 +41,14 @@ public class StudyApplicationService {
         handleApprove(studyApplication, study, user);
     }
 
+    @Transactional
+    public void rejectStudyApplication(Long userId, Long studyApplicationId) {
+        User user = entityFacade.getUser(userId);
+        StudyApplication studyApplication = entityFacade.getStudyApplication(studyApplicationId);
+
+        studyApplication.reject();
+    }
+
     private static void validateStudyMemberCnt(long studyMemberCnt, Study study) {
         if (studyMemberCnt == 0)
             throw new MosException(StudyErrorCode.STUDY_NOT_FOUND);

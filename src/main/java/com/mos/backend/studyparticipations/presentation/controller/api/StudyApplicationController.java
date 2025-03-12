@@ -18,4 +18,10 @@ public class StudyApplicationController {
         studyApplicationService.approveStudyApplication(userId, studyApplicationId);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/{studyApplicationId}/rejection")
+    public ResponseEntity<Void> rejectStudyApplication(@AuthenticationPrincipal Long userId, @PathVariable Long studyApplicationId) {
+        studyApplicationService.rejectStudyApplication(userId, studyApplicationId);
+        return ResponseEntity.ok().build();
+    }
 }
