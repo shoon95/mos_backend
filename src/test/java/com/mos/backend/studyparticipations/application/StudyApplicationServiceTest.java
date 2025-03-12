@@ -34,10 +34,10 @@ public class StudyApplicationServiceTest {
 
 
     @Nested
-    @DisplayName("스터디 멤버 승인 성공 시나리오")
+    @DisplayName("스터디 신청 승인 성공 시나리오")
     class ApproveSuccessScenarios {
         @Test
-        @DisplayName("스터디 멤버 승인")
+        @DisplayName("스터디 신청 승인")
         void approveStudyMember_Success() {
             // Given
             Long userId = 1L;
@@ -53,7 +53,7 @@ public class StudyApplicationServiceTest {
             when(mockStudy.getMaxParticipantsCount()).thenReturn(5);
 
             // When
-            studyApplicationService.approveStudyMember(userId, studyApplicationId);
+            studyApplicationService.approveStudyApplication(userId, studyApplicationId);
 
             // Then
             verify(entityFacade).getUser(userId);
@@ -64,7 +64,7 @@ public class StudyApplicationServiceTest {
     }
 
     @Nested
-    @DisplayName("스터디 멤버 승인 실패 시나리오")
+    @DisplayName("스터디 신청 승인 실패 시나리오")
     class ApproveFailureScenarios {
         @Test
         @DisplayName("스터디가 존재하지 않을 때 MosException 발생")
@@ -83,7 +83,7 @@ public class StudyApplicationServiceTest {
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyApplicationService.approveStudyMember(userId, studyApplicationId);
+                studyApplicationService.approveStudyApplication(userId, studyApplicationId);
             });
 
             assertEquals(StudyErrorCode.STUDY_NOT_FOUND, exception.getErrorCode());
@@ -112,7 +112,7 @@ public class StudyApplicationServiceTest {
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyApplicationService.approveStudyMember(userId, studyApplicationId);
+                studyApplicationService.approveStudyApplication(userId, studyApplicationId);
             });
 
             assertEquals(StudyMemberErrorCode.STUDY_MEMBER_FULL, exception.getErrorCode());

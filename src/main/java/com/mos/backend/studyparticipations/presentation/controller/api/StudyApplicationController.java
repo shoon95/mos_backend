@@ -14,8 +14,8 @@ public class StudyApplicationController {
     private final StudyApplicationService studyApplicationService;
 
     @PutMapping("/{studyApplicationId}/approval")
-    public ResponseEntity<Void> approveStudyMember(@AuthenticationPrincipal Long userId, @PathVariable Long studyApplicationId) {
-        studyApplicationService.approveStudyMember(userId, studyApplicationId);
+    public ResponseEntity<Void> approveStudyApplication(@AuthenticationPrincipal Long userId, @PathVariable Long studyApplicationId) {
+        studyApplicationService.approveStudyApplication(userId, studyApplicationId);
         return ResponseEntity.ok().build();
     }
 }

@@ -29,7 +29,7 @@ public class StudyApplicationService {
     }
 
     @Transactional
-    public void approveStudyMember(Long userId, Long studyApplicationId) {
+    public void approveStudyApplication(Long userId, Long studyApplicationId) {
         User user = entityFacade.getUser(userId);
         StudyApplication studyApplication = entityFacade.getStudyApplication(studyApplicationId);
 
