@@ -121,7 +121,7 @@ class StudyControllerTest {
                                 fieldWithPath("benefits").type(JsonFieldType.ARRAY).description("스터디 혜택 목록"),
                                 fieldWithPath("applicationQuestions").type(JsonFieldType.ARRAY).description("가입 신청 질문 목록"),
                                 fieldWithPath("applicationQuestions[].question").type(JsonFieldType.STRING).description("질문 내용"),
-                                fieldWithPath("applicationQuestions[].questionId").type(JsonFieldType.NUMBER).description("질문 ID"),
+                                fieldWithPath("applicationQuestions[].questionNum").type(JsonFieldType.NUMBER).description("질문 ID"),
                                 fieldWithPath("applicationQuestions[].required").type(JsonFieldType.BOOLEAN).description("필수 질문 여부"),
                                 fieldWithPath("applicationQuestions[].type").type(JsonFieldType.STRING).description("질문 유형"),
                                 fieldWithPath("applicationQuestions[].options").type(JsonFieldType.ARRAY).description("질문 옵션")

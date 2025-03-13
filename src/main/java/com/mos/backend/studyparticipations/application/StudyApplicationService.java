@@ -53,7 +53,7 @@ public class StudyApplicationService {
         if (studyMemberCnt == 0)
             throw new MosException(StudyErrorCode.STUDY_NOT_FOUND);
 
-        if (studyMemberCnt >= study.getMaxParticipantsCount())
+        if (studyMemberCnt >= study.getMaxStudyMemberCount())
             throw new MosException(StudyMemberErrorCode.STUDY_MEMBER_FULL);
     }
 

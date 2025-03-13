@@ -50,7 +50,7 @@ public class StudyApplicationServiceTest {
             when(entityFacade.getStudyApplication(studyApplicationId)).thenReturn(mockStudyApplication);
             when(mockStudyApplication.getStudy()).thenReturn(mockStudy);
             when(studyMemberRepository.countByStudy(mockStudy)).thenReturn(1L);
-            when(mockStudy.getMaxParticipantsCount()).thenReturn(5);
+            when(mockStudy.getMaxStudyMemberCount()).thenReturn(5);
 
             // When
             studyApplicationService.approveStudyApplication(userId, studyApplicationId);
@@ -108,7 +108,7 @@ public class StudyApplicationServiceTest {
             when(entityFacade.getStudyApplication(studyApplicationId)).thenReturn(mockStudyApplication);
             when(mockStudyApplication.getStudy()).thenReturn(mockStudy);
             when(studyMemberRepository.countByStudy(mockStudy)).thenReturn(4L);
-            when(mockStudy.getMaxParticipantsCount()).thenReturn(4);
+            when(mockStudy.getMaxStudyMemberCount()).thenReturn(4);
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
