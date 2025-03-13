@@ -9,9 +9,8 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
-import com.querydsl.jpa.JPQLQueryFactory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -25,18 +24,13 @@ import static com.mos.backend.studymembers.entity.QStudyMember.studyMember;
 import static com.querydsl.core.util.StringUtils.isNullOrEmpty;
 
 @Repository
+@RequiredArgsConstructor
 public class StudyQueryDslRepository {
 
-    private EntityManager em;
-    private JPQLQueryFactory jpqlQueryFactory;
-
-    public StudyQueryDslRepository(EntityManager em) {
-        this.em = em;
-        jpqlQueryFactory = new JPAQueryFactory(em);
-    }
+    private final JPAQueryFactory jpaQueryFactory;
 
     public Page<StudiesResponseDto> findStudies(Pageable pageable, String categoryCond, String meetingTypeCond, String recruitmentStatusCond, String progressStatusCond) {
-        List<Long> findStudyId = jpqlQueryFactory
+        List<Long> findStudyId = jpaQueryFactory
                 .select(study.id)
                 .from(study)
                 .where(
@@ -50,7 +44,7 @@ public class StudyQueryDslRepository {
                 .orderBy(getOrderSpecifiers(pageable))
                 .fetch();
 
-        List<StudiesResponseDto> results = jpqlQueryFactory
+        List<StudiesResponseDto> results = jpaQueryFactory
                 .select(Projections.constructor(StudiesResponseDto.class,
                         study.id,
                         study.title,
@@ -73,7 +67,7 @@ public class StudyQueryDslRepository {
                 .orderBy(getOrderSpecifiers(pageable))
                 .fetch();
 
-        JPQLQuery<Study> countQuery = jpqlQueryFactory
+        JPQLQuery<Study> countQuery = jpaQueryFactory
                 .select(study)
                 .from(study)
                 .where(
