@@ -97,6 +97,6 @@ public class StudyQueryDslRepository {
     }
 
     private static OrderSpecifier[] getOrderSpecifiers(Pageable pageable) {
-        return QueryDslSortUtil.toOrderSpecifiers(pageable.getSort(), Study.class, "study").toArray(new OrderSpecifier[0]);
+        return QueryDslSortUtil.toOrderSpecifiers(pageable.getSort(), Study.class).toArray(new OrderSpecifier[0]);
     }
 }
