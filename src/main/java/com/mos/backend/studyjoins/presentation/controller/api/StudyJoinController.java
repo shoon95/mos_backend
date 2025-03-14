@@ -2,6 +2,7 @@ package com.mos.backend.studyjoins.presentation.controller.api;
 
 import com.mos.backend.studyjoins.application.StudyJoinService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -15,18 +16,18 @@ public class StudyJoinController {
     private final StudyJoinService studyJoinService;
 
     @PatchMapping("/studies/{studyId}/study-joins/{studyJoinId}/approval")
-    public ResponseEntity<Void> approveStudyJoin(@AuthenticationPrincipal Long userId,
-                                                 @PathVariable Long studyId,
-                                                 @PathVariable Long studyJoinId) {
+    @ResponseStatus(HttpStatus.OK)
+    public void approveStudyJoin(@AuthenticationPrincipal Long userId,
+                                 @PathVariable Long studyId,
+                                 @PathVariable Long studyJoinId) {
         studyJoinService.approveStudyJoin(userId, studyId, studyJoinId);
-        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/studies/{studyId}/study-joins/{studyJoinId}/rejection")
-    public ResponseEntity<Void> rejectStudyJoin(@AuthenticationPrincipal Long userId,
-                                                @PathVariable Long studyId,
-                                                @PathVariable Long studyJoinId) {
+    @ResponseStatus(HttpStatus.OK)
+    public void rejectStudyJoin(@AuthenticationPrincipal Long userId,
+                                @PathVariable Long studyId,
+                                @PathVariable Long studyJoinId) {
         studyJoinService.rejectStudyJoin(userId, studyId, studyJoinId);
-        return ResponseEntity.ok().build();
     }
 }
