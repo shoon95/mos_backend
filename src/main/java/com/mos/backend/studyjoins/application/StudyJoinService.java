@@ -22,14 +22,6 @@ public class StudyJoinService {
     private final EntityFacade entityFacade;
 
     @Transactional
-    public void create(Long studyId, Long userId) {
-        Study study = entityFacade.getStudy(studyId);
-        User user = entityFacade.getUser(userId);
-
-        studyMemberRepository.save(StudyMember.create(study, user));
-    }
-
-    @Transactional
     public void approveStudyJoin(Long userId, Long studyId, Long studyJoinId) {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
