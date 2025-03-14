@@ -1,5 +1,6 @@
-package com.mos.backend.studies.presentation.dto;
+package com.mos.backend.studies.presentation.requestdto;
 
+import com.mos.backend.studybenefits.presentation.requestdto.StudyBenefitRequestDto;
 import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCreateRequestDto;
 import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
 import jakarta.validation.Valid;
@@ -55,7 +56,9 @@ public class StudyCreateRequestDto {
   private List<StudyCurriculumCreateRequestDto> curriculums;
 
   private List<String> rules;
-  private List<String> benefits;
+
+  @Valid
+  private List<StudyBenefitRequestDto> benefits;
 
   @Valid
   @NotNull

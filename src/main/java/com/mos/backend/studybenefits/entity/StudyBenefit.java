@@ -25,14 +25,29 @@ public class StudyBenefit extends BaseAuditableEntity {
     private Study study;
 
     @Column(nullable = false)
+    private Long benefitNum;
+
+    @Column(nullable = false)
     private String content;
 
-    public static StudyBenefit create(Study study, String content) {
+    public static StudyBenefit create(Study study, Long benefitNum, String content) {
         StudyBenefit studyBenefit = new StudyBenefit();
         studyBenefit.study = study;
+        studyBenefit.benefitNum = benefitNum;
         studyBenefit.content = content;
         return studyBenefit;
     }
 
+    public void changeNumAndContent(Long benefitNum, String content) {
+        changeBenefitNum(benefitNum);
+        changeContent(content);
+    }
 
+    public void changeBenefitNum(Long benefitNum) {
+        this.benefitNum = benefitNum;
+    }
+
+    public void changeContent(String content) {
+        this.content = content;
+    }
 }
