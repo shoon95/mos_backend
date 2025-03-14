@@ -40,6 +40,7 @@ public class StudyService {
     /**
      * 스터디 생성
      */
+
     @Transactional
     public Long create(Long userId, StudyCreateRequestDto requestDto) {
         validateStudyCreateRequest(requestDto);
@@ -65,6 +66,7 @@ public class StudyService {
     /**
      * 스터디 다 건 조회
      */
+
     public StudyCardListResponseDto findStudies(Pageable pageable, String categoryCond, String meetingTypeCond, String recruitmentStatusCond, String progressStatusCond) {
         Page<StudiesResponseDto> studies = studyRepository.findStudies(pageable, categoryCond, meetingTypeCond, recruitmentStatusCond, progressStatusCond);
         return new StudyCardListResponseDto(studies.getTotalElements(), studies.getNumber(), studies.getTotalPages(), studies.getContent());
@@ -104,7 +106,7 @@ public class StudyService {
     private void handleStudyRelations(Long userId, StudyCreateRequestDto requestDto, Long savedStudyId) {
         studyRuleService.create(savedStudyId, requestDto.getRules());
         studyBenefitService.createOrUpdateOrDelete(savedStudyId, requestDto.getBenefits());
-        studyQuestionService.create(savedStudyId, requestDto.getApplicationQuestions());
+        studyQuestionService.createOrUpdateOrDelete(savedStudyId, requestDto.getApplicationQuestions());
         studyCurriculumService.create(savedStudyId, requestDto.getCurriculums());
         studyMemberService.create(savedStudyId, userId);
     }
