@@ -12,8 +12,10 @@ import java.util.Locale;
 @Getter
 public enum StudyQuestionErrorCode implements ErrorCode {
     INVALID_QUESTION_TYPE(HttpStatus.BAD_REQUEST, "study-question.invalid-question-type"),
-    INVALID_MULTIPLE_CHOICE_OPTIONS(HttpStatus.BAD_REQUEST, "study-question.invalid-multiple-choice-options");
-
+    INVALID_MULTIPLE_CHOICE_OPTIONS(HttpStatus.BAD_REQUEST, "study-question.invalid-multiple-choice-options"),
+    STUDY_QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "study-question.not-found"),
+    INVALID_SHORT_ANSWER(HttpStatus.BAD_REQUEST, "study-question.invalid-short-answer"),
+    INVALID_QUESTION_NUM(HttpStatus.BAD_REQUEST, "study-question.invalid-question-num");
     private final HttpStatus httpStatus;
     private final String messageKey;
 

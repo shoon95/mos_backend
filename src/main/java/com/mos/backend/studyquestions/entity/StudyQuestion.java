@@ -1,11 +1,14 @@
 package com.mos.backend.studyquestions.entity;
 
 import com.mos.backend.common.entity.BaseAuditableEntity;
+import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studies.entity.Study;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -39,14 +42,51 @@ public class StudyQuestion extends BaseAuditableEntity {
     @Column(nullable = false)
     private boolean required;
 
-    public static StudyQuestion create(Study study, Long questionId, String question, QuestionType type, QuestionOption options, boolean required) {
+    public static StudyQuestion create(Study study, Long questionNum, String question, String type, List<String> options, boolean required) {
+        if ((QuestionType.MULTIPLE_CHOICE.equals(QuestionType.fromDescription(type))) && (options == null || options.size() < 2)) {
+            throw new MosException(StudyQuestionErrorCode.INVALID_MULTIPLE_CHOICE_OPTIONS);
+        }
+        if ((QuestionType.SHORT_ANSWER.equals(QuestionType.fromDescription(type))) && (!options.isEmpty())) {
+            throw new MosException(StudyQuestionErrorCode.INVALID_SHORT_ANSWER);
+        }
+
         StudyQuestion studyQuestion = new StudyQuestion();
         studyQuestion.study = study;
-        studyQuestion.questionNum = questionId;
+        studyQuestion.questionNum = questionNum;
         studyQuestion.question = question;
-        studyQuestion.type = type;
-        studyQuestion.options = options;
+        studyQuestion.type = QuestionType.fromDescription(type);
+        studyQuestion.options = QuestionOption.fromList(options);
         studyQuestion.required = required;
         return studyQuestion;
+    }
+
+    public void changeQuestion(Long questionNum, String question, boolean required, String type, List<String> options) {
+        changeQuestionNum(questionNum);
+        changeQuestionContent(question);
+        changeRequired(required);
+        changeTypeAndOptions(type, options);
+    }
+
+    public void changeQuestionNum(Long questionNum) {
+        this.questionNum = questionNum;
+    }
+
+    public void changeQuestionContent(String question) {
+        this.question = question;
+    }
+
+    public void changeRequired(boolean required) {
+        this.required = required;
+    }
+
+    public void changeTypeAndOptions(String type, List<String> options) {
+        if ((QuestionType.MULTIPLE_CHOICE.equals(QuestionType.fromDescription(type))) && (options == null || options.size() < 2)) {
+            throw new MosException(StudyQuestionErrorCode.INVALID_MULTIPLE_CHOICE_OPTIONS);
+        }
+        if ((QuestionType.SHORT_ANSWER.equals(QuestionType.fromDescription(type))) && (!options.isEmpty())) {
+            throw new MosException(StudyQuestionErrorCode.INVALID_SHORT_ANSWER);
+        }
+        this.type = QuestionType.fromDescription(type);
+        this.options = QuestionOption.fromList(options);
     }
 }
