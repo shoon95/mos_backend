@@ -1,4 +1,4 @@
-package com.mos.backend.userstudylikes.presentation.api;
+package com.mos.backend.userstudylikes.presentation.controller.api;
 
 import com.mos.backend.userstudylikes.application.UserStudyLikeService;
 import lombok.RequiredArgsConstructor;
