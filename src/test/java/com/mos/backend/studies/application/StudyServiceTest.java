@@ -5,8 +5,9 @@ import com.mos.backend.studies.application.responsedto.StudyResponseDto;
 import com.mos.backend.studies.entity.*;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
-import com.mos.backend.studies.presentation.dto.StudyCreateRequestDto;
+import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
 import com.mos.backend.studybenefits.application.StudyBenefitService;
+import com.mos.backend.studybenefits.presentation.requestdto.StudyBenefitRequestDto;
 import com.mos.backend.studycurriculum.application.StudyCurriculumService;
 import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCreateRequestDto;
 import com.mos.backend.studymembers.application.StudyMemberService;
@@ -81,7 +82,10 @@ class StudyServiceTest {
                 new StudyCurriculumCreateRequestDto(1L,"Week 1", "Java Basics")
         ));
         validRequestDto.setRules(List.of("Rule 1", "Rule 2"));
-        validRequestDto.setBenefits(List.of("Benefit 1"));
+        StudyBenefitRequestDto studyBenefitRequestDto = new StudyBenefitRequestDto();
+        studyBenefitRequestDto.setBenefitNum(1L);
+        studyBenefitRequestDto.setContent("Benefit 1");
+        validRequestDto.setBenefits(List.of(studyBenefitRequestDto));
         validRequestDto.setApplicationQuestions(List.of(
                 new StudyQuestionCreateRequestDto("좋은 질문", 1L, true, "주관식", List.of("A", "B", "C"))
         ));
@@ -110,7 +114,7 @@ class StudyServiceTest {
 
             // 연관된 서비스 메서드 호출 검증
             verify(studyRuleService).create(eq(studyId), eq(validRequestDto.getRules()));
-            verify(studyBenefitService).create(eq(studyId), eq(validRequestDto.getBenefits()));
+            verify(studyBenefitService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getBenefits()));
             verify(studyQuestionService).create(eq(studyId), eq(validRequestDto.getApplicationQuestions()));
             verify(studyCurriculumService).create(eq(studyId), eq(validRequestDto.getCurriculums()));
             verify(studyMemberService).create(eq(studyId), eq(testUserId));

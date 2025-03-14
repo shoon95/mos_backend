@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mos.backend.common.jwt.TokenUtil;
 import com.mos.backend.securityuser.WithMockCustomUser;
 import com.mos.backend.studies.application.StudyService;
-import com.mos.backend.studies.presentation.dto.StudyCreateRequestDto;
+import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
+import com.mos.backend.studybenefits.presentation.requestdto.StudyBenefitRequestDto;
 import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCreateRequestDto;
 import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,8 +81,10 @@ class StudyControllerTest {
         ));
 
         dto.setRules(List.of("주 1회 꼭 참석", "과제 미제출 시 벌금"));
-        dto.setBenefits(List.of("전문성 향상", "네트워킹"));
-
+        StudyBenefitRequestDto studyBenefitRequestDto = new StudyBenefitRequestDto();
+        studyBenefitRequestDto.setBenefitNum(1L);
+        studyBenefitRequestDto.setContent("테스트 베니핏");
+        dto.setBenefits(List.of(studyBenefitRequestDto));
         return dto;
     }
 

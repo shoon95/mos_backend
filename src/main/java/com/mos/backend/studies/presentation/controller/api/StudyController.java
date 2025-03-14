@@ -3,7 +3,7 @@ package com.mos.backend.studies.presentation.controller.api;
 import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.application.responsedto.StudyCardListResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyResponseDto;
-import com.mos.backend.studies.presentation.dto.StudyCreateRequestDto;
+import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
