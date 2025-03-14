@@ -1,8 +1,8 @@
 package com.mos.backend.questionanswers.entity;
 
 import com.mos.backend.common.entity.BaseAuditableEntity;
-import com.mos.backend.studies.entity.Study;
-import com.mos.backend.users.entity.User;
+import com.mos.backend.studyjoins.entity.StudyJoin;
+import com.mos.backend.studyquestions.entity.StudyQuestion;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,10 +22,10 @@ public class QuestionAnswer extends BaseAuditableEntity {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "study_join_id", nullable = false)
+    private StudyJoin studyJoin;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "study_id", nullable = false)
-    private Study study;
+    @JoinColumn(name = "study_question_id", nullable = false)
+    private StudyQuestion studyQuestion;
 }
