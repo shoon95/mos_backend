@@ -29,9 +29,9 @@ public class StudyJoinService {
     }
 
     @Transactional
-    public void approveStudyJoin(Long userId, Long studyApplicationId) {
+    public void approveStudyJoin(Long userId, Long studyJoinId) {
         User user = entityFacade.getUser(userId);
-        StudyJoin studyJoin = entityFacade.getStudyJoin(studyApplicationId);
+        StudyJoin studyJoin = entityFacade.getStudyJoin(studyJoinId);
 
         Study study = studyJoin.getStudy();
         long studyMemberCnt = studyMemberRepository.countByStudy(study);
@@ -42,9 +42,9 @@ public class StudyJoinService {
     }
 
     @Transactional
-    public void rejectStudyJoin(Long userId, Long studyApplicationId) {
+    public void rejectStudyJoin(Long userId, Long studyJoinId) {
         User user = entityFacade.getUser(userId);
-        StudyJoin studyJoin = entityFacade.getStudyJoin(studyApplicationId);
+        StudyJoin studyJoin = entityFacade.getStudyJoin(studyJoinId);
 
         studyJoin.reject();
     }
