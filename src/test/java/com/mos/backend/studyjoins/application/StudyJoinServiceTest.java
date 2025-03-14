@@ -41,25 +41,25 @@ public class StudyJoinServiceTest {
             // Given
             Long userId = 1L;
             Long studyId = 1L;
-            Long studyApplicationId = 1L;
+            Long studyJoinId = 1L;
             User mockUser = mock(User.class);
             Study mockStudy = mock(Study.class);
             StudyJoin mockStudyJoin = mock(StudyJoin.class);
 
             when(entityFacade.getUser(userId)).thenReturn(mockUser);
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
-            when(entityFacade.getStudyJoin(studyApplicationId)).thenReturn(mockStudyJoin);
+            when(entityFacade.getStudyJoin(studyJoinId)).thenReturn(mockStudyJoin);
             when(mockStudyJoin.isSameStudy(mockStudy)).thenReturn(true);
             when(studyMemberRepository.countByStudy(mockStudy)).thenReturn(1L);
             when(mockStudy.getMaxStudyMemberCount()).thenReturn(5);
 
             // When
-            studyJoinService.approveStudyJoin(userId, studyId, studyApplicationId);
+            studyJoinService.approveStudyJoin(userId, studyId, studyJoinId);
 
             // Then
             verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
-            verify(entityFacade).getStudyJoin(studyApplicationId);
+            verify(entityFacade).getStudyJoin(studyJoinId);
             verify(mockStudyJoin).isSameStudy(mockStudy);
             verify(mockStudyJoin).approve();
             verify(studyMemberRepository).save(any(StudyMember.class));
@@ -75,7 +75,7 @@ public class StudyJoinServiceTest {
             // Given
             Long userId = 1L;
             Long studyId = 1L;
-            Long studyApplicationId = 1L;
+            Long studyJoinId = 1L;
             User mockUser = mock(User.class);
             Study mockStudy = mock(Study.class);
             StudyJoin mockStudyJoin = mock(StudyJoin.class);
@@ -85,14 +85,14 @@ public class StudyJoinServiceTest {
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyJoinService.approveStudyJoin(userId, studyId, studyApplicationId);
+                studyJoinService.approveStudyJoin(userId, studyId, studyJoinId);
             });
 
             assertEquals(StudyErrorCode.STUDY_NOT_FOUND, exception.getErrorCode());
 
             verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
-            verify(entityFacade, never()).getStudyJoin(studyApplicationId);
+            verify(entityFacade, never()).getStudyJoin(studyJoinId);
             verify(mockStudyJoin, never()).isSameStudy(mockStudy);
             verify(mockStudyJoin, never()).approve();
             verify(studyMemberRepository, never()).save(any(StudyMember.class));
@@ -104,32 +104,33 @@ public class StudyJoinServiceTest {
             // Given
             Long userId = 1L;
             Long studyId = 1L;
-            Long studyApplicationId = 1L;
+            Long studyJoinId = 1L;
             User mockUser = mock(User.class);
             Study mockStudy = mock(Study.class);
             StudyJoin mockStudyJoin = mock(StudyJoin.class);
 
             when(entityFacade.getUser(userId)).thenReturn(mockUser);
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
-            when(entityFacade.getStudyJoin(studyApplicationId)).thenReturn(mockStudyJoin);
+            when(entityFacade.getStudyJoin(studyJoinId)).thenReturn(mockStudyJoin);
             when(mockStudyJoin.isSameStudy(mockStudy)).thenReturn(true);
             when(studyMemberRepository.countByStudy(mockStudy)).thenReturn(4L);
             when(mockStudy.getMaxStudyMemberCount()).thenReturn(4);
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyJoinService.approveStudyJoin(userId, studyId, studyApplicationId);
+                studyJoinService.approveStudyJoin(userId, studyId, studyJoinId);
             });
 
             assertEquals(StudyMemberErrorCode.STUDY_MEMBER_FULL, exception.getErrorCode());
 
             verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
-            verify(entityFacade).getStudyJoin(studyApplicationId);
+            verify(entityFacade).getStudyJoin(studyJoinId);
             verify(mockStudyJoin).isSameStudy(mockStudy);
             verify(mockStudyJoin, never()).approve();
             verify(studyMemberRepository, never()).save(any(StudyMember.class));
         }
+
     }
 
     @Nested
@@ -141,23 +142,23 @@ public class StudyJoinServiceTest {
             // Given
             Long userId = 1L;
             Long studyId = 1L;
-            Long studyApplicationId = 1L;
+            Long studyJoinId = 1L;
             User mockUser = mock(User.class);
             Study mockStudy = mock(Study.class);
             StudyJoin mockStudyJoin = mock(StudyJoin.class);
 
             when(entityFacade.getUser(userId)).thenReturn(mockUser);
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
-            when(entityFacade.getStudyJoin(studyApplicationId)).thenReturn(mockStudyJoin);
+            when(entityFacade.getStudyJoin(studyJoinId)).thenReturn(mockStudyJoin);
             when(mockStudyJoin.isSameStudy(mockStudy)).thenReturn(true);
 
             // When
-            studyJoinService.rejectStudyJoin(userId, studyId, studyApplicationId);
+            studyJoinService.rejectStudyJoin(userId, studyId, studyJoinId);
 
             // Then
             verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
-            verify(entityFacade).getStudyJoin(studyApplicationId);
+            verify(entityFacade).getStudyJoin(studyJoinId);
             verify(mockStudyJoin).isSameStudy(mockStudy);
             verify(mockStudyJoin).reject();
         }
