@@ -10,10 +10,9 @@ import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.users.entity.User;
-import com.mos.backend.users.entity.exception.UserErrorCode;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
