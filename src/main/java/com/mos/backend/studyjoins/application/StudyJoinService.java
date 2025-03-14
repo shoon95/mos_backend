@@ -5,10 +5,12 @@ import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studyjoins.entity.StudyJoin;
+import com.mos.backend.studyjoins.entity.exception.StudyJoinErrorCode;
 import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.users.entity.User;
+import com.mos.backend.users.entity.exception.UserErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,24 +31,33 @@ public class StudyJoinService {
     }
 
     @Transactional
-    public void approveStudyJoin(Long userId, Long studyJoinId) {
+    public void approveStudyJoin(Long userId, Long studyId, Long studyJoinId) {
         User user = entityFacade.getUser(userId);
+        Study study = entityFacade.getStudy(studyId);
         StudyJoin studyJoin = entityFacade.getStudyJoin(studyJoinId);
 
-        Study study = studyJoin.getStudy();
-        long studyMemberCnt = studyMemberRepository.countByStudy(study);
+        validateSameStudy(studyJoin, study);
 
+        long studyMemberCnt = studyMemberRepository.countByStudy(study);
         validateStudyMemberCnt(studyMemberCnt, study);
 
         handleApprove(studyJoin, study, user);
     }
 
     @Transactional
-    public void rejectStudyJoin(Long userId, Long studyJoinId) {
+    public void rejectStudyJoin(Long userId, Long studyId, Long studyJoinId) {
         User user = entityFacade.getUser(userId);
+        Study study = entityFacade.getStudy(studyId);
         StudyJoin studyJoin = entityFacade.getStudyJoin(studyJoinId);
 
+        validateSameStudy(studyJoin, study);
+
         studyJoin.reject();
+    }
+
+    private static void validateSameStudy(StudyJoin studyJoin, Study study) {
+        if (!studyJoin.isSameStudy(study))
+            throw new MosException(StudyJoinErrorCode.STUDY_JOIN_MISMATCH);
     }
 
     private static void validateStudyMemberCnt(long studyMemberCnt, Study study) {

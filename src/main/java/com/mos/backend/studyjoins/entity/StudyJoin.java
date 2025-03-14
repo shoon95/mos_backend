@@ -40,4 +40,8 @@ public class StudyJoin extends BaseAuditableEntity {
     public void reject() {
         this.status = StudyJoinStatus.REJECTED;
     }
+
+    public boolean isSameStudy(Study study) {
+        return this.study.getId().equals(study.getId());
+    }
 }

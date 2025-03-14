@@ -10,21 +10,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@RequestMapping("/study-joins")
 @RestController
 public class StudyJoinController {
 
     private final StudyJoinService studyJoinService;
 
-    @PutMapping("/{studyJoinId}/approval")
-    public ResponseEntity<Void> approveStudyJoin(@AuthenticationPrincipal Long userId, @PathVariable Long studyJoinId) {
-        studyJoinService.approveStudyJoin(userId, studyJoinId);
+    @PutMapping("/studies/{studyId}/study-joins/{studyJoinId}/approval")
+    public ResponseEntity<Void> approveStudyJoin(@AuthenticationPrincipal Long userId,
+                                                 @PathVariable Long studyId,
+                                                 @PathVariable Long studyJoinId) {
+        studyJoinService.approveStudyJoin(userId, studyId, studyJoinId);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{studyJoinId}/rejection")
-    public ResponseEntity<Void> rejectStudyJoin(@AuthenticationPrincipal Long userId, @PathVariable Long studyJoinId) {
-        studyJoinService.rejectStudyJoin(userId, studyJoinId);
+    @PutMapping("/studies/{studyId}/study-joins/{studyJoinId}/rejection")
+    public ResponseEntity<Void> rejectStudyJoin(@AuthenticationPrincipal Long userId,
+                                                @PathVariable Long studyId,
+                                                @PathVariable Long studyJoinId) {
+        studyJoinService.rejectStudyJoin(userId, studyId, studyJoinId);
         return ResponseEntity.ok().build();
     }
 }
