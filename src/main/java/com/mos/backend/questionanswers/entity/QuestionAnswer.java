@@ -1,4 +1,4 @@
-package com.mos.backend.studyparticipationanswers.entity;
+package com.mos.backend.questionanswers.entity;
 
 import com.mos.backend.common.entity.BaseAuditableEntity;
 import com.mos.backend.studies.entity.Study;
@@ -13,12 +13,12 @@ import static jakarta.persistence.FetchType.LAZY;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "study_participation_answers")
-public class StudyParticipationAnswer extends BaseAuditableEntity {
+@Table(name = "question_answers")
+public class QuestionAnswer extends BaseAuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "study_participation_answer_id")
+    @Column(name = "question_answers_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
