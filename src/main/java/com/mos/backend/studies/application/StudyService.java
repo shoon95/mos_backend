@@ -56,6 +56,7 @@ public class StudyService {
      * 스터디 단 건 조회
      */
 
+    @Transactional
     public StudyResponseDto get(long studyId) {
         increaseViewCount(studyId);
         Study study = findStudyById(studyId);
