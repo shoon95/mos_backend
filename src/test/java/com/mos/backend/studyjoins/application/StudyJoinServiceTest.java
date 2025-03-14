@@ -229,4 +229,101 @@ public class StudyJoinServiceTest {
             verify(mockStudyJoin, never()).reject();
         }
     }
+
+    @Nested
+    @DisplayName("스터디 신청 삭제 성공 시나리오")
+    class CancelSuccessScenarios {
+        @Test
+        @DisplayName("스터디 신청 삭제")
+        void cancelStudyMember_Success() {
+            // Given
+            Long userId = 1L;
+            Long studyId = 1L;
+            Long studyJoinId = 1L;
+            User mockUser = mock(User.class);
+            Study mockStudy = mock(Study.class);
+            StudyJoin mockStudyJoin = mock(StudyJoin.class);
+
+            when(entityFacade.getUser(userId)).thenReturn(mockUser);
+            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+            when(entityFacade.getStudyJoin(studyJoinId)).thenReturn(mockStudyJoin);
+            when(mockStudyJoin.isSameStudy(mockStudy)).thenReturn(true);
+
+            // When
+            studyJoinService.deleteStudyJoin(userId, studyId, studyJoinId);
+
+            // Then
+            verify(entityFacade).getUser(userId);
+            verify(entityFacade).getStudy(studyId);
+            verify(entityFacade).getStudyJoin(studyJoinId);
+            verify(mockStudyJoin).isSameStudy(mockStudy);
+            verify(mockStudyJoin).cancel();
+        }
+    }
+
+    @Nested
+    @DisplayName("스터디 신청 삭제 실패 시나리오")
+    class CancelFailureScenarios {
+        @Test
+        @DisplayName("스터디가입이 요청한 스터디와 일치하지 않을 때 MosException 발생")
+        void cancelStudyMember_StudyJoinMismatch() {
+            // Given
+            Long userId = 1L;
+            Long studyId = 1L;
+            Long studyJoinId = 1L;
+            User mockUser = mock(User.class);
+            Study mockStudy = mock(Study.class);
+            StudyJoin mockStudyJoin = mock(StudyJoin.class);
+
+            when(entityFacade.getUser(userId)).thenReturn(mockUser);
+            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+            when(entityFacade.getStudyJoin(studyJoinId)).thenReturn(mockStudyJoin);
+            when(mockStudyJoin.isSameStudy(mockStudy)).thenReturn(false);
+
+            // When & Then
+            MosException exception = assertThrows(MosException.class, () -> {
+                studyJoinService.deleteStudyJoin(userId, studyId, studyJoinId);
+            });
+
+            assertEquals(StudyJoinErrorCode.STUDY_JOIN_MISMATCH, exception.getErrorCode());
+
+            verify(entityFacade).getUser(userId);
+            verify(entityFacade).getStudy(studyId);
+            verify(entityFacade).getStudyJoin(studyJoinId);
+            verify(mockStudyJoin).isSameStudy(mockStudy);
+            verify(mockStudyJoin, never()).cancel();
+        }
+
+        @Test
+        @DisplayName("스터디 신청 상태가 PENDING이 아닐 때 MosException 발생")
+        void deleteStudyJoin_NotPending() {
+            // Given
+            Long userId = 1L;
+            Long studyId = 1L;
+            Long studyJoinId = 1L;
+            User mockUser = mock(User.class);
+            Study mockStudy = mock(Study.class);
+            StudyJoin mockStudyJoin = mock(StudyJoin.class);
+
+            when(entityFacade.getUser(userId)).thenReturn(mockUser);
+            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+            when(entityFacade.getStudyJoin(studyJoinId)).thenReturn(mockStudyJoin);
+            when(mockStudyJoin.isSameStudy(mockStudy)).thenReturn(true);
+            when(mockStudyJoin.isPending()).thenReturn(false);
+
+            // When & Then
+            MosException exception = assertThrows(MosException.class, () -> {
+                studyJoinService.deleteStudyJoin(userId, studyId, studyJoinId);
+            });
+
+            assertEquals(StudyJoinErrorCode.STUDY_JOIN_NOT_PENDING, exception.getErrorCode());
+
+            verify(entityFacade).getUser(userId);
+            verify(entityFacade).getStudy(studyId);
+            verify(entityFacade).getStudyJoin(studyJoinId);
+            verify(mockStudyJoin).isSameStudy(mockStudy);
+            verify(mockStudyJoin).isPending();
+            verify(mockStudyJoin, never()).cancel();
+        }
+    }
 }

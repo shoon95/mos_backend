@@ -16,7 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -60,6 +59,21 @@ class StudyJoinControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andDo(document("study-joins-reject-success",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint())
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("스터디 신청 삭제 성공 문서화")
+    void cancelStudyJoin_Success_Documentation() throws Exception {
+        mockMvc.perform(
+                        patch("/studies/1/study-joins/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andDo(document("study-joins-delete-success",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint())
                         )
