@@ -4,15 +4,15 @@ import com.mos.backend.common.entity.BaseAuditableEntity;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.users.entity.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Table(name = "study_joins")
 public class StudyJoin extends BaseAuditableEntity {
 

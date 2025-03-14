@@ -4,8 +4,11 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
+import com.mos.backend.studyjoins.application.res.MyStudyJoinRes;
 import com.mos.backend.studyjoins.entity.StudyJoin;
+import com.mos.backend.studyjoins.entity.StudyJoinStatus;
 import com.mos.backend.studyjoins.entity.exception.StudyJoinErrorCode;
+import com.mos.backend.studyjoins.infrastructure.StudyJoinRepository;
 import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
@@ -14,10 +17,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class StudyJoinService {
 
+    private final StudyJoinRepository studyJoinRepository;
     private final StudyMemberRepository studyMemberRepository;
     private final EntityFacade entityFacade;
 
@@ -56,6 +62,15 @@ public class StudyJoinService {
         validatePendingStatus(studyJoin);
 
         studyJoin.cancel();
+    }
+
+    @Transactional(readOnly = true)
+    public List<MyStudyJoinRes> getMyStudyJoins(Long userId, StudyJoinStatus status) {
+        User user = entityFacade.getUser(userId);
+
+        List<StudyJoin> studyJoins = studyJoinRepository.findAllByStatusWithStudy(status);
+
+        return studyJoins.stream().map(MyStudyJoinRes::from).toList();
     }
 
     private static void validatePendingStatus(StudyJoin studyJoin) {
