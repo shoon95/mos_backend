@@ -16,11 +16,11 @@ public class StudyQuestionCreateRequestDto {
 
     @NotBlank(message = "question 필수입니다.")
     private String question;
-    @NotNull(message = "questionId는 필수입니다.")
-    @Min(value = 1, message = "questionId는 1보다 커야합니다.")
+    @NotNull(message = "questionNum는 필수입니다.")
+    @Min(value = 1, message = "questionNum는 1보다 커야합니다.")
     private Long questionNum;
-    @NotNull(message = "isRequired 필수입니다.")
-    private boolean isRequired;
+    @NotNull(message = "required 필수입니다.")
+    private boolean required;
     @NotBlank(message = "type 필수입니다.")
     private String type;
     @NotNull(message = "options 필수입니다.")
