@@ -15,7 +15,7 @@ public class StudyQuestionController {
     private final StudyQuestionService studyQuestionService;
 
     /**
-     * 스터디 지원 질문 생성|슈종|삭제
+     * 스터디 지원 질문 생성|수정|삭제
      */
 
     @PostMapping("/studies/{studyId}/questions")
