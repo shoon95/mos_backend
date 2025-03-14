@@ -46,6 +46,23 @@ public class StudyJoinService {
         studyJoin.reject();
     }
 
+    @Transactional
+    public void deleteStudyJoin(Long userId, Long studyId, Long studyJoinId) {
+        User user = entityFacade.getUser(userId);
+        Study study = entityFacade.getStudy(studyId);
+        StudyJoin studyJoin = entityFacade.getStudyJoin(studyJoinId);
+
+        validateSameStudy(studyJoin, study);
+        validatePendingStatus(studyJoin);
+
+        studyJoin.cancel();
+    }
+
+    private static void validatePendingStatus(StudyJoin studyJoin) {
+        if (!studyJoin.isPending())
+            throw new MosException(StudyJoinErrorCode.STUDY_JOIN_NOT_PENDING);
+    }
+
     private static void validateSameStudy(StudyJoin studyJoin, Study study) {
         if (!studyJoin.isSameStudy(study))
             throw new MosException(StudyJoinErrorCode.STUDY_JOIN_MISMATCH);

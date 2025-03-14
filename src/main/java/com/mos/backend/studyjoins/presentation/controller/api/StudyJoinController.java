@@ -30,4 +30,12 @@ public class StudyJoinController {
                                 @PathVariable Long studyJoinId) {
         studyJoinService.rejectStudyJoin(userId, studyId, studyJoinId);
     }
+
+    @PatchMapping("/studies/{studyId}/study-joins/{studyJoinId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void cancelStudyJoin(@AuthenticationPrincipal Long userId,
+                                @PathVariable Long studyId,
+                                @PathVariable Long studyJoinId) {
+        studyJoinService.deleteStudyJoin(userId, studyId, studyJoinId);
+    }
 }

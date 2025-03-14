@@ -9,7 +9,8 @@ import java.util.Locale;
 
 @RequiredArgsConstructor
 public enum StudyJoinErrorCode implements ErrorCode {
-    STUDY_JOIN_MISMATCH(HttpStatus.BAD_REQUEST, "auth.study-join.mismatch");
+    STUDY_JOIN_MISMATCH(HttpStatus.BAD_REQUEST, "auth.study-join.mismatch"),
+    STUDY_JOIN_NOT_PENDING(HttpStatus.BAD_REQUEST, "auth.study-join.not-pending");
 
     private final HttpStatus httpStatus;
     private final String messageKey;
