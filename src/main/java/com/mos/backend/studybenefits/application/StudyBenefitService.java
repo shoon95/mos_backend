@@ -3,7 +3,7 @@ package com.mos.backend.studybenefits.application;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
-import com.mos.backend.studies.infrastructure.StudyRepository;
+import com.mos.backend.studybenefits.application.responsedto.StudyBenefitResponseDto;
 import com.mos.backend.studybenefits.entity.StudyBenefit;
 import com.mos.backend.studybenefits.entity.exception.StudyBenefitErrorCode;
 import com.mos.backend.studybenefits.infrastructure.StudyBenefitRepository;
@@ -12,7 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,11 +24,13 @@ import java.util.stream.Collectors;
 public class StudyBenefitService {
 
     private final StudyBenefitRepository studyBenefitRepository;
-    private final StudyRepository studyRepository;
     private final EntityFacade entityFacade;
 
+    /**
+     * StudyBenefit 생성 | 수정 | 삭제
+     */
     @Transactional
-    public void createOrUpdateOrDelete(Long studyId, List<StudyBenefitRequestDto> benefitRequestDtoList) {
+    public List<StudyBenefitResponseDto> createOrUpdateOrDelete(Long studyId, List<StudyBenefitRequestDto> benefitRequestDtoList) {
         validateRequest(benefitRequestDtoList);
 
         Study study = entityFacade.getStudy(studyId);
@@ -46,6 +51,17 @@ public class StudyBenefitService {
                 studyBenefit.changeNumAndContent(benefitRequestDto.getBenefitNum(), benefitRequestDto.getContent());
             }
         });
+        return getAll(studyId);
+    }
+
+    /**
+     * StudyBenefit 목록 조회
+     */
+    public List<StudyBenefitResponseDto> getAll(Long studyId) {
+        Study study = entityFacade.getStudy(studyId);
+        List<StudyBenefit> studyBenefitList = studyBenefitRepository.findAllByStudy(study);
+        studyBenefitList.sort(Comparator.comparing(StudyBenefit::getBenefitNum));
+        return studyBenefitList.stream().map(StudyBenefitResponseDto::from).toList();
     }
 
     private static List<StudyBenefit> getDeleteBefitList(List<StudyBenefitRequestDto> benefitRequestDtoList, List<StudyBenefit> benefitList) {
@@ -53,7 +69,6 @@ public class StudyBenefitService {
                 .map(StudyBenefitRequestDto::getId)
                 .filter(Objects::nonNull)
                 .toList();
-
         return benefitList.stream()
                 .filter(b -> !requestBenefitIds.contains(b.getId()))
                 .toList();

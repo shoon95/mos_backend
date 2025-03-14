@@ -3,10 +3,12 @@ package com.mos.backend.studybenefits.application;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
+import com.mos.backend.studybenefits.application.responsedto.StudyBenefitResponseDto;
 import com.mos.backend.studybenefits.entity.StudyBenefit;
 import com.mos.backend.studybenefits.entity.exception.StudyBenefitErrorCode;
 import com.mos.backend.studybenefits.infrastructure.StudyBenefitRepository;
 import com.mos.backend.studybenefits.presentation.requestdto.StudyBenefitRequestDto;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -173,6 +175,31 @@ class StudyBenefitServiceTest {
             verify(entityFacade).getStudy(studyId);
             verify(studyBenefitRepository).findAllByStudy(mockStudy);
         }
+    }
+
+    @Test
+    @DisplayName("studyBenefit 목록 조회 성공")
+    void getAllStudyBenefits_Success() {
+        Long studyId = 1L;
+        Study study = Study.builder().id(studyId).build();
+        StudyBenefit studyBenefit1 = spy(StudyBenefit.create(study, 2L, "1"));
+        StudyBenefit studyBenefit2 = spy(StudyBenefit.create(study, 1L, "1"));
+        StudyBenefit studyBenefit3 = spy(StudyBenefit.create(study, 4L, "1"));
+        StudyBenefit studyBenefit4 = spy(StudyBenefit.create(study, 3L, "1"));
+
+        when(entityFacade.getStudy(studyId)).thenReturn(study);
+        when(studyBenefitRepository.findAllByStudy(study)).thenReturn(new ArrayList<>(List.of(studyBenefit1, studyBenefit2, studyBenefit3, studyBenefit4)));
+
+        // when
+        List<StudyBenefitResponseDto> all = studyBenefitService.getAll(studyId);
+
+        // then
+        int num = 1;
+        for (StudyBenefitResponseDto studyBenefitResponseDto : all) {
+            assertThat(studyBenefitResponseDto.getBenefitNum()).isEqualTo(num);
+            num++;
+        }
+
     }
 
     private StudyBenefitRequestDto createStudyBenefitRequestDto(Long id, Long num, String content) {
