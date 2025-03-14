@@ -11,7 +11,7 @@ import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.StudyTag;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
-import com.mos.backend.studies.presentation.dto.StudyCreateRequestDto;
+import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
 import com.mos.backend.studybenefits.application.StudyBenefitService;
 import com.mos.backend.studycurriculum.application.StudyCurriculumService;
 import com.mos.backend.studymembers.application.StudyMemberService;
@@ -103,7 +103,7 @@ public class StudyService {
 
     private void handleStudyRelations(Long userId, StudyCreateRequestDto requestDto, Long savedStudyId) {
         studyRuleService.create(savedStudyId, requestDto.getRules());
-        studyBenefitService.create(savedStudyId, requestDto.getBenefits());
+        studyBenefitService.createOrUpdateOrDelete(savedStudyId, requestDto.getBenefits());
         studyQuestionService.create(savedStudyId, requestDto.getApplicationQuestions());
         studyCurriculumService.create(savedStudyId, requestDto.getCurriculums());
         studyMemberService.create(savedStudyId, userId);
