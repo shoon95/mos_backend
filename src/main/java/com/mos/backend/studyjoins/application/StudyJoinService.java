@@ -1,13 +1,13 @@
-package com.mos.backend.studyparticipations.application;
+package com.mos.backend.studyjoins.application;
 
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
+import com.mos.backend.studyjoins.entity.StudyJoin;
 import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
-import com.mos.backend.studyparticipations.entity.StudyApplication;
 import com.mos.backend.users.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class StudyApplicationService {
+public class StudyJoinService {
 
     private final StudyMemberRepository studyMemberRepository;
     private final EntityFacade entityFacade;
@@ -29,24 +29,24 @@ public class StudyApplicationService {
     }
 
     @Transactional
-    public void approveStudyApplication(Long userId, Long studyApplicationId) {
+    public void approveStudyJoin(Long userId, Long studyApplicationId) {
         User user = entityFacade.getUser(userId);
-        StudyApplication studyApplication = entityFacade.getStudyApplication(studyApplicationId);
+        StudyJoin studyJoin = entityFacade.getStudyJoin(studyApplicationId);
 
-        Study study = studyApplication.getStudy();
+        Study study = studyJoin.getStudy();
         long studyMemberCnt = studyMemberRepository.countByStudy(study);
 
         validateStudyMemberCnt(studyMemberCnt, study);
 
-        handleApprove(studyApplication, study, user);
+        handleApprove(studyJoin, study, user);
     }
 
     @Transactional
-    public void rejectStudyApplication(Long userId, Long studyApplicationId) {
+    public void rejectStudyJoin(Long userId, Long studyApplicationId) {
         User user = entityFacade.getUser(userId);
-        StudyApplication studyApplication = entityFacade.getStudyApplication(studyApplicationId);
+        StudyJoin studyJoin = entityFacade.getStudyJoin(studyApplicationId);
 
-        studyApplication.reject();
+        studyJoin.reject();
     }
 
     private static void validateStudyMemberCnt(long studyMemberCnt, Study study) {
@@ -57,8 +57,8 @@ public class StudyApplicationService {
             throw new MosException(StudyMemberErrorCode.STUDY_MEMBER_FULL);
     }
 
-    private void handleApprove(StudyApplication studyApplication, Study study, User user) {
-        studyApplication.approve();
+    private void handleApprove(StudyJoin studyJoin, Study study, User user) {
+        studyJoin.approve();
         studyMemberRepository.save(StudyMember.create(study, user));
     }
 }

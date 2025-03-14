@@ -1,4 +1,4 @@
-package com.mos.backend.studyparticipations.entity;
+package com.mos.backend.studyjoins.entity;
 
 import com.mos.backend.common.entity.BaseAuditableEntity;
 import com.mos.backend.studies.entity.Study;
@@ -13,12 +13,12 @@ import static jakarta.persistence.FetchType.LAZY;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "study_applications")
-public class StudyApplication extends BaseAuditableEntity {
+@Table(name = "study_joins")
+public class StudyJoin extends BaseAuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "study_application_id")
+    @Column(name = "study_joins_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
@@ -31,13 +31,13 @@ public class StudyApplication extends BaseAuditableEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StudyApplicationStatus status;
+    private StudyJoinStatus status;
 
     public void approve() {
-        this.status = StudyApplicationStatus.APPROVED;
+        this.status = StudyJoinStatus.APPROVED;
     }
 
     public void reject() {
-        this.status = StudyApplicationStatus.REJECTED;
+        this.status = StudyJoinStatus.REJECTED;
     }
 }

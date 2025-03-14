@@ -1,9 +1,9 @@
-package com.mos.backend.studyparticipations.presentation.controller.api;
+package com.mos.backend.studyjoins.presentation.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mos.backend.common.jwt.TokenUtil;
 import com.mos.backend.securityuser.WithMockCustomUser;
-import com.mos.backend.studyparticipations.application.StudyApplicationService;
+import com.mos.backend.studyjoins.application.StudyJoinService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +19,11 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(StudyApplicationController.class)
+@WebMvcTest(StudyJoinController.class)
 @AutoConfigureRestDocs(outputDir = "build/generated-snippets")
 @AutoConfigureMockMvc(addFilters = false)
 @WithMockCustomUser(userId = 1L)
-class StudyApplicationControllerTest {
+class StudyJoinControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -31,19 +31,19 @@ class StudyApplicationControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private StudyApplicationService studyApplicationService;
+    private StudyJoinService studyJoinService;
     @MockitoBean
     private TokenUtil tokenUtil;
 
     @Test
     @DisplayName("스터디 신청 승인 성공 문서화")
-    void approveStudyApplication_Success_Documentation() throws Exception {
+    void approveStudyJoin_Success_Documentation() throws Exception {
         mockMvc.perform(
-                        put("/study-applications/1/approval")
+                        put("/study-joins/1/approval")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andDo(document("study-applications-approve-success",
+                .andDo(document("study-joins-approve-success",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint())
                         )
@@ -52,13 +52,13 @@ class StudyApplicationControllerTest {
 
     @Test
     @DisplayName("스터디 신청 거절 성공 문서화")
-    void rejectStudyApplication_Success_Documentation() throws Exception {
+    void rejectStudyJoin_Success_Documentation() throws Exception {
         mockMvc.perform(
-                        put("/study-applications/1/rejection")
+                        put("/study-joins/1/rejection")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andDo(document("study-applications-reject-success",
+                .andDo(document("study-joins-reject-success",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint())
                         )
