@@ -1,7 +1,6 @@
 package com.mos.backend.studies.entity;
 
 import com.mos.backend.common.entity.BaseAuditableEntity;
-import com.mos.backend.users.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
