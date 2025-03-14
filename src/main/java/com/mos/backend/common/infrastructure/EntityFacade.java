@@ -4,8 +4,8 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
-import com.mos.backend.studyparticipations.entity.StudyApplication;
-import com.mos.backend.studyparticipations.infrastructure.StudyApplicationRepository;
+import com.mos.backend.studyjoins.entity.StudyJoin;
+import com.mos.backend.studyjoins.infrastructure.StudyJoinRepository;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.users.entity.exception.UserErrorCode;
 import com.mos.backend.users.infrastructure.respository.UserRepository;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class EntityFacade {
     private final UserRepository userRepository;
     private final StudyRepository studyRepository;
-    private final StudyApplicationRepository studyApplicationRepository;
+    private final StudyJoinRepository studyJoinRepository;
 
     public User getUser(Long userId) {
         return userRepository.findById(userId)
@@ -31,8 +31,8 @@ public class EntityFacade {
                 .orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
     }
 
-    public StudyApplication getStudyApplication(Long studyApplicationId) {
-        return studyApplicationRepository.findById(studyApplicationId)
+    public StudyJoin getStudyJoin(Long studyApplicationId) {
+        return studyJoinRepository.findById(studyApplicationId)
                 .orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
     }
 }
