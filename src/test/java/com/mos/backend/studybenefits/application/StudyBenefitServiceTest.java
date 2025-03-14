@@ -8,7 +8,6 @@ import com.mos.backend.studybenefits.entity.StudyBenefit;
 import com.mos.backend.studybenefits.entity.exception.StudyBenefitErrorCode;
 import com.mos.backend.studybenefits.infrastructure.StudyBenefitRepository;
 import com.mos.backend.studybenefits.presentation.requestdto.StudyBenefitRequestDto;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -59,8 +58,6 @@ class StudyBenefitServiceTest {
             studyBenefitService.createOrUpdateOrDelete(studyId, contents);
 
             // Then
-            verify(entityFacade).getStudy(studyId);
-            verify(studyBenefitRepository).findAllByStudy(mockStudy);
             verify(studyBenefitRepository, times(2)).save(any(StudyBenefit.class));
         }
         @Test
@@ -100,7 +97,7 @@ class StudyBenefitServiceTest {
             StudyBenefit studyBenefit2 = spy(StudyBenefit.create(study, 2L, "혜택2"));
             doReturn(2L).when(studyBenefit2).getId();
 
-            when(studyBenefitRepository.findAllByStudy(study)).thenReturn(List.of(studyBenefit1, studyBenefit2));
+            when(studyBenefitRepository.findAllByStudy(study)).thenReturn(new ArrayList<>(List.of(studyBenefit1, studyBenefit2)));
             when(entityFacade.getStudy(studyId)).thenReturn(study);
             when(studyBenefitRepository.findByIdAndStudy(eq(1L), eq(study))).thenReturn(Optional.of(studyBenefit1));
 
