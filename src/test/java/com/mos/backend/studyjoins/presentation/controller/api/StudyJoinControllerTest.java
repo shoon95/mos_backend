@@ -39,7 +39,7 @@ class StudyJoinControllerTest {
     @DisplayName("스터디 신청 승인 성공 문서화")
     void approveStudyJoin_Success_Documentation() throws Exception {
         mockMvc.perform(
-                        put("/study-joins/1/approval")
+                        put("/studies/1/study-joins/1/approval")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
@@ -54,7 +54,7 @@ class StudyJoinControllerTest {
     @DisplayName("스터디 신청 거절 성공 문서화")
     void rejectStudyJoin_Success_Documentation() throws Exception {
         mockMvc.perform(
-                        put("/study-joins/1/rejection")
+                        put("/studies/1/study-joins/1/rejection")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
