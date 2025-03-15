@@ -271,10 +271,10 @@ public class StudyJoinServiceTest {
     }
 
     @Nested
-    @DisplayName("스터디 신청 삭제 성공 시나리오")
+    @DisplayName("스터디 신청 취소 성공 시나리오")
     class CancelSuccessScenarios {
         @Test
-        @DisplayName("스터디 신청 삭제")
+        @DisplayName("스터디 신청 취소")
         void cancelStudyMember_Success() {
             // Given
             Long userId = 1L;
@@ -290,7 +290,7 @@ public class StudyJoinServiceTest {
             when(mockStudyJoin.isSameStudy(mockStudy)).thenReturn(true);
 
             // When
-            studyJoinService.deleteStudyJoin(userId, studyId, studyJoinId);
+            studyJoinService.cancelStudyJoin(userId, studyId, studyJoinId);
 
             // Then
             verify(entityFacade).getUser(userId);
@@ -302,7 +302,7 @@ public class StudyJoinServiceTest {
     }
 
     @Nested
-    @DisplayName("스터디 신청 삭제 실패 시나리오")
+    @DisplayName("스터디 신청 취소 실패 시나리오")
     class CancelFailureScenarios {
         @Test
         @DisplayName("스터디가입이 요청한 스터디와 일치하지 않을 때 MosException 발생")
@@ -322,7 +322,7 @@ public class StudyJoinServiceTest {
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyJoinService.deleteStudyJoin(userId, studyId, studyJoinId);
+                studyJoinService.cancelStudyJoin(userId, studyId, studyJoinId);
             });
 
             assertEquals(StudyJoinErrorCode.STUDY_JOIN_MISMATCH, exception.getErrorCode());
@@ -353,7 +353,7 @@ public class StudyJoinServiceTest {
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyJoinService.deleteStudyJoin(userId, studyId, studyJoinId);
+                studyJoinService.cancelStudyJoin(userId, studyId, studyJoinId);
             });
 
             assertEquals(StudyJoinErrorCode.STUDY_JOIN_NOT_PENDING, exception.getErrorCode());

@@ -2,9 +2,12 @@ package com.mos.backend.studyjoins.application;
 
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
+import com.mos.backend.questionanswers.infrastructure.QuestionAnswerRepository;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studyjoins.application.res.MyStudyJoinRes;
+import com.mos.backend.studyjoins.application.res.QuestionAnswerRes;
+import com.mos.backend.studyjoins.application.res.StudyJoinRes;
 import com.mos.backend.studyjoins.entity.StudyJoin;
 import com.mos.backend.studyjoins.entity.StudyJoinStatus;
 import com.mos.backend.studyjoins.entity.exception.StudyJoinErrorCode;
@@ -25,6 +28,7 @@ public class StudyJoinService {
 
     private final StudyJoinRepository studyJoinRepository;
     private final StudyMemberRepository studyMemberRepository;
+    private final QuestionAnswerRepository questionAnswerRepository;
     private final EntityFacade entityFacade;
 
     @Transactional
@@ -53,7 +57,7 @@ public class StudyJoinService {
     }
 
     @Transactional
-    public void deleteStudyJoin(Long userId, Long studyId, Long studyJoinId) {
+    public void cancelStudyJoin(Long userId, Long studyId, Long studyJoinId) {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
         StudyJoin studyJoin = entityFacade.getStudyJoin(studyJoinId);
@@ -71,6 +75,21 @@ public class StudyJoinService {
         List<StudyJoin> studyJoins = studyJoinRepository.findAllByStatusWithStudy(status);
 
         return studyJoins.stream().map(MyStudyJoinRes::from).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<StudyJoinRes> getStudyJoins(Long userId, Long studyId) {
+        User user = entityFacade.getUser(userId);
+        Study study = entityFacade.getStudy(studyId);
+
+        List<StudyJoin> studyJoins = studyJoinRepository.findAllByStudyId(study.getId());
+
+        return studyJoins.stream()
+                .map(studyJoin -> {
+                    List<QuestionAnswerRes> questionAnswers = questionAnswerRepository.findAllByStudyJoinId(studyJoin.getId());
+                    return StudyJoinRes.of(studyJoin, questionAnswers);
+                })
+                .toList();
     }
 
     private static void validatePendingStatus(StudyJoin studyJoin) {
