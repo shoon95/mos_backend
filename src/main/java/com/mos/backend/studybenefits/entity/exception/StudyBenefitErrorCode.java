@@ -9,8 +9,8 @@ import java.util.Locale;
 
 @RequiredArgsConstructor
 public enum StudyBenefitErrorCode implements ErrorCode {
-    STUDY_BENEFIT_NOT_FOUND(HttpStatus.NOT_FOUND, "study.benefit.not-found"),
-    INVALID_BENEFIT_NUM(HttpStatus.BAD_REQUEST, "study.benefit.invalid-benefit-num");
+    STUDY_BENEFIT_NOT_FOUND(HttpStatus.NOT_FOUND, "study-benefit.not-found"),
+    INVALID_BENEFIT_NUM(HttpStatus.BAD_REQUEST, "study-benefit.invalid-benefit-num");
 
     private final HttpStatus httpStatus;
     private final String messageKey;

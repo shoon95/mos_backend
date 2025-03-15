@@ -1,9 +1,12 @@
 package com.mos.backend.studyquestions.application;
 
 import com.mos.backend.common.exception.MosException;
+import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
-import com.mos.backend.studies.entity.exception.StudyErrorCode;
-import com.mos.backend.studies.infrastructure.StudyRepository;
+import com.mos.backend.studyquestions.application.responsedto.StudyQuestionResponseDto;
+import com.mos.backend.studyquestions.entity.QuestionOption;
+import com.mos.backend.studyquestions.entity.QuestionType;
+import com.mos.backend.studyquestions.entity.StudyQuestion;
 import com.mos.backend.studyquestions.entity.StudyQuestionErrorCode;
 import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
 import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
@@ -20,8 +23,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,116 +35,247 @@ class StudyQuestionServiceTest {
     private StudyQuestionRepository studyQuestionRepository;
 
     @Mock
-    private StudyRepository studyRepository;
+    private EntityFacade entityFacade;
 
     @InjectMocks
     private StudyQuestionService studyQuestionService;
 
     @Nested
-    @DisplayName("스터디 질문 생성 성공 시나리오")
-    class SuccessScenarios {
+    @DisplayName("createOrUpdateOrDelete() 테스트")
+    class CreateOrUpdateOrDeleteTest {
         @Test
-        @DisplayName("정상적인 스터디 질문 생성 시 성공")
-        void givenValidRequest_whenCreateStudyQuestion_thenSuccess() {
-            // given
-            Long studyId = 1L;
-            Study mockStudy = mock(Study.class);
-            List<StudyQuestionCreateRequestDto> requestDtos = new ArrayList<>();
-            requestDtos.add(new StudyQuestionCreateRequestDto("질문1", 1L, true, "객관식", List.of("옵션1", "옵션2")));
-            requestDtos.add(new StudyQuestionCreateRequestDto("질문2", 2L, false, "주관식", List.of()));
-
-            //when
-            when(studyRepository.findById(studyId)).thenReturn(Optional.of(mockStudy));
-
-            studyQuestionService.create(studyId, requestDtos);
-
-            // then
-            verify(studyRepository).findById(studyId);
-            verify(studyQuestionRepository).saveAll(anyList());
-        }
-
-        @Test
-        @DisplayName("빈 리스트를 넣을 때 아무것도 실행되지 않는다.")
-        void givenEmptyRequestList_whenCreateStudyQuestion_thenNotExecuteRepositoryMethod() {
+        @DisplayName("새로운 질문 생성 성공")
+        void createStudyQuestion_Success() {
             //given
             Long studyId = 1L;
-            List<StudyQuestionCreateRequestDto> requestDtos = new ArrayList<>();
+            List<StudyQuestionCreateRequestDto> requestDtos = List.of(
+                    new StudyQuestionCreateRequestDto(null, 1L, "질문1", true, "주관식", List.of()),
+                    new StudyQuestionCreateRequestDto(null, 2L, "질문2", true, "객관식", List.of("옵션1", "옵션2"))
+            );
+            Study mockStudy = Study.builder().id(studyId).build();
+            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+            when(studyQuestionRepository.findAllByStudy(mockStudy)).thenReturn(new ArrayList<>());
 
             //when
-            studyQuestionService.create(studyId, requestDtos);
+            studyQuestionService.createOrUpdateOrDelete(studyId, requestDtos);
 
             //then
-            verify(studyRepository, never()).findById(anyLong());
-            verify(studyQuestionRepository, never()).saveAll(anyList());
+            verify(studyQuestionRepository, times(2)).save(any(StudyQuestion.class));
         }
-    }
 
-    @Nested
-    @DisplayName("스터디 질문 생성 실패 시나리오")
-    class FailureScenarios {
+        @Test
+        @DisplayName("질문 수정 성공")
+        void updateStudyQuestion_Success() {
+            //given
+            Long studyId = 1L;
+            Study mockStudy = Study.builder().id(studyId).build();
+
+            // 수정할 질문 목록
+            List<StudyQuestionCreateRequestDto> requestDtos = List.of(
+                    new StudyQuestionCreateRequestDto(1L, 1L, "수정된 질문1", true, "객관식", List.of("옵션1", "옵션2"))
+            );
+
+            // 수정 전 질문 생성
+            StudyQuestion studyQuestion1 = spy(StudyQuestion.create(mockStudy, 1L, "질문1", "주관식", List.of(), true));
+            doReturn(1L).when(studyQuestion1).getId();
+            StudyQuestion studyQuestion2 = spy(StudyQuestion.create(mockStudy, 2L, "질문2", "주관식", List.of(), true));
+            doReturn(2L).when(studyQuestion2).getId();
+
+            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+            when(studyQuestionRepository.findAllByStudy(mockStudy)).thenReturn(new ArrayList<>(List.of(studyQuestion1, studyQuestion2)));
+            when(studyQuestionRepository.findByIdAndStudy(1L, mockStudy)).thenReturn(Optional.of(studyQuestion1));
+
+            //when
+            studyQuestionService.createOrUpdateOrDelete(studyId, requestDtos);
+
+            //then
+            verify(studyQuestion1).changeQuestion(1L, "수정된 질문1", true, "객관식", List.of("옵션1", "옵션2"));
+            assertThat(studyQuestion1.getQuestion()).isEqualTo("수정된 질문1");
+            assertThat(studyQuestion1.isRequired()).isTrue();
+            assertThat(studyQuestion1.getType()).isEqualTo(QuestionType.MULTIPLE_CHOICE);
+            assertThat(studyQuestion1.getOptions().toList()).isEqualTo(List.of("옵션1", "옵션2"));
+        }
+
+        @Test
+        @DisplayName("질문 삭제")
+        void deleteStudyQuestion_Success() {
+            //given
+            Long studyId = 1L;
+            Study mockStudy = Study.builder().id(studyId).build();
+
+            // 수정할 질문 목록
+            List<StudyQuestionCreateRequestDto> requestDtos = List.of();
+
+            StudyQuestion studyQuestion1 = spy(StudyQuestion.create(mockStudy, 1L, "질문1", "주관식", List.of(), true));
+            doReturn(1L).when(studyQuestion1).getId();
+
+            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+            when(studyQuestionRepository.findAllByStudy(mockStudy)).thenReturn(new ArrayList<>(List.of(studyQuestion1)));
+
+            //when
+            studyQuestionService.createOrUpdateOrDelete(studyId, requestDtos);
+
+            //then
+            verify(studyQuestionRepository).deleteAll(List.of(studyQuestion1));
+        }
+
         @Test
         @DisplayName("스터디가 존재하지 않을 때 MosException 발생")
-        void givenNoExistingStudy_whenCreateStudyQuestion_thenThrowMosException() {
-            // given
+        void createOrUpdateOrDelete_StudyNotFound() {
+            // Given
             Long studyId = 1L;
             List<StudyQuestionCreateRequestDto> requestDtos = List.of(
-                    new StudyQuestionCreateRequestDto("질문1", 1L, true, "객관식", List.of("옵션1", "옵션2"))
+                    new StudyQuestionCreateRequestDto(null, 1L, "질문1", true, "주관식", List.of()),
+                    new StudyQuestionCreateRequestDto(null, 2L, "질문2", true, "객관식", List.of("옵션1", "옵션2"))
             );
 
-            when(studyRepository.findById(studyId)).thenReturn(Optional.empty());
+            when(entityFacade.getStudy(studyId)).thenThrow(new MosException(StudyQuestionErrorCode.STUDY_QUESTION_NOT_FOUND));
 
-            // when
+            // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyQuestionService.create(studyId, requestDtos);
+                studyQuestionService.createOrUpdateOrDelete(studyId, requestDtos);
             });
 
-            // then
-            assertThat(exception.getErrorCode()).isEqualTo(StudyErrorCode.STUDY_NOT_FOUND);
-            verify(studyRepository).findById(studyId);
-            verify(studyQuestionRepository, never()).saveAll(any());
+            assertThat(exception.getErrorCode()).isEqualTo(StudyQuestionErrorCode.STUDY_QUESTION_NOT_FOUND);
         }
 
         @Test
-        @DisplayName("객관식 질문의 options가 2개 미만일 때 MosException 발생")
-        void givenMultipleChoiceQuestionWithLessThanTwoOptions_whenCreateStudyQuestion_thenThrowMosException() {
-            // given
+        @DisplayName("중복된 questionNum 입력 시 예외 발생")
+        void createOrUpdateOrDelete_DuplicateQuestionNum() {
+            // Given
             Long studyId = 1L;
             List<StudyQuestionCreateRequestDto> requestDtos = List.of(
-                    new StudyQuestionCreateRequestDto("객관식 질문", 1L, true, "객관식", List.of("옵션1"))
+                    new StudyQuestionCreateRequestDto(null, 1L, "질문1", true, "주관식", List.of()),
+                    new StudyQuestionCreateRequestDto(null, 1L, "질문2", true, "객관식", List.of("옵션1", "옵션2"))
             );
 
-            when(studyRepository.findById(studyId)).thenReturn(Optional.of(mock(Study.class)));
-
-            // when
+            // When
             MosException exception = assertThrows(MosException.class, () -> {
-                studyQuestionService.create(studyId, requestDtos);
+                studyQuestionService.createOrUpdateOrDelete(studyId, requestDtos);
             });
 
             // then
-            assertThat(exception.getErrorCode()).isEqualTo(StudyQuestionErrorCode.INVALID_MULTIPLE_CHOICE_OPTIONS);
-            verify(studyRepository).findById(studyId);
-            verify(studyQuestionRepository, never()).saveAll(any());
+            assertEquals(StudyQuestionErrorCode.INVALID_QUESTION_NUM, exception.getErrorCode());
         }
+
         @Test
-        @DisplayName("객관식 질문의 options가 null일 때 MosException 발생")
-        void givenMultipleChoiceQuestionWithNullOptions_whenCreateStudyQuestion_thenThrowMosException() {
-            // given
+        @DisplayName("찾을 수 없는 studyQuestion")
+        void createOrUpdateOrDelete_invalidStudyQuestionId() {
+            // Given
             Long studyId = 1L;
+            Long questionId = 1L;
             List<StudyQuestionCreateRequestDto> requestDtos = List.of(
-                    new StudyQuestionCreateRequestDto("객관식 질문", 1L, true, "객관식", null)
-            );
+                    new StudyQuestionCreateRequestDto(questionId, 1L, "질문1", true, "주관식", List.of()));
 
-            when(studyRepository.findById(studyId)).thenReturn(Optional.of(mock(Study.class)));
+            Study mockStudy = Study.builder().id(studyId).build();
+            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+            when(studyQuestionRepository.findAllByStudy(mockStudy)).thenReturn(new ArrayList<>());
+            when(studyQuestionRepository.findByIdAndStudy(questionId, mockStudy)).thenReturn(Optional.empty());
 
-            // when
+            // When
             MosException exception = assertThrows(MosException.class, () -> {
-                studyQuestionService.create(studyId, requestDtos);
+                studyQuestionService.createOrUpdateOrDelete(studyId, requestDtos);
             });
 
             // then
+            assertThat(exception.getErrorCode()).isEqualTo(StudyQuestionErrorCode.STUDY_QUESTION_NOT_FOUND);
+        }
+
+        @Test
+        @DisplayName("단답형인데 option이 있는 경우 예외 발생")
+        void createOrUpdateOrDelete_shortAnswerWithOption() {
+            //given
+            Long studyId = 1L;
+            List<StudyQuestionCreateRequestDto> requestDtos = List.of(
+                    new StudyQuestionCreateRequestDto(null, 1L, "질문1", true, "주관식", List.of("옵션1", "옵션2")));
+            Study mockStudy = Study.builder().id(studyId).build();
+            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+
+            //when
+            MosException exception = assertThrows(MosException.class, () -> {
+                studyQuestionService.createOrUpdateOrDelete(studyId, requestDtos);
+            });
+
+            //then
+            assertThat(exception.getErrorCode()).isEqualTo(StudyQuestionErrorCode.INVALID_SHORT_ANSWER);
+        }
+
+        @Test
+        @DisplayName("객관식인데 option이 2개 미만인 경우 예외 발생")
+        void createOrUpdateOrDelete_multipleChoiceWithoutTwoOptions() {
+            //given
+            Long studyId = 1L;
+            List<StudyQuestionCreateRequestDto> requestDtos = List.of(
+                    new StudyQuestionCreateRequestDto(null, 1L, "질문1", true, "객관식", List.of("옵션1")));
+            Study mockStudy = Study.builder().id(studyId).build();
+            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+
+            //when
+            MosException exception = assertThrows(MosException.class, () -> {
+                studyQuestionService.createOrUpdateOrDelete(studyId, requestDtos);
+            });
+
+            //then
             assertThat(exception.getErrorCode()).isEqualTo(StudyQuestionErrorCode.INVALID_MULTIPLE_CHOICE_OPTIONS);
-            verify(studyRepository).findById(studyId);
-            verify(studyQuestionRepository, never()).saveAll(any());
         }
     }
+
+    @Test
+    @DisplayName("단건 조회 성공")
+    void getStudyQuestion_Success() {
+        //given
+        Long studyId = 1L;
+        Long questionId = 1L;
+        Study mockStudy = Study.builder().id(studyId).build();
+        StudyQuestion studyQuestion = spy(StudyQuestion.create(mockStudy, 1L, "질문1", "주관식", List.of(), true));
+        doReturn(questionId).when(studyQuestion).getId();
+        when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+        when(studyQuestionRepository.findByIdAndStudy(questionId, mockStudy)).thenReturn(Optional.of(studyQuestion));
+
+        //when
+        StudyQuestionResponseDto responseDto = studyQuestionService.get(studyId, questionId);
+
+        //then
+        assertThat(responseDto.getId()).isEqualTo(questionId);
+        assertThat(responseDto.getQuestion()).isEqualTo("질문1");
+        assertThat(responseDto.getType()).isEqualTo("주관식");
+        assertThat(responseDto.isRequired()).isTrue();
+        assertThat(responseDto.getQuestionNum()).isEqualTo(1L);
+        assertThat(responseDto.getOptions()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("다 건 조회 성공")
+    void getAllStudyQuestion_Success() {
+        //given
+        Long studyId = 1L;
+        Long questionId1 = 1L;
+        Long questionId2 = 2L;
+        Study mockStudy = Study.builder().id(studyId).build();
+        StudyQuestion studyQuestion1 = spy(StudyQuestion.create(mockStudy, 1L, "질문1", "주관식", List.of(), false));
+        doReturn(questionId1).when(studyQuestion1).getId();
+        StudyQuestion studyQuestion2 = spy(StudyQuestion.create(mockStudy, 2L, "질문2", "객관식", List.of("보기1", "보기2"), true));
+        doReturn(questionId2).when(studyQuestion2).getId();
+        when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+        when(studyQuestionRepository.findAllByStudy(mockStudy)).thenReturn(new ArrayList<>(List.of(studyQuestion1, studyQuestion2)));
+
+        //when
+        List<StudyQuestionResponseDto> responseDtoList = studyQuestionService.getAll(studyId);
+
+        //then
+        assertThat(responseDtoList.get(0).getId()).isEqualTo(questionId1);
+        assertThat(responseDtoList.get(0).getQuestion()).isEqualTo("질문1");
+        assertThat(responseDtoList.get(0).getType()).isEqualTo("주관식");
+        assertThat(responseDtoList.get(0).isRequired()).isFalse();
+        assertThat(responseDtoList.get(0).getQuestionNum()).isEqualTo(1L);
+        assertThat(responseDtoList.get(0).getOptions()).isEmpty();
+
+        assertThat(responseDtoList.get(1).getId()).isEqualTo(questionId2);
+        assertThat(responseDtoList.get(1).getQuestion()).isEqualTo("질문2");
+        assertThat(responseDtoList.get(1).getType()).isEqualTo("객관식");
+        assertThat(responseDtoList.get(1).isRequired()).isTrue();
+        assertThat(responseDtoList.get(1).getQuestionNum()).isEqualTo(2L);
+        assertThat(responseDtoList.get(1).getOptions()).hasSize(2);
+    }
 }
+
