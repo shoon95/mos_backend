@@ -2,6 +2,7 @@ package com.mos.backend.studyjoins.application;
 
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
+import com.mos.backend.questionanswers.entity.QuestionAnswer;
 import com.mos.backend.questionanswers.infrastructure.QuestionAnswerRepository;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
@@ -12,9 +13,13 @@ import com.mos.backend.studyjoins.entity.StudyJoin;
 import com.mos.backend.studyjoins.entity.StudyJoinStatus;
 import com.mos.backend.studyjoins.entity.exception.StudyJoinErrorCode;
 import com.mos.backend.studyjoins.infrastructure.StudyJoinRepository;
+import com.mos.backend.studyjoins.presentation.controller.req.StudyJoinReq;
 import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
+import com.mos.backend.studyquestions.entity.StudyQuestion;
+import com.mos.backend.studyquestions.entity.StudyQuestionErrorCode;
+import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
 import com.mos.backend.users.entity.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -28,11 +33,12 @@ import org.mockito.quality.Strictness;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
+
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @DisplayName("StudyApplicationService 테스트")
@@ -45,9 +51,134 @@ public class StudyJoinServiceTest {
     @Mock
     private QuestionAnswerRepository questionAnswerRepository;
     @Mock
+    private StudyQuestionRepository studyQuestionRepository;
+    @Mock
     private EntityFacade entityFacade;
     @InjectMocks
     private StudyJoinService studyJoinService;
+
+    @Nested
+    @DisplayName("스터디 신청 성공 시나리오")
+    class JoinStudySuccessScenarios {
+        @Test
+        @DisplayName("스터디 참여 신청 성공")
+        void joinStudy_Success() {
+            // Given
+            Long userId = 1L;
+            Long studyId = 1L;
+            User user = mock(User.class);
+            Study study = mock(Study.class);
+            StudyJoin newStudyJoin = mock(StudyJoin.class);
+            StudyQuestion studyQuestion = mock(StudyQuestion.class);
+            StudyJoinReq studyJoinReq = new StudyJoinReq(1L, "answer");
+            List<StudyJoinReq> studyJoinReqs = List.of(studyJoinReq);
+            StudyQuestion requiredStudyQuestion = mock(StudyQuestion.class);
+            List<StudyQuestion> requiredQuestions = List.of(requiredStudyQuestion);
+
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(entityFacade.getStudy(studyId)).thenReturn(study);
+            when(study.getId()).thenReturn(studyId);
+            when(studyQuestionRepository.findByStudyIdAndRequiredTrue(studyId)).thenReturn(requiredQuestions);
+            when(requiredStudyQuestion.getId()).thenReturn(1L);
+            when(studyJoinRepository.save(any(StudyJoin.class))).thenReturn(newStudyJoin);
+            when(entityFacade.getStudyQuestion(1L)).thenReturn(studyQuestion);
+            when(studyQuestion.isSameStudy(study)).thenReturn(true);
+
+            // When
+            studyJoinService.joinStudy(userId, studyId, studyJoinReqs);
+
+            // Then
+            verify(entityFacade).getUser(userId);
+            verify(entityFacade).getStudy(studyId);
+            verify(studyQuestionRepository).findByStudyIdAndRequiredTrue(studyId);
+            verify(studyJoinRepository).save(any(StudyJoin.class));
+            verify(entityFacade).getStudyQuestion(1L);
+            verify(questionAnswerRepository).save(any(QuestionAnswer.class));
+        }
+    }
+
+    @Nested
+    @DisplayName("스터디 신청 실패 시나리오")
+    class JoinStudyFailureScenarios {
+        @Test
+        @DisplayName("필수 질문이 누락된 경우 MosException 발생")
+        void joinStudy_Failure_MissingRequiredQuestions() {
+            // Given
+            Long userId = 1L;
+            Long studyId = 1L;
+            Long requiredStudyQuestionId = 1L;
+            User user = mock(User.class);
+            Study study = mock(Study.class);
+            StudyJoin newStudyJoin = mock(StudyJoin.class);
+            StudyQuestion studyQuestion = mock(StudyQuestion.class);
+
+            StudyJoinReq studyJoinReq = new StudyJoinReq(2L, "answer"); // 필수 질문의 id=1, 하지만 요청은 id=2
+            List<StudyJoinReq> studyJoinReqs = List.of(studyJoinReq);
+
+            StudyQuestion requiredStudyQuestion = mock(StudyQuestion.class);
+            when(requiredStudyQuestion.getId()).thenReturn(requiredStudyQuestionId);
+            List<StudyQuestion> requiredQuestions = List.of(requiredStudyQuestion);
+
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(entityFacade.getStudy(studyId)).thenReturn(study);
+            when(study.getId()).thenReturn(studyId);
+            when(studyQuestionRepository.findByStudyIdAndRequiredTrue(studyId)).thenReturn(requiredQuestions);
+            when(studyJoinRepository.save(any(StudyJoin.class))).thenReturn(newStudyJoin);
+            when(entityFacade.getStudyQuestion(2L)).thenReturn(studyQuestion);
+
+            // When
+            MosException exception = assertThrows(MosException.class, () -> {
+                studyJoinService.joinStudy(userId, studyId, studyJoinReqs);
+            });
+
+            // Then
+            assertEquals(StudyQuestionErrorCode.MISSING_REQUIRED_QUESTIONS, exception.getErrorCode());
+            verify(entityFacade).getUser(userId);
+            verify(entityFacade).getStudy(studyId);
+            verify(studyQuestionRepository).findByStudyIdAndRequiredTrue(studyId);
+            verify(studyJoinRepository, never()).save(any(StudyJoin.class));
+            verify(entityFacade, never()).getStudyQuestion(any(Long.class));
+            verify(studyQuestion, never()).isSameStudy(study);
+            verify(questionAnswerRepository, never()).save(any(QuestionAnswer.class));
+        }
+
+        @Test
+        @DisplayName("스터디 질문이 스터디와 일치하지 않는 경우 MosException 발생")
+        void joinStudy_Failure_StudyQuestionMismatch() {
+            Long userId = 1L;
+            Long studyId = 1L;
+            User user = mock(User.class);
+            Study study = mock(Study.class);
+            StudyJoin newStudyJoin = mock(StudyJoin.class);
+            StudyQuestion studyQuestion = mock(StudyQuestion.class);
+            StudyJoinReq studyJoinReq = new StudyJoinReq(1L, "answer");
+            List<StudyJoinReq> studyJoinReqs = List.of(studyJoinReq);
+
+            StudyQuestion requiredStudyQuestion = mock(StudyQuestion.class);
+            List<StudyQuestion> requiredQuestions = List.of(requiredStudyQuestion);
+
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(entityFacade.getStudy(studyId)).thenReturn(study);
+            when(study.getId()).thenReturn(studyId);
+            when(studyQuestionRepository.findByStudyIdAndRequiredTrue(studyId)).thenReturn(requiredQuestions);
+            when(requiredStudyQuestion.getId()).thenReturn(1L);
+            when(studyJoinRepository.save(any(StudyJoin.class))).thenReturn(newStudyJoin);
+            when(entityFacade.getStudyQuestion(1L)).thenReturn(studyQuestion);
+            when(studyQuestion.isSameStudy(study)).thenReturn(false);
+
+            MosException exception = assertThrows(MosException.class, () -> {
+                studyJoinService.joinStudy(userId, studyId, studyJoinReqs);
+            });
+
+            assertEquals(StudyQuestionErrorCode.STUDY_QUESTION_MISMATCH, exception.getErrorCode());
+            verify(entityFacade).getUser(userId);
+            verify(entityFacade).getStudy(studyId);
+            verify(studyQuestionRepository).findByStudyIdAndRequiredTrue(studyId);
+            verify(entityFacade).getStudyQuestion(1L);
+            verify(studyJoinRepository).save(any(StudyJoin.class));
+            verify(questionAnswerRepository, never()).save(any(QuestionAnswer.class));
+        }
+    }
 
     @Nested
     @DisplayName("스터디의 스터디 신청 목록 조회 성공 시나리오")
