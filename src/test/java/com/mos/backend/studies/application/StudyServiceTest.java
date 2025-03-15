@@ -87,7 +87,7 @@ class StudyServiceTest {
         studyBenefitRequestDto.setContent("Benefit 1");
         validRequestDto.setBenefits(List.of(studyBenefitRequestDto));
         validRequestDto.setApplicationQuestions(List.of(
-                new StudyQuestionCreateRequestDto("좋은 질문", 1L, true, "주관식", List.of("A", "B", "C"))
+                new StudyQuestionCreateRequestDto(1L, 1L,  "좋은 질문", true, "객관식", List.of("A", "B", "C"))
         ));
     }
 
@@ -115,7 +115,7 @@ class StudyServiceTest {
             // 연관된 서비스 메서드 호출 검증
             verify(studyRuleService).create(eq(studyId), eq(validRequestDto.getRules()));
             verify(studyBenefitService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getBenefits()));
-            verify(studyQuestionService).create(eq(studyId), eq(validRequestDto.getApplicationQuestions()));
+            verify(studyQuestionService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getApplicationQuestions()));
             verify(studyCurriculumService).create(eq(studyId), eq(validRequestDto.getCurriculums()));
             verify(studyMemberService).create(eq(studyId), eq(testUserId));
         }

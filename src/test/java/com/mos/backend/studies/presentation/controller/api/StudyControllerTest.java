@@ -77,7 +77,7 @@ class StudyControllerTest {
 
         // 질문 추가
         dto.setApplicationQuestions(List.of(
-                new StudyQuestionCreateRequestDto("개발 경력은 어떻게 되시나요?", 1L, true, "TEXT", List.of("신입", "경력"))
+                new StudyQuestionCreateRequestDto(null, 1L, "신입입니까", true, "객관식", List.of("신입", "경력"))
         ));
 
         dto.setRules(List.of("주 1회 꼭 참석", "과제 미제출 시 벌금"));
@@ -126,8 +126,9 @@ class StudyControllerTest {
                                 fieldWithPath("benefits[].benefitNum").type(JsonFieldType.NUMBER).description("스터디 혜택 번호"),
                                 fieldWithPath("benefits[].content").type(JsonFieldType.STRING).description("스터디 혜택 내용"),
                                 fieldWithPath("applicationQuestions").type(JsonFieldType.ARRAY).description("가입 신청 질문 목록"),
+                                fieldWithPath("applicationQuestions[].id").type(JsonFieldType.NULL).description("가입 신청 질문 아이디"),
                                 fieldWithPath("applicationQuestions[].question").type(JsonFieldType.STRING).description("질문 내용"),
-                                fieldWithPath("applicationQuestions[].questionNum").type(JsonFieldType.NUMBER).description("질문 ID"),
+                                fieldWithPath("applicationQuestions[].questionNum").type(JsonFieldType.NUMBER).description("질문 번호"),
                                 fieldWithPath("applicationQuestions[].required").type(JsonFieldType.BOOLEAN).description("필수 질문 여부"),
                                 fieldWithPath("applicationQuestions[].type").type(JsonFieldType.STRING).description("질문 유형"),
                                 fieldWithPath("applicationQuestions[].options").type(JsonFieldType.ARRAY).description("질문 옵션")
