@@ -2,7 +2,10 @@ package com.mos.backend.studies.application;
 
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studies.application.responsedto.StudyResponseDto;
-import com.mos.backend.studies.entity.*;
+import com.mos.backend.studies.entity.Category;
+import com.mos.backend.studies.entity.MeetingType;
+import com.mos.backend.studies.entity.Study;
+import com.mos.backend.studies.entity.StudyTag;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
@@ -14,6 +17,7 @@ import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studyquestions.application.StudyQuestionService;
 import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
 import com.mos.backend.studyrules.application.StudyRuleService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -55,6 +59,9 @@ class StudyServiceTest {
 
     @Mock
     private StudyMemberService studyMemberService;
+
+    @Mock
+    private ViewCountService viewCountService;
 
     @InjectMocks
     private StudyService studyService;
@@ -180,13 +187,15 @@ class StudyServiceTest {
                 .requirements("testRequirements")
                 .build();
 
-        doNothing().when(studyRepository).increaseViewCount(study.getId());
         when(studyRepository.findById(study.getId())).thenReturn(Optional.of(study));
+        HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
+        when(httpServletRequest.getHeader("X-Forwarded-For")).thenReturn("0.0.0.0");
+
+        doNothing().when(viewCountService).handleViewCount(any(Long.class), any(String.class));
         // when
-        StudyResponseDto studyResponseDto = studyService.get(study.getId());
+        StudyResponseDto studyResponseDto = studyService.get(study.getId(), httpServletRequest);
 
         // then
-        verify(studyRepository).increaseViewCount(study.getId());
         verify(studyRepository).findById(study.getId());
         assertNotNull(studyResponseDto);
     }
@@ -197,12 +206,14 @@ class StudyServiceTest {
 
         // given
         Long studyId = 1L;
+        HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
+        when(httpServletRequest.getHeader("X-Forwarded-For")).thenReturn("0.0.0.0");
 
-        doNothing().when(studyRepository).increaseViewCount(studyId);
+        doNothing().when(viewCountService).handleViewCount(any(Long.class), any(String.class));
         when(studyRepository.findById(studyId)).thenReturn(Optional.empty());
 
         // when
-        MosException mosException = assertThrows(MosException.class, () -> studyService.get(studyId));
+        MosException mosException = assertThrows(MosException.class, () -> studyService.get(studyId, httpServletRequest));
 
         // then
         Assertions.assertThat(mosException.getErrorCode()).isEqualTo(StudyErrorCode.STUDY_NOT_FOUND);
