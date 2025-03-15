@@ -53,6 +53,21 @@ class StudyJoinControllerTest {
     }
 
     @Test
+    @DisplayName("스터디 신청 목록 조회 성공 문서화")
+    void getStudyJoins_Success_Documentation() throws Exception {
+        mockMvc.perform(
+                        get("/studies/1/study-joins")
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andDo(document("study-joins-success",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint())
+                        )
+                );
+    }
+
+    @Test
     @DisplayName("스터디 신청 승인 성공 문서화")
     void approveStudyJoin_Success_Documentation() throws Exception {
         mockMvc.perform(
