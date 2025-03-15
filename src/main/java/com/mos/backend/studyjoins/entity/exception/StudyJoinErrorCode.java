@@ -9,8 +9,9 @@ import java.util.Locale;
 
 @RequiredArgsConstructor
 public enum StudyJoinErrorCode implements ErrorCode {
-    STUDY_JOIN_MISMATCH(HttpStatus.BAD_REQUEST, "auth.study-join.mismatch"),
-    STUDY_JOIN_NOT_PENDING(HttpStatus.BAD_REQUEST, "auth.study-join.not-pending");
+    STUDY_JOIN_NOT_FOUND(HttpStatus.NOT_FOUND, "study-join.not-found"),
+    STUDY_JOIN_MISMATCH(HttpStatus.BAD_REQUEST, "study-join.mismatch"),
+    STUDY_JOIN_NOT_PENDING(HttpStatus.BAD_REQUEST, "study-join.not-pending");
 
     private final HttpStatus httpStatus;
     private final String messageKey;
@@ -29,4 +30,4 @@ public enum StudyJoinErrorCode implements ErrorCode {
     public String getMessage(MessageSource messageSource) {
         return messageSource.getMessage(messageKey, null, Locale.getDefault());
     }
-    }
+}
