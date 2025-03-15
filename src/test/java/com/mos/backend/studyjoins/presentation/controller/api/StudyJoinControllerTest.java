@@ -15,6 +15,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,6 +35,22 @@ class StudyJoinControllerTest {
     private StudyJoinService studyJoinService;
     @MockitoBean
     private TokenUtil tokenUtil;
+
+    @Test
+    @DisplayName("스터디 신청 목록 조회 성공 문서화")
+    void getMyStudyJoins_Success_Documentation() throws Exception {
+        mockMvc.perform(
+                        get("/study-joins")
+                                .param("status", "PENDING")
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andDo(document("study-joins-list-success",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint())
+                        )
+                );
+    }
 
     @Test
     @DisplayName("스터디 신청 승인 성공 문서화")

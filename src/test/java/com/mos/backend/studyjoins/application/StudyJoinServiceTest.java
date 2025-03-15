@@ -4,12 +4,16 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
+import com.mos.backend.studyjoins.application.res.MyStudyJoinRes;
 import com.mos.backend.studyjoins.entity.StudyJoin;
+import com.mos.backend.studyjoins.entity.StudyJoinStatus;
 import com.mos.backend.studyjoins.entity.exception.StudyJoinErrorCode;
+import com.mos.backend.studyjoins.infrastructure.StudyJoinRepository;
 import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.users.entity.User;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,6 +22,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -29,9 +36,42 @@ public class StudyJoinServiceTest {
     @Mock
     private StudyMemberRepository studyMemberRepository;
     @Mock
+    private StudyJoinRepository studyJoinRepository;
+    @Mock
     private EntityFacade entityFacade;
     @InjectMocks
     private StudyJoinService studyJoinService;
+
+    @Nested
+    @DisplayName("나의 스터디 신청 조회 성공 시나리오")
+    class GetMyStudyJoinSuccessScenarios {
+        @Test
+        @DisplayName("나의 스터디 신청 조회")
+        void getMyStudyJoin_Success() {
+            // Given
+            Long userId = 1L;
+            User user = mock(User.class);
+            Study mockStudy1 = mock(Study.class);
+            StudyJoin mockStudyJoin1 = mock(StudyJoin.class);
+            Study mockStudy2 = mock(Study.class);
+            StudyJoin mockStudyJoin2 = mock(StudyJoin.class);
+            List<StudyJoin> mockStudyJoins = List.of(mockStudyJoin1, mockStudyJoin2);
+            StudyJoinStatus status = StudyJoinStatus.PENDING;
+
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(mockStudyJoin1.getStudy()).thenReturn(mockStudy1);
+            when(mockStudyJoin2.getStudy()).thenReturn(mockStudy2);
+            when(studyJoinRepository.findAllByStatusWithStudy(status)).thenReturn(mockStudyJoins);
+
+            // When
+            List<MyStudyJoinRes> myStudyJoinResList = studyJoinService.getMyStudyJoins(userId, status);
+
+            // Then
+            verify(entityFacade).getUser(userId);
+            verify(studyJoinRepository).findAllByStatusWithStudy(status);
+            assertThat(myStudyJoinResList).hasSize(mockStudyJoins.size());
+        }
+    }
 
     @Nested
     @DisplayName("스터디 신청 승인 성공 시나리오")
