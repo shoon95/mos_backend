@@ -1,6 +1,7 @@
 package com.mos.backend.studies.application;
 
 import com.mos.backend.common.exception.MosException;
+import com.mos.backend.common.utils.ClientInfoExtractor;
 import com.mos.backend.common.utils.RandomColorGenerator;
 import com.mos.backend.studies.application.responsedto.StudiesResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyCardListResponseDto;
@@ -17,6 +18,7 @@ import com.mos.backend.studycurriculum.application.StudyCurriculumService;
 import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studyquestions.application.StudyQuestionService;
 import com.mos.backend.studyrules.application.StudyRuleService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +38,7 @@ public class StudyService {
     private final StudyQuestionService studyQuestionService;
     private final StudyCurriculumService studyCurriculumService;
     private final StudyMemberService studyMemberService;
+    private final ViewCountService viewCountService;
 
     /**
      * 스터디 생성
@@ -57,8 +60,11 @@ public class StudyService {
      */
 
     @Transactional
-    public StudyResponseDto get(long studyId) {
-        increaseViewCount(studyId);
+    public StudyResponseDto get(long studyId, HttpServletRequest httpServletRequest) {
+        String ipAddress = ClientInfoExtractor.extractIpAddress(httpServletRequest);
+
+        viewCountService.handleViewCount(studyId, ipAddress);
+
         Study study = findStudyById(studyId);
         int studyMemberCount = studyMemberService.countCurrentStudyMember(studyId);
         return StudyResponseDto.from(study, studyMemberCount);
@@ -73,9 +79,7 @@ public class StudyService {
         return new StudyCardListResponseDto(studies.getTotalElements(), studies.getNumber(), studies.getTotalPages(), studies.getContent());
     }
 
-    private void increaseViewCount(long studyId) {
-        studyRepository.increaseViewCount(studyId);
-    }
+
 
     private Study findStudyById(long studyId) {
         return studyRepository.findById(studyId).orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));

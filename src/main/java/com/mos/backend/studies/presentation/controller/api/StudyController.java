@@ -4,6 +4,7 @@ import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.application.responsedto.StudyCardListResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyResponseDto;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -31,8 +32,8 @@ public class StudyController {
 
     @GetMapping("/{studyId}")
     @ResponseStatus(HttpStatus.OK)
-    public StudyResponseDto get(@PathVariable Long studyId) {
-        return studyService.get(studyId);
+    public StudyResponseDto get(@PathVariable Long studyId, HttpServletRequest httpServletRequest) {
+        return studyService.get(studyId, httpServletRequest);
     }
 
     /**
