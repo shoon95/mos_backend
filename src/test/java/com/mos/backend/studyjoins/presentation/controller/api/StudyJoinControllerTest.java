@@ -37,7 +37,7 @@ class StudyJoinControllerTest {
     private TokenUtil tokenUtil;
 
     @Test
-    @DisplayName("스터디 신청 목록 조회 성공 문서화")
+    @DisplayName("나의 스터디 신청 목록 조회 성공 문서화")
     void getMyStudyJoins_Success_Documentation() throws Exception {
         mockMvc.perform(
                         get("/study-joins")
@@ -45,7 +45,7 @@ class StudyJoinControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andDo(document("study-joins-list-success",
+                .andDo(document("my-study-joins-success",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint())
                         )
