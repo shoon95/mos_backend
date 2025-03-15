@@ -8,6 +8,7 @@ import com.mos.backend.studybenefits.entity.StudyBenefit;
 import com.mos.backend.studybenefits.entity.exception.StudyBenefitErrorCode;
 import com.mos.backend.studybenefits.infrastructure.StudyBenefitRepository;
 import com.mos.backend.studyjoins.entity.StudyJoin;
+import com.mos.backend.studyjoins.entity.exception.StudyJoinErrorCode;
 import com.mos.backend.studyjoins.infrastructure.StudyJoinRepository;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.users.entity.exception.UserErrorCode;
@@ -37,7 +38,7 @@ public class EntityFacade {
 
     public StudyJoin getStudyJoin(Long studyApplicationId) {
         return studyJoinRepository.findById(studyApplicationId)
-                .orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
+                .orElseThrow(() -> new MosException(StudyJoinErrorCode.STUDY_JOIN_NOT_FOUND));
     }
 
     public StudyBenefit getStudyBenefit(Long studyBenefitId) {
