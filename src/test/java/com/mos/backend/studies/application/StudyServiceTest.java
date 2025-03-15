@@ -191,11 +191,11 @@ class StudyServiceTest {
         HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
         when(httpServletRequest.getHeader("X-Forwarded-For")).thenReturn("0.0.0.0");
 
-        doNothing().when(viewCountService).handleViewCount(any(Long.class), any(String.class));
         // when
         StudyResponseDto studyResponseDto = studyService.get(study.getId(), httpServletRequest);
 
         // then
+        verify(viewCountService).handleViewCount(eq(study.getId()), anyString());
         verify(studyRepository).findById(study.getId());
         assertNotNull(studyResponseDto);
     }
@@ -209,13 +209,13 @@ class StudyServiceTest {
         HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
         when(httpServletRequest.getHeader("X-Forwarded-For")).thenReturn("0.0.0.0");
 
-        doNothing().when(viewCountService).handleViewCount(any(Long.class), any(String.class));
         when(studyRepository.findById(studyId)).thenReturn(Optional.empty());
 
         // when
         MosException mosException = assertThrows(MosException.class, () -> studyService.get(studyId, httpServletRequest));
 
         // then
+        verify(viewCountService).handleViewCount(eq(studyId), anyString());
         Assertions.assertThat(mosException.getErrorCode()).isEqualTo(StudyErrorCode.STUDY_NOT_FOUND);
     }
 }
