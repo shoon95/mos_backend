@@ -15,8 +15,8 @@ public class StudyQuestionRepositoryImpl implements StudyQuestionRepository{
     private final StudyQuestionJpaRepository studyQuestionJpaRepository;
 
     @Override
-    public void save(StudyQuestion studyQuestion) {
-        studyQuestionJpaRepository.save(studyQuestion);
+    public StudyQuestion save(StudyQuestion studyQuestion) {
+        return studyQuestionJpaRepository.save(studyQuestion);
     }
 
     @Override
