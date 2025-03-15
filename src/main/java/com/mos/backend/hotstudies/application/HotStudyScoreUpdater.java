@@ -14,10 +14,10 @@ public class HotStudyScoreUpdater {
     private final HotStudyScoreCalculator hotStudyScoreCalculator;
 
     private static final long HOT_STUDY_COUNT = 10;
-    private static final Duration HOT_ARTICLE_TTL = Duration.ofDays(3);
+    private static final Duration HOT_STUDY_TTL = Duration.ofDays(3);
 
     public void update(Long studyId) {
         long score = hotStudyScoreCalculator.calculate(studyId);
-        hotStudyRepository.add(studyId, score, HOT_STUDY_COUNT, HOT_ARTICLE_TTL);
+        hotStudyRepository.add(studyId, score, HOT_STUDY_COUNT, HOT_STUDY_TTL);
     }
 }

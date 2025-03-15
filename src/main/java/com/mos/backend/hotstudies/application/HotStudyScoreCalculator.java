@@ -17,10 +17,10 @@ public class HotStudyScoreCalculator {
     private static final long STUDY_LIKE_COUNT_WEIGHT = 3;
     private static final long STUDY_JOIN_COUNT_WEIGHT = 5;
 
-    public long calculate(Long articleId) {
-        Long studyViewCount = hotStudyViewRepository.read(articleId);
-        Long studyLikeCount = hotStudyLikeRepository.read(articleId);
-        Long studyJointCount = hotStudyJoinRepository.read(articleId);
+    public long calculate(Long studyId) {
+        Long studyViewCount = hotStudyViewRepository.read(studyId);
+        Long studyLikeCount = hotStudyLikeRepository.read(studyId);
+        Long studyJointCount = hotStudyJoinRepository.read(studyId);
 
 
         return studyViewCount * STUDY_VIEW_COUNT_WEIGHT
