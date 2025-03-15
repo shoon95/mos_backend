@@ -14,6 +14,11 @@ public class StudyJoinRepositoryImpl implements StudyJoinRepository {
     private final StudyJoinJpaRepository studyJoinJpaRepository;
 
     @Override
+    public StudyJoin save(StudyJoin studyJoin) {
+        return studyJoinJpaRepository.save(studyJoin);
+    }
+
+    @Override
     public Optional<StudyJoin> findById(Long studyApplicationId) {
         return studyJoinJpaRepository.findById(studyApplicationId);
     }

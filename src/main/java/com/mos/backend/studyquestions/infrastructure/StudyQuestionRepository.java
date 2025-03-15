@@ -11,6 +11,10 @@ public interface StudyQuestionRepository{
 
     void saveAll(List<StudyQuestion> studyQuestionList);
 
+    Optional<StudyQuestion> findById(Long studyQuestionId);
+
+    List<StudyQuestion> findByStudyIdAndRequiredTrue(Long studyId);
+
     List<StudyQuestion> findAllByStudy(Study study);
 
     void deleteAll(List<StudyQuestion> deleteQuestionList);

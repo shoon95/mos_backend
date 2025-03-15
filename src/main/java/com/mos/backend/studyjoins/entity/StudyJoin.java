@@ -52,4 +52,12 @@ public class StudyJoin extends BaseAuditableEntity {
     public boolean isPending() {
         return this.status == StudyJoinStatus.PENDING;
     }
+
+    public static StudyJoin createPendingStudyJoin(User user, Study study) {
+        return StudyJoin.builder()
+                .user(user)
+                .study(study)
+                .status(StudyJoinStatus.PENDING)
+                .build();
+    }
 }

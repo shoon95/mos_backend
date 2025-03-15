@@ -89,4 +89,8 @@ public class StudyQuestion extends BaseAuditableEntity {
         this.type = QuestionType.fromDescription(type);
         this.options = QuestionOption.fromList(options);
     }
+
+    public boolean isSameStudy(Study study) {
+        return this.study.getId().equals(study.getId());
+    }
 }

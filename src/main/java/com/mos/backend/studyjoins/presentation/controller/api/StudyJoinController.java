@@ -4,12 +4,11 @@ import com.mos.backend.studyjoins.application.StudyJoinService;
 import com.mos.backend.studyjoins.application.res.MyStudyJoinRes;
 import com.mos.backend.studyjoins.application.res.StudyJoinRes;
 import com.mos.backend.studyjoins.entity.StudyJoinStatus;
+import com.mos.backend.studyjoins.presentation.controller.req.StudyJoinReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,6 +17,14 @@ import java.util.List;
 public class StudyJoinController {
 
     private final StudyJoinService studyJoinService;
+
+    @PostMapping("/studies/{studyId}/study-joins")
+    @ResponseStatus(HttpStatus.OK)
+    public void joinStudy(@AuthenticationPrincipal Long userId,
+                          @PathVariable Long studyId,
+                          @RequestBody List<StudyJoinReq> studyJoinReqs) {
+        studyJoinService.joinStudy(userId, studyId, studyJoinReqs);
+    }
 
     @GetMapping("/study-joins")
     @ResponseStatus(HttpStatus.OK)

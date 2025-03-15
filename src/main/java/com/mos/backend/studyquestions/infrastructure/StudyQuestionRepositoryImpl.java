@@ -25,6 +25,16 @@ public class StudyQuestionRepositoryImpl implements StudyQuestionRepository{
     }
 
     @Override
+    public Optional<StudyQuestion> findById(Long studyQuestionId) {
+        return studyQuestionJpaRepository.findById(studyQuestionId);
+    }
+
+    @Override
+    public List<StudyQuestion> findByStudyIdAndRequiredTrue(Long studyId) {
+        return studyQuestionJpaRepository.findByStudyIdAndRequiredTrue(studyId);
+    }
+
+    @Override
     public List<StudyQuestion> findAllByStudy(Study study) {
         return studyQuestionJpaRepository.findAllByStudy(study);
     }
