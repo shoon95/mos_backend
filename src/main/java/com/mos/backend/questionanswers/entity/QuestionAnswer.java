@@ -28,4 +28,12 @@ public class QuestionAnswer extends BaseAuditableEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "study_question_id", nullable = false)
     private StudyQuestion studyQuestion;
+
+    private String answer;
+
+    public QuestionAnswer(StudyJoin studyJoin, StudyQuestion studyQuestion, String answer) {
+        this.studyJoin = studyJoin;
+        this.studyQuestion = studyQuestion;
+        this.answer = answer;
+    }
 }

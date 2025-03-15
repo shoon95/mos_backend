@@ -8,5 +8,8 @@ import java.util.Optional;
 
 public interface StudyJoinRepository {
     Optional<StudyJoin> findById(Long studyApplicationId);
+
     List<StudyJoin> findAllByStatusWithStudy(StudyJoinStatus status);
+
+    List<StudyJoin> findAllByStudyId(Long studyId);
 }

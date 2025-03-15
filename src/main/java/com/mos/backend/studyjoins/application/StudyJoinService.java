@@ -31,6 +31,21 @@ public class StudyJoinService {
     private final QuestionAnswerRepository questionAnswerRepository;
     private final EntityFacade entityFacade;
 
+    @Transactional(readOnly = true)
+    public List<StudyJoinRes> getStudyJoins(Long userId, Long studyId) {
+        User user = entityFacade.getUser(userId);
+        Study study = entityFacade.getStudy(studyId);
+
+        List<StudyJoin> studyJoins = studyJoinRepository.findAllByStudyId(study.getId());
+
+        return studyJoins.stream()
+                .map(studyJoin -> {
+                    List<QuestionAnswerRes> questionAnswers = questionAnswerRepository.findAllByStudyJoinId(studyJoin.getId());
+                    return StudyJoinRes.of(studyJoin, questionAnswers);
+                })
+                .toList();
+    }
+
     @Transactional
     public void approveStudyJoin(Long userId, Long studyId, Long studyJoinId) {
         User user = entityFacade.getUser(userId);
@@ -75,21 +90,6 @@ public class StudyJoinService {
         List<StudyJoin> studyJoins = studyJoinRepository.findAllByStatusWithStudy(status);
 
         return studyJoins.stream().map(MyStudyJoinRes::from).toList();
-    }
-
-    @Transactional(readOnly = true)
-    public List<StudyJoinRes> getStudyJoins(Long userId, Long studyId) {
-        User user = entityFacade.getUser(userId);
-        Study study = entityFacade.getStudy(studyId);
-
-        List<StudyJoin> studyJoins = studyJoinRepository.findAllByStudyId(study.getId());
-
-        return studyJoins.stream()
-                .map(studyJoin -> {
-                    List<QuestionAnswerRes> questionAnswers = questionAnswerRepository.findAllByStudyJoinId(studyJoin.getId());
-                    return StudyJoinRes.of(studyJoin, questionAnswers);
-                })
-                .toList();
     }
 
     private static void validatePendingStatus(StudyJoin studyJoin) {

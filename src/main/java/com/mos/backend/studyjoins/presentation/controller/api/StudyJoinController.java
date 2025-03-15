@@ -2,6 +2,7 @@ package com.mos.backend.studyjoins.presentation.controller.api;
 
 import com.mos.backend.studyjoins.application.StudyJoinService;
 import com.mos.backend.studyjoins.application.res.MyStudyJoinRes;
+import com.mos.backend.studyjoins.application.res.StudyJoinRes;
 import com.mos.backend.studyjoins.entity.StudyJoinStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,12 @@ public class StudyJoinController {
     @ResponseStatus(HttpStatus.OK)
     public List<MyStudyJoinRes> getMyStudyJoins(@AuthenticationPrincipal Long userId, @RequestParam StudyJoinStatus status) {
         return studyJoinService.getMyStudyJoins(userId, status);
+    }
+
+    @GetMapping("/studies/{studyId}/study-joins")
+    @ResponseStatus(HttpStatus.OK)
+    public List<StudyJoinRes> getStudyJoins(@AuthenticationPrincipal Long userId, @PathVariable Long studyId) {
+        return studyJoinService.getStudyJoins(userId, studyId);
     }
 
     @PatchMapping("/studies/{studyId}/study-joins/{studyJoinId}/approval")
@@ -45,6 +52,6 @@ public class StudyJoinController {
     public void cancelStudyJoin(@AuthenticationPrincipal Long userId,
                                 @PathVariable Long studyId,
                                 @PathVariable Long studyJoinId) {
-        studyJoinService.deleteStudyJoin(userId, studyId, studyJoinId);
+        studyJoinService.cancelStudyJoin(userId, studyId, studyJoinId);
     }
 }

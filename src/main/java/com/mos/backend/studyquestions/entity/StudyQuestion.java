@@ -4,9 +4,7 @@ import com.mos.backend.common.entity.BaseAuditableEntity;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studies.entity.Study;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -14,7 +12,9 @@ import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Table(name = "study_questions")
 public class StudyQuestion extends BaseAuditableEntity {
 
