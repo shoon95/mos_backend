@@ -287,6 +287,7 @@ public class StudyJoinServiceTest {
             when(entityFacade.getUser(userId)).thenReturn(mockUser);
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
             when(entityFacade.getStudyJoin(studyJoinId)).thenReturn(mockStudyJoin);
+            when(mockStudyJoin.isPending()).thenReturn(true);
             when(mockStudyJoin.isSameStudy(mockStudy)).thenReturn(true);
 
             // When
