@@ -4,6 +4,7 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.questionanswers.entity.QuestionAnswer;
 import com.mos.backend.questionanswers.infrastructure.QuestionAnswerRepository;
+import com.mos.backend.studies.entity.Category;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studyjoins.application.res.MyStudyJoinRes;
@@ -245,6 +246,10 @@ public class StudyJoinServiceTest {
             when(mockStudyJoin1.getStudy()).thenReturn(mockStudy1);
             when(mockStudyJoin2.getStudy()).thenReturn(mockStudy2);
             when(studyJoinRepository.findAllByStatusWithStudy(status)).thenReturn(mockStudyJoins);
+            when(mockStudy1.getCategory()).thenReturn(mock(Category.class));
+            when(mockStudy2.getCategory()).thenReturn(mock(Category.class));
+            when(mockStudyJoin1.getStatus()).thenReturn(status);
+            when(mockStudyJoin2.getStatus()).thenReturn(status);
 
             // When
             List<MyStudyJoinRes> myStudyJoinResList = studyJoinService.getMyStudyJoins(userId, status.getDescription());
