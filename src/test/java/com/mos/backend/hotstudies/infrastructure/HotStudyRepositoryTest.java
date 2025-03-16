@@ -1,5 +1,6 @@
 package com.mos.backend.hotstudies.infrastructure;
 
+import com.mos.backend.testconfig.AbstractTestContainer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -18,7 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class HotStudyRepositoryTest extends AbstractMethodError{
+@DirtiesContext
+class HotStudyRepositoryTest extends AbstractTestContainer {
 
     @Autowired
     private HotStudyRepository hotStudyRepository;
