@@ -2,14 +2,13 @@ package com.mos.backend.studyjoins.application.res;
 
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studyjoins.entity.StudyJoin;
-import com.mos.backend.studyjoins.entity.StudyJoinStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
 public class MyStudyJoinRes {
-    private Long studyJd;
+    private Long studyId;
     private String title;
     private String category;
 
