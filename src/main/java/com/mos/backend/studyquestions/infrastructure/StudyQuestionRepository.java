@@ -7,9 +7,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface StudyQuestionRepository{
-    void save(StudyQuestion studyQuestion);
+    StudyQuestion save(StudyQuestion studyQuestion);
 
     void saveAll(List<StudyQuestion> studyQuestionList);
+
+    Optional<StudyQuestion> findById(Long studyQuestionId);
+
+    List<StudyQuestion> findByStudyIdAndRequiredTrue(Long studyId);
 
     List<StudyQuestion> findAllByStudy(Study study);
 
