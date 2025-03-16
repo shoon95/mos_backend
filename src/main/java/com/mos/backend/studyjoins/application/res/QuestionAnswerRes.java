@@ -5,7 +5,6 @@ import com.mos.backend.studyquestions.entity.QuestionType;
 import lombok.Getter;
 import lombok.ToString;
 
-@ToString
 @Getter
 public class QuestionAnswerRes {
     private Long studyQuestionId;
