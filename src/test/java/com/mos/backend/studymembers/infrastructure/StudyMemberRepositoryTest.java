@@ -16,6 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Arrays;
 
@@ -38,6 +39,7 @@ class StudyMemberRepositoryTest extends AbstractTestContainer {
 
     @Test
     @DisplayName("Study에 현재 참여 중인 수 조회 성공 테스트")
+    @DirtiesContext
     void countByStudyAndStatusInTest() {
         // given
         Study study = createStudy();
