@@ -3,7 +3,8 @@ package com.mos.backend.studyjoins.application.res;
 import com.mos.backend.studyquestions.entity.QuestionOption;
 import com.mos.backend.studyquestions.entity.QuestionType;
 import lombok.Getter;
-import lombok.ToString;
+
+import java.util.List;
 
 @Getter
 public class QuestionAnswerRes {
@@ -11,7 +12,7 @@ public class QuestionAnswerRes {
     private String question;
     private Long questionNum;
     private String questionType;
-    private QuestionOption questionOption;
+    private List<String> questionOptions;
 
     private Long questionAnswerId;
     private String answer;
@@ -21,7 +22,7 @@ public class QuestionAnswerRes {
         this.question = question;
         this.questionNum = questionNum;
         this.questionType = questionType.getDescription();
-        this.questionOption = questionOption;
+        this.questionOptions = questionOption.toList();
         this.questionAnswerId = questionAnswerId;
         this.answer = answer;
     }
