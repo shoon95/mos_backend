@@ -75,9 +75,8 @@ public class EntitySaver {
 
     public StudyQuestion saveStudyQuestion(Study study, Long questionNum) {
         List<String> options = List.of("선택지1", "선택지2", "선택지3");
-        QuestionOption questionOption = QuestionOption.fromList(options);
         return studyQuestionRepository.save(
-                StudyQuestion.create(study, questionNum, "질문", QuestionType.MULTIPLE_CHOICE, questionOption, true)
+                StudyQuestion.create(study, questionNum, "질문", "객관식", options, true)
         );
     }
 
