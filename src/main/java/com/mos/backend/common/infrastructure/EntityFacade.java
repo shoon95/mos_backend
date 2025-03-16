@@ -8,7 +8,11 @@ import com.mos.backend.studybenefits.entity.StudyBenefit;
 import com.mos.backend.studybenefits.entity.exception.StudyBenefitErrorCode;
 import com.mos.backend.studybenefits.infrastructure.StudyBenefitRepository;
 import com.mos.backend.studyjoins.entity.StudyJoin;
+import com.mos.backend.studyjoins.entity.exception.StudyJoinErrorCode;
 import com.mos.backend.studyjoins.infrastructure.StudyJoinRepository;
+import com.mos.backend.studyquestions.entity.StudyQuestion;
+import com.mos.backend.studyquestions.entity.StudyQuestionErrorCode;
+import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.users.entity.exception.UserErrorCode;
 import com.mos.backend.users.infrastructure.respository.UserRepository;
@@ -24,6 +28,7 @@ public class EntityFacade {
     private final StudyRepository studyRepository;
     private final StudyJoinRepository studyJoinRepository;
     private final StudyBenefitRepository studyBenefitRepository;
+    private final StudyQuestionRepository studyQuestionRepository;
 
     public User getUser(Long userId) {
         return userRepository.findById(userId)
@@ -37,11 +42,16 @@ public class EntityFacade {
 
     public StudyJoin getStudyJoin(Long studyApplicationId) {
         return studyJoinRepository.findById(studyApplicationId)
-                .orElseThrow(() -> new MosException(StudyErrorCode.STUDY_NOT_FOUND));
+                .orElseThrow(() -> new MosException(StudyJoinErrorCode.STUDY_JOIN_NOT_FOUND));
     }
 
     public StudyBenefit getStudyBenefit(Long studyBenefitId) {
         return studyBenefitRepository.findById(studyBenefitId)
                 .orElseThrow(() -> new MosException(StudyBenefitErrorCode.STUDY_BENEFIT_NOT_FOUND));
+    }
+
+    public StudyQuestion getStudyQuestion(Long studyQuestionId) {
+        return studyQuestionRepository.findById(studyQuestionId)
+                .orElseThrow(() -> new MosException(StudyQuestionErrorCode.STUDY_QUESTION_NOT_FOUND));
     }
 }

@@ -15,13 +15,23 @@ public class StudyQuestionRepositoryImpl implements StudyQuestionRepository{
     private final StudyQuestionJpaRepository studyQuestionJpaRepository;
 
     @Override
-    public void save(StudyQuestion studyQuestion) {
-        studyQuestionJpaRepository.save(studyQuestion);
+    public StudyQuestion save(StudyQuestion studyQuestion) {
+        return studyQuestionJpaRepository.save(studyQuestion);
     }
 
     @Override
     public void saveAll(List<StudyQuestion> studyQuestionList) {
         studyQuestionJpaRepository.saveAll(studyQuestionList);
+    }
+
+    @Override
+    public Optional<StudyQuestion> findById(Long studyQuestionId) {
+        return studyQuestionJpaRepository.findById(studyQuestionId);
+    }
+
+    @Override
+    public List<StudyQuestion> findByStudyIdAndRequiredTrue(Long studyId) {
+        return studyQuestionJpaRepository.findByStudyIdAndRequiredTrue(studyId);
     }
 
     @Override
