@@ -247,7 +247,7 @@ public class StudyJoinServiceTest {
             when(studyJoinRepository.findAllByStatusWithStudy(status)).thenReturn(mockStudyJoins);
 
             // When
-            List<MyStudyJoinRes> myStudyJoinResList = studyJoinService.getMyStudyJoins(userId, status);
+            List<MyStudyJoinRes> myStudyJoinResList = studyJoinService.getMyStudyJoins(userId, status.getDescription());
 
             // Then
             verify(entityFacade).getUser(userId);

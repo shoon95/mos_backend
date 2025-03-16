@@ -28,8 +28,8 @@ public class StudyJoinController {
 
     @GetMapping("/study-joins")
     @ResponseStatus(HttpStatus.OK)
-    public List<MyStudyJoinRes> getMyStudyJoins(@AuthenticationPrincipal Long userId, @RequestParam StudyJoinStatus status) {
-        return studyJoinService.getMyStudyJoins(userId, status);
+    public List<MyStudyJoinRes> getMyStudyJoins(@AuthenticationPrincipal Long userId, @RequestParam String studyJoinStatus) {
+        return studyJoinService.getMyStudyJoins(userId, studyJoinStatus);
     }
 
     @GetMapping("/studies/{studyId}/study-joins")

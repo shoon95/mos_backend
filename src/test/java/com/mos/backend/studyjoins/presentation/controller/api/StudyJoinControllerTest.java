@@ -62,7 +62,7 @@ class StudyJoinControllerTest {
     void getMyStudyJoins_Success_Documentation() throws Exception {
         mockMvc.perform(
                         get("/study-joins")
-                                .param("status", "PENDING")
+                                .param("studyJoinStatus", "대기")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
