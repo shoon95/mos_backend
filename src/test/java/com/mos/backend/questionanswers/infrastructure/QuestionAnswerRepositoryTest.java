@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 
@@ -29,6 +30,7 @@ class QuestionAnswerRepositoryTest extends AbstractTestContainer {
 
     @Test
     @DisplayName("studyJoinId를 통한 QuestionAnswerRes 조회")
+    @DirtiesContext
     void findAllByStudyJoinId() {
         // given
         User user1 = entitySaver.saveUser();

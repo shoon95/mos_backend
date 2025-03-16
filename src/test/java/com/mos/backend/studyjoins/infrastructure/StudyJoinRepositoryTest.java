@@ -15,6 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,6 +35,7 @@ class StudyJoinRepositoryTest extends AbstractTestContainer {
 
     @Test
     @DisplayName("특정 상태의 신청 목록 조회 쿼리 테스트")
+    @DirtiesContext
     void findAllByStatusWithStudyTest() {
         // Given
         User user1 = saveUser();
