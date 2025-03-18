@@ -27,4 +27,12 @@ public class StudyScheduleCurriculum extends BaseAuditableEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(nullable = false, name = "study_curriculum_id")
     private StudyCurriculum studyCurriculum;
+
+
+    public static StudyScheduleCurriculum create(StudySchedule studySchedule, StudyCurriculum studyCurriculum) {
+        StudyScheduleCurriculum studyScheduleCurriculum = new StudyScheduleCurriculum();
+        studyScheduleCurriculum.studySchedule = studySchedule;
+        studyScheduleCurriculum.studyCurriculum = studyCurriculum;
+        return studyScheduleCurriculum;
+    }
 }
