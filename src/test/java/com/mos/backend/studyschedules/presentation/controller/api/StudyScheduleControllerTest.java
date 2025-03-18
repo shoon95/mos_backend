@@ -3,9 +3,7 @@ package com.mos.backend.studyschedules.presentation.controller.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mos.backend.common.jwt.TokenUtil;
 import com.mos.backend.securityuser.WithMockCustomUser;
-import com.mos.backend.studyjoins.presentation.controller.req.StudyJoinReq;
 import com.mos.backend.studyschedules.application.StudyScheduleService;
-import com.mos.backend.studyschedules.presentation.req.CurriculumScheduleCreateReq;
 import com.mos.backend.studyschedules.presentation.req.StudyScheduleCreateReq;
 import com.mos.backend.studyschedules.presentation.req.StudyScheduleUpdateReq;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +22,6 @@ import java.util.List;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -55,6 +52,7 @@ class StudyScheduleControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(
                                                 new StudyScheduleCreateReq(
+                                                        List.of(1L, 2L, 3L),
                                                         "스터디 일정 제목",
                                                         "스터디 일정 설명",
                                                         LocalDateTime.now().plusHours(1),
@@ -70,6 +68,7 @@ class StudyScheduleControllerTest {
                                 parameterWithName("studyId").description("스터디 ID")
                         ),
                         requestFields(
+                                fieldWithPath("curriculumIds").description("커리큘럼 ID 목록"),
                                 fieldWithPath("title").description("일정 제목"),
                                 fieldWithPath("description").optional().description("일정 설명"),
                                 fieldWithPath("startDateTime").description("시작 일시 (현재 시간 이후)"),
@@ -78,34 +77,6 @@ class StudyScheduleControllerTest {
                 ));
     }
 
-    @Test
-    @DisplayName("커리큘럼 기반의 스케쥴 생성 성공 문서화")
-    void createStudyScheduleByCurriculum_Success_Documentation() throws Exception {
-        mockMvc.perform(
-                        post("/studies/{studyId}/study-curriculums/{studyCurriculumId}/schedules", 1L, 1L)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(
-                                                new CurriculumScheduleCreateReq(
-                                                        LocalDateTime.now().plusHours(1),
-                                                        LocalDateTime.now().plusHours(2)
-                                                )
-                                        )
-                                )
-                )
-                .andExpect(status().isOk())
-                .andDo(document("study-schedule-create-by-curriculum-success",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        pathParameters(
-                                parameterWithName("studyId").description("스터디 ID"),
-                                parameterWithName("studyCurriculumId").description("스터디 커리큘럼 ID")
-                        ),
-                        requestFields(
-                                fieldWithPath("startDateTime").description("시작 일시 (현재 시간 이후)"),
-                                fieldWithPath("endDateTime").optional().description("종료 일시")
-                        )
-                ));
-    }
 
     @Test
     @DisplayName("나의 스터디 스케쥴 목록 조회 성공 문서화")

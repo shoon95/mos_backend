@@ -9,4 +9,6 @@ public interface StudyCurriculumRepository {
     void saveAll(List<StudyCurriculum> studyCurriculumList);
 
     Optional<StudyCurriculum > findById(Long studyCurriculumId);
+
+    StudyCurriculum save(StudyCurriculum studyCurriculum);
 }

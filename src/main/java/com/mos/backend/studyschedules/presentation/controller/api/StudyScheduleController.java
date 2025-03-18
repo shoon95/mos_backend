@@ -2,7 +2,6 @@ package com.mos.backend.studyschedules.presentation.controller.api;
 
 import com.mos.backend.studyschedules.application.StudyScheduleService;
 import com.mos.backend.studyschedules.application.res.StudyScheduleRes;
-import com.mos.backend.studyschedules.presentation.req.CurriculumScheduleCreateReq;
 import com.mos.backend.studyschedules.presentation.req.StudyScheduleCreateReq;
 import com.mos.backend.studyschedules.presentation.req.StudyScheduleUpdateReq;
 import jakarta.validation.Valid;
@@ -24,15 +23,6 @@ public class StudyScheduleController {
                                                 @PathVariable Long studyId,
                                                 @Valid @RequestBody StudyScheduleCreateReq req) {
         studyScheduleService.createStudySchedule(userId, studyId, req);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/studies/{studyId}/study-curriculums/{studyCurriculumId}/schedules")
-    public void createStudyScheduleByCurriculum(@AuthenticationPrincipal Long userId,
-                                                @PathVariable Long studyId,
-                                                @PathVariable Long studyCurriculumId,
-                                                @Valid @RequestBody CurriculumScheduleCreateReq req) {
-        studyScheduleService.createStudyScheduleByCurriculum(userId, studyId, studyCurriculumId, req);
     }
 
     @ResponseStatus(HttpStatus.OK)

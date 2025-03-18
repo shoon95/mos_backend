@@ -5,10 +5,10 @@ import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studycurriculum.entity.StudyCurriculum;
+import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
 import com.mos.backend.studyschedules.application.res.StudyScheduleRes;
 import com.mos.backend.studyschedules.entity.StudySchedule;
 import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
-import com.mos.backend.studyschedules.presentation.req.CurriculumScheduleCreateReq;
 import com.mos.backend.studyschedules.presentation.req.StudyScheduleCreateReq;
 import com.mos.backend.studyschedules.presentation.req.StudyScheduleUpdateReq;
 import com.mos.backend.users.entity.User;
@@ -22,6 +22,7 @@ import java.util.List;
 @Service
 public class StudyScheduleService {
     private final StudyScheduleRepository studyScheduleRepository;
+    private final StudyCurriculumRepository studyCurriculumRepository;
     private final EntityFacade entityFacade;
 
     @Transactional
@@ -29,26 +30,9 @@ public class StudyScheduleService {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
 
-        StudySchedule studySchedule = StudySchedule.create(
-                study, req.getTitle(), req.getDescription(), req.getStartDateTime(), req.getEndDateTime()
-        );
+        saveScheduleCurriculums(req, study);
 
-        studyScheduleRepository.save(studySchedule);
-    }
-
-    @Transactional
-    public void createStudyScheduleByCurriculum(Long userId, Long studyId, Long studyCurriculumId, CurriculumScheduleCreateReq req) {
-        User user = entityFacade.getUser(userId);
-        Study study = entityFacade.getStudy(studyId);
-        StudyCurriculum studyCurriculum = entityFacade.getStudyCurriculum(studyCurriculumId);
-
-        validateRelationalStudy(study, studyCurriculum.getStudy().getId());
-
-        StudySchedule studySchedule = StudySchedule.create(
-                study, studyCurriculum.getTitle(), studyCurriculum.getContent(), req.getStartDateTime(), req.getEndDateTime()
-        );
-
-        studyScheduleRepository.save(studySchedule);
+        saveStudySchedule(req, study);
     }
 
     @Transactional(readOnly = true)
@@ -88,6 +72,22 @@ public class StudyScheduleService {
         validateRelationalStudy(study, studySchedule.getStudy().getId());
 
         studyScheduleRepository.delete(studySchedule);
+    }
+
+    private void saveScheduleCurriculums(StudyScheduleCreateReq req, Study study) {
+        req.getCurriculumIds().forEach((curriculumId) -> {
+            StudyCurriculum studyCurriculum = entityFacade.getStudyCurriculum(curriculumId);
+            validateRelationalStudy(study, studyCurriculum.getStudy().getId());
+            studyCurriculumRepository.save(studyCurriculum);
+        });
+    }
+
+    private void saveStudySchedule(StudyScheduleCreateReq req, Study study) {
+        StudySchedule studySchedule = StudySchedule.create(
+                study, req.getTitle(), req.getDescription(), req.getStartDateTime(), req.getEndDateTime()
+        );
+
+        studyScheduleRepository.save(studySchedule);
     }
 
     public void validateRelationalStudy(Study study, Long studyId) {

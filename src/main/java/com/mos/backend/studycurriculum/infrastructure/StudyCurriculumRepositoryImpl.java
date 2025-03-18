@@ -14,6 +14,11 @@ public class StudyCurriculumRepositoryImpl implements StudyCurriculumRepository 
     private final StudyCurriculumJpaRepository studyCurriculumJpaRepository;
 
     @Override
+    public StudyCurriculum save(StudyCurriculum studyCurriculum) {
+        return studyCurriculumJpaRepository.save(studyCurriculum);
+    }
+
+    @Override
     public void saveAll(List<StudyCurriculum> studyCurriculumList) {
         studyCurriculumJpaRepository.saveAll(studyCurriculumList);
     }
