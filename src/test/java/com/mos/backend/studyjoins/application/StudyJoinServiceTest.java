@@ -42,7 +42,7 @@ import static org.mockito.Mockito.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-@DisplayName("StudyApplicationService 테스트")
+@DisplayName("StudyJoinService 테스트")
 public class StudyJoinServiceTest {
 
     @Mock
