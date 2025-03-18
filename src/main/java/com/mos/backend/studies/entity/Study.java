@@ -77,4 +77,7 @@ public class Study extends BaseAuditableEntity {
     @Builder.Default
     private RecruitmentStatus recruitmentStatus = RecruitmentStatus.OPEN;
 
+    public boolean isRelational(Long studyId) {
+        return this.id.equals(studyId);
+    }
 }

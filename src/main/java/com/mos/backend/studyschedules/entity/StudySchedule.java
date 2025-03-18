@@ -26,6 +26,8 @@ public class StudySchedule extends BaseAuditableEntity {
     @JoinColumn(nullable = false, name = "study_id")
     private Study study;
 
+    @Column(nullable = false)
+    private String title;
 
     @Column(nullable = true)
     private String description;
@@ -35,4 +37,21 @@ public class StudySchedule extends BaseAuditableEntity {
 
     @Column(nullable = true)
     private LocalDateTime endTime;
+
+    public static StudySchedule create(Study study, String title, String description, LocalDateTime startTime, LocalDateTime endTime) {
+        StudySchedule studySchedule = new StudySchedule();
+        studySchedule.study = study;
+        studySchedule.title = title;
+        studySchedule.description = description;
+        studySchedule.startTime = startTime;
+        studySchedule.endTime = endTime;
+        return studySchedule;
+    }
+
+    public void update(String title, String description, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        this.title = title;
+        this.description = description;
+        this.startTime = startDateTime;
+        this.endTime = endDateTime;
+    }
 }

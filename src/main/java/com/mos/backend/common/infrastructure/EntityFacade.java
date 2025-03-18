@@ -7,12 +7,16 @@ import com.mos.backend.studies.infrastructure.StudyRepository;
 import com.mos.backend.studybenefits.entity.StudyBenefit;
 import com.mos.backend.studybenefits.entity.exception.StudyBenefitErrorCode;
 import com.mos.backend.studybenefits.infrastructure.StudyBenefitRepository;
+import com.mos.backend.studycurriculum.entity.StudyCurriculum;
+import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
 import com.mos.backend.studyjoins.entity.StudyJoin;
 import com.mos.backend.studyjoins.entity.exception.StudyJoinErrorCode;
 import com.mos.backend.studyjoins.infrastructure.StudyJoinRepository;
 import com.mos.backend.studyquestions.entity.StudyQuestion;
 import com.mos.backend.studyquestions.entity.StudyQuestionErrorCode;
 import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
+import com.mos.backend.studyschedules.entity.StudySchedule;
+import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.users.entity.exception.UserErrorCode;
 import com.mos.backend.users.infrastructure.respository.UserRepository;
@@ -29,6 +33,8 @@ public class EntityFacade {
     private final StudyJoinRepository studyJoinRepository;
     private final StudyBenefitRepository studyBenefitRepository;
     private final StudyQuestionRepository studyQuestionRepository;
+    private final StudyCurriculumRepository studyCurriculumRepository;
+    private final StudyScheduleRepository studyScheduleRepository;
 
     public User getUser(Long userId) {
         return userRepository.findById(userId)
@@ -52,6 +58,16 @@ public class EntityFacade {
 
     public StudyQuestion getStudyQuestion(Long studyQuestionId) {
         return studyQuestionRepository.findById(studyQuestionId)
+                .orElseThrow(() -> new MosException(StudyQuestionErrorCode.STUDY_QUESTION_NOT_FOUND));
+    }
+
+    public StudyCurriculum getStudyCurriculum(Long studyCurriculumId) {
+        return studyCurriculumRepository.findById(studyCurriculumId)
+                .orElseThrow(() -> new MosException(StudyQuestionErrorCode.STUDY_QUESTION_NOT_FOUND));
+    }
+
+    public StudySchedule getStudySchedule(Long studyScheduleId) {
+        return studyScheduleRepository.findById(studyScheduleId)
                 .orElseThrow(() -> new MosException(StudyQuestionErrorCode.STUDY_QUESTION_NOT_FOUND));
     }
 }
