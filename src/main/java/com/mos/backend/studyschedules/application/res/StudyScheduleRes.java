@@ -9,11 +9,13 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 public class StudyScheduleRes {
-    private Long id;
+    private Long studyScheduleId;
     private String title;
     private String description;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
+
+    private Long studyId;
 
     public static StudyScheduleRes from(StudySchedule studySchedule) {
         return new StudyScheduleRes(
@@ -21,7 +23,8 @@ public class StudyScheduleRes {
                 studySchedule.getTitle(),
                 studySchedule.getDescription(),
                 studySchedule.getStartTime(),
-                studySchedule.getEndTime()
+                studySchedule.getEndTime(),
+                studySchedule.getStudy().getId()
         );
     }
 }
