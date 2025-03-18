@@ -20,6 +20,8 @@ import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.users.entity.exception.UserErrorCode;
 import com.mos.backend.users.infrastructure.respository.UserRepository;
+import com.mos.backend.userschedules.entity.UserSchedule;
+import com.mos.backend.userschedules.infrastructure.UserScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,7 @@ public class EntityFacade {
     private final StudyQuestionRepository studyQuestionRepository;
     private final StudyCurriculumRepository studyCurriculumRepository;
     private final StudyScheduleRepository studyScheduleRepository;
+    private final UserScheduleRepository userScheduleRepository;
 
     public User getUser(Long userId) {
         return userRepository.findById(userId)
@@ -59,6 +62,11 @@ public class EntityFacade {
     public StudyQuestion getStudyQuestion(Long studyQuestionId) {
         return studyQuestionRepository.findById(studyQuestionId)
                 .orElseThrow(() -> new MosException(StudyQuestionErrorCode.STUDY_QUESTION_NOT_FOUND));
+    }
+
+    public UserSchedule getUserSchedule(Long userScheduleId) {
+        return userScheduleRepository.findById(userScheduleId)
+                .orElseThrow(() -> new MosException(UserErrorCode.USER_NOT_FOUND));
     }
 
     public StudyCurriculum getStudyCurriculum(Long studyCurriculumId) {
