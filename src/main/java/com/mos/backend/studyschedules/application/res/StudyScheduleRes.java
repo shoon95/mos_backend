@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -17,14 +18,17 @@ public class StudyScheduleRes {
 
     private Long studyId;
 
-    public static StudyScheduleRes from(StudySchedule studySchedule) {
+    private List<StudyCurriculumRes> studyCurriculumResList;
+
+    public static StudyScheduleRes of(StudySchedule studySchedule, List<StudyCurriculumRes> studyCurriculumList) {
         return new StudyScheduleRes(
                 studySchedule.getId(),
                 studySchedule.getTitle(),
                 studySchedule.getDescription(),
                 studySchedule.getStartTime(),
                 studySchedule.getEndTime(),
-                studySchedule.getStudy().getId()
+                studySchedule.getStudy().getId(),
+                studyCurriculumList
         );
     }
 }

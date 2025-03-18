@@ -6,6 +6,7 @@ import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studycurriculum.entity.StudyCurriculum;
 import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
+import com.mos.backend.studyschedules.application.res.StudyCurriculumRes;
 import com.mos.backend.studyschedules.application.res.StudyScheduleRes;
 import com.mos.backend.studyschedules.entity.StudySchedule;
 import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
@@ -40,7 +41,7 @@ public class StudyScheduleService {
         User user = entityFacade.getUser(userId);
 
         List<StudySchedule> studySchedules = studyScheduleRepository.findAllByActivatedUserId(user.getId());
-        return studySchedules.stream().map(StudyScheduleRes::from).toList();
+        return convertToRes(studySchedules);
     }
 
     @Transactional(readOnly = true)
@@ -49,8 +50,18 @@ public class StudyScheduleService {
         Study study = entityFacade.getStudy(studyId);
 
         List<StudySchedule> studySchedules = studyScheduleRepository.findByStudyId(study.getId());
-        return studySchedules.stream().map(StudyScheduleRes::from).toList();
+        return convertToRes(studySchedules);
     }
+
+    private List<StudyScheduleRes> convertToRes(List<StudySchedule> studySchedules) {
+        return studySchedules.stream().map(studySchedule -> {
+            List<StudyCurriculumRes> studyCurriculumResList = studyCurriculumRepository.findAllByStudyScheduleId(studySchedule.getId()).stream()
+                    .map(StudyCurriculumRes::from)
+                    .toList();
+            return StudyScheduleRes.of(studySchedule, studyCurriculumResList);
+        }).toList();
+    }
+
 
     @Transactional
     public void updateStudySchedule(Long userId, Long studyId, Long studyScheduleId, StudyScheduleUpdateReq req) {

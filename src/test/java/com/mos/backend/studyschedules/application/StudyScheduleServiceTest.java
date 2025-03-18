@@ -121,10 +121,17 @@ class StudyScheduleServiceTest {
             // Given
             Long userId = 1L;
             User user = mock(User.class);
+            Study study = mock(Study.class);
+            StudySchedule studySchedule = mock(StudySchedule.class);
+            List<StudySchedule> studySchedules = List.of(studySchedule);
+            List<StudyCurriculum> studyCurriculums = List.of(mock(StudyCurriculum.class));
 
             when(entityFacade.getUser(userId)).thenReturn(user);
             when(user.getId()).thenReturn(userId);
-            when(studyScheduleRepository.findAllByActivatedUserId(userId)).thenReturn(mock(List.class));
+            when(studyScheduleRepository.findAllByActivatedUserId(userId)).thenReturn(studySchedules);
+            when(studySchedule.getStudy()).thenReturn(study);
+            when(studySchedule.getId()).thenReturn(1L);
+            when(studyCurriculumRepository.findAllByStudyScheduleId(studySchedule.getId())).thenReturn(studyCurriculums);
 
             // When
             studyScheduleService.getMyStudySchedules(userId);
@@ -132,6 +139,7 @@ class StudyScheduleServiceTest {
             // Then
             verify(entityFacade).getUser(userId);
             verify(studyScheduleRepository).findAllByActivatedUserId(userId);
+            verify(studyCurriculumRepository, times(studySchedules.size())).findAllByStudyScheduleId(anyLong());
         }
 
         @Test
@@ -141,11 +149,17 @@ class StudyScheduleServiceTest {
             Long userId = 1L;
             Long studyId = 1L;
             Study study = mock(Study.class);
+            StudySchedule studySchedule = mock(StudySchedule.class);
+            List<StudySchedule> studySchedules = List.of(studySchedule);
+            List<StudyCurriculum> studyCurriculums = List.of(mock(StudyCurriculum.class));
 
             when(entityFacade.getUser(userId)).thenReturn(mock(User.class));
             when(entityFacade.getStudy(studyId)).thenReturn(study);
             when(study.getId()).thenReturn(studyId);
-            when(studyScheduleRepository.findByStudyId(studyId)).thenReturn(mock(List.class));
+            when(studyScheduleRepository.findByStudyId(studyId)).thenReturn(studySchedules);
+            when(studySchedule.getStudy()).thenReturn(study);
+            when(studySchedule.getId()).thenReturn(1L);
+            when(studyCurriculumRepository.findAllByStudyScheduleId(studySchedule.getId())).thenReturn(studyCurriculums);
 
             // When
             studyScheduleService.getStudySchedules(userId, studyId);
@@ -154,6 +168,7 @@ class StudyScheduleServiceTest {
             verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(studyScheduleRepository).findByStudyId(studyId);
+            verify(studyCurriculumRepository, times(studySchedules.size())).findAllByStudyScheduleId(anyLong());
         }
     }
 

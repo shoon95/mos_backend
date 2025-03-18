@@ -27,4 +27,9 @@ public class StudyCurriculumRepositoryImpl implements StudyCurriculumRepository 
     public Optional<StudyCurriculum> findById(Long studyCurriculumId) {
         return studyCurriculumJpaRepository.findById(studyCurriculumId);
     }
+
+    @Override
+    public List<StudyCurriculum> findAllByStudyScheduleId(Long studyScheduleId) {
+        return studyCurriculumJpaRepository.findAllByStudyScheduleId(studyScheduleId);
+    }
 }

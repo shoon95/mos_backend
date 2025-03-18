@@ -11,4 +11,6 @@ public interface StudyCurriculumRepository {
     Optional<StudyCurriculum > findById(Long studyCurriculumId);
 
     StudyCurriculum save(StudyCurriculum studyCurriculum);
+
+    List<StudyCurriculum> findAllByStudyScheduleId(Long studyScheduleId);
 }

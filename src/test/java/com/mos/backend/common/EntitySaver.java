@@ -6,6 +6,8 @@ import com.mos.backend.studies.entity.Category;
 import com.mos.backend.studies.entity.MeetingType;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.infrastructure.StudyRepository;
+import com.mos.backend.studycurriculum.entity.StudyCurriculum;
+import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
 import com.mos.backend.studyjoins.entity.StudyJoin;
 import com.mos.backend.studyjoins.entity.StudyJoinStatus;
 import com.mos.backend.studyjoins.infrastructure.StudyJoinJpaRepository;
@@ -13,6 +15,8 @@ import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.studyquestions.entity.StudyQuestion;
 import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
+import com.mos.backend.studyschedulecurriculums.entity.StudyScheduleCurriculum;
+import com.mos.backend.studyschedulecurriculums.infrastructure.StudyScheduleCurriculumRepository;
 import com.mos.backend.studyschedules.entity.StudySchedule;
 import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
 import com.mos.backend.users.entity.OauthProvider;
@@ -39,6 +43,10 @@ public class EntitySaver {
     private StudyMemberRepository studyMemberRepository;
     @Autowired
     private StudyScheduleRepository studyScheduleRepository;
+    @Autowired
+    private StudyCurriculumRepository studyCurriculumRepository;
+    @Autowired
+    private StudyScheduleCurriculumRepository studyScheduleCurriculumRepository;
     @Autowired
     private QuestionAnswerRepository questionAnswerRepository;
     @Autowired
@@ -98,6 +106,18 @@ public class EntitySaver {
     public StudySchedule saveStudySchedule(Study study) {
         return studyScheduleRepository.save(
                 StudySchedule.create(study, "제목", "설명", LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2))
+        );
+    }
+
+    public StudyCurriculum saveStudyCurriculum(Study study) {
+        return studyCurriculumRepository.save(
+                StudyCurriculum.create(study, "제목", 1L, "내용")
+        );
+    }
+
+    public StudyScheduleCurriculum saveStudyScheduleCurriculum(StudySchedule studySchedule, StudyCurriculum studyCurriculum) {
+        return studyScheduleCurriculumRepository.save(
+                StudyScheduleCurriculum.create(studySchedule, studyCurriculum)
         );
     }
 }
