@@ -49,4 +49,8 @@ public class User extends BaseTimeEntity {
         this.introduction = introduction;
         this.categories = categories;
     }
+
+    public boolean isOwner(Long userId) {
+        return this.id.equals(userId);
+    }
 }
