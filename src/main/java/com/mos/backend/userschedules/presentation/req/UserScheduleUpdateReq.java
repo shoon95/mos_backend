@@ -1,5 +1,6 @@
 package com.mos.backend.userschedules.presentation.req;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,4 +19,12 @@ public class UserScheduleUpdateReq {
     @FutureOrPresent(message = "시작 일시는 현재 시각 이후여야 합니다.")
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
+
+    @AssertTrue(message = "종료 일시가 존재한다면 시작 일시 이후여야 합니다.")
+    public boolean isEndDateTimeAfterStartDateTime() {
+        if (endDateTime == null) {
+            return true;
+        }
+        return endDateTime.isAfter(startDateTime);
+    }
 }
