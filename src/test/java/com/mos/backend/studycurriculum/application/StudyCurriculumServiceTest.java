@@ -76,8 +76,8 @@ class StudyCurriculumServiceTest {
         }
 
         @Test
-        @DisplayName("기존 스터디 혜택 삭제")
-        void deleteStudyBenefit_Success() {
+        @DisplayName("기존 스터디 커리큘럼 삭제")
+        void deleteStudyCurriculum_Success() {
             // Given
             Long studyId = 1L;
             Study study = Study.builder().id(studyId).build();
