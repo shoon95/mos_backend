@@ -144,7 +144,7 @@ public class StudyService {
     }
 
     private void handleStudyRelations(Long userId, StudyCreateRequestDto requestDto, Long savedStudyId) {
-        studyRuleService.create(savedStudyId, requestDto.getRules());
+        studyRuleService.createOrUpdateOrDelete(savedStudyId, requestDto.getRules());
         studyBenefitService.createOrUpdateOrDelete(savedStudyId, requestDto.getBenefits());
         studyQuestionService.createOrUpdateOrDelete(savedStudyId, requestDto.getApplicationQuestions());
         studyCurriculumService.createOrUpdateOrDelete(savedStudyId, requestDto.getCurriculums());

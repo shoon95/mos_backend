@@ -19,6 +19,7 @@ import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studyquestions.application.StudyQuestionService;
 import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
 import com.mos.backend.studyrules.application.StudyRuleService;
+import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,15 +95,19 @@ class StudyServiceTest {
 
         // 필수 리스트 초기화
         validRequestDto.setCurriculums(List.of(
-                new StudyCurriculumCreateRequestDto(1L,1L,"Week 1", "Java Basics")
+                new StudyCurriculumCreateRequestDto(null,1L,"Week 1", "Java Basics")
         ));
-        validRequestDto.setRules(List.of("Rule 1", "Rule 2"));
+        validRequestDto.setRules(List.of(
+                new StudyRuleCreateRequestDto(null, 1L, "스터디 룰1"),
+                new StudyRuleCreateRequestDto(null,2L,"스터디 룰2")
+                )
+        );
         StudyBenefitRequestDto studyBenefitRequestDto = new StudyBenefitRequestDto();
         studyBenefitRequestDto.setBenefitNum(1L);
         studyBenefitRequestDto.setContent("Benefit 1");
         validRequestDto.setBenefits(List.of(studyBenefitRequestDto));
         validRequestDto.setApplicationQuestions(List.of(
-                new StudyQuestionCreateRequestDto(1L, 1L,  "좋은 질문", true, "객관식", List.of("A", "B", "C"))
+                new StudyQuestionCreateRequestDto(null, 1L,  "좋은 질문", true, "객관식", List.of("A", "B", "C"))
         ));
     }
 
@@ -128,7 +133,7 @@ class StudyServiceTest {
             assertEquals(1L, studyId);
 
             // 연관된 서비스 메서드 호출 검증
-            verify(studyRuleService).create(eq(studyId), eq(validRequestDto.getRules()));
+            verify(studyRuleService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getRules()));
             verify(studyBenefitService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getBenefits()));
             verify(studyQuestionService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getApplicationQuestions()));
             verify(studyCurriculumService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getCurriculums()));
