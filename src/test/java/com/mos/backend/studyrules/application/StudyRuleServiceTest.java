@@ -7,6 +7,7 @@ import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
 import com.mos.backend.studycurriculum.application.StudyCurriculumService;
 import com.mos.backend.studycurriculum.entity.StudyCurriculum;
+import com.mos.backend.studycurriculum.entity.exception.StudyCurriculumErrorCode;
 import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
 import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCreateRequestDto;
 import com.mos.backend.studyrules.application.responsedto.StudyRuleResponseDto;
@@ -49,12 +50,12 @@ class StudyRuleServiceTest {
 
 
     @Nested
-    @DisplayName("스터디 룰 생성, 수정, 삭제 성공 시나리오")
-    class SuccessScenarios {
+    @DisplayName("스터디 룰 생성, 수정, 삭제 시나리오")
+    class CreateOrUpdateOrDeleteTest {
 
         @Test
-        @DisplayName("ruleNum 순서가 빈 값이 존재하면 테스트를 실패한다.")
-        void InvalidRuleNumCreateOrUpdateOrDelete_Fail() {
+        @DisplayName("ruleNum 순서가 빈 값이 존재하면 에러를 발생시킨다.")
+        void nullRuleNumCreateOrUpdateOrDelete_ThrowsException() {
             // given
             Long studyId = 1L;
             List<StudyRuleCreateRequestDto> contents = List.of(
@@ -67,7 +68,57 @@ class StudyRuleServiceTest {
 
             // then
             assertThat(mosException.getErrorCode()).isEqualTo(StudyRuleErrorCode.INVALID_RULE_NUM);
+        }
 
+        @Test
+        @DisplayName("ruleNum 순서가 연속된 수가 아니라면에러를 발생시킨다.")
+        void notContinuousRuleNumCreateOrUpdateOrDelete_ThrowsException() {
+            // given
+            Long studyId = 1L;
+            List<StudyRuleCreateRequestDto> contents = List.of(
+                    new StudyRuleCreateRequestDto(null, 1L, "스터디 룰1"),
+                    new StudyRuleCreateRequestDto(null, 3L, "스터디 룰2")
+            );
+
+            // when
+            MosException mosException = assertThrows(MosException.class, () -> studyRuleService.createOrUpdateOrDelete(studyId, contents));
+
+            // then
+            assertThat(mosException.getErrorCode()).isEqualTo(StudyRuleErrorCode.INVALID_RULE_NUM);
+        }
+
+        @Test
+        @DisplayName("ruleNum 순서가 1부터 시작되지 않으면 에러를 발생시킨다.")
+        void ruleNumNotStartFrom1CreateOrUpdateOrDelete_ThrowsException() {
+            // given
+            Long studyId = 1L;
+            List<StudyRuleCreateRequestDto> contents = List.of(
+                    new StudyRuleCreateRequestDto(null, 2L, "스터디 룰1"),
+                    new StudyRuleCreateRequestDto(null, 3L, "스터디 룰2")
+            );
+
+            // when
+            MosException mosException = assertThrows(MosException.class, () -> studyRuleService.createOrUpdateOrDelete(studyId, contents));
+
+            // then
+            assertThat(mosException.getErrorCode()).isEqualTo(StudyRuleErrorCode.INVALID_RULE_NUM);
+        }
+
+        @Test
+        @DisplayName("ruleNum 순서가 중복이면 에러를 발생시킨다.")
+        void duplicatedRuleNumCreateOrUpdateOrDelete_ThrowsException() {
+            // given
+            Long studyId = 1L;
+            List<StudyRuleCreateRequestDto> contents = List.of(
+                    new StudyRuleCreateRequestDto(null, 1L, "스터디 룰1"),
+                    new StudyRuleCreateRequestDto(null, 1L, "스터디 룰2")
+            );
+
+            // when
+            MosException mosException = assertThrows(MosException.class, () -> studyRuleService.createOrUpdateOrDelete(studyId, contents));
+
+            // then
+            assertThat(mosException.getErrorCode()).isEqualTo(StudyRuleErrorCode.INVALID_RULE_NUM);
         }
 
         @Test

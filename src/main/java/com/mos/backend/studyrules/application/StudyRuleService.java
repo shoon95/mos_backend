@@ -3,6 +3,8 @@ package com.mos.backend.studyrules.application;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
+import com.mos.backend.studycurriculum.entity.exception.StudyCurriculumErrorCode;
+import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCreateRequestDto;
 import com.mos.backend.studyrules.application.responsedto.StudyRuleResponseDto;
 import com.mos.backend.studyrules.entity.StudyRule;
 import com.mos.backend.studyrules.entity.exception.StudyRuleErrorCode;
@@ -87,10 +89,24 @@ public class StudyRuleService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
+        // null 이 있는지 확인
         if (ruleNumSet.size() != requestDtoList.size()) {
             throw new MosException(StudyRuleErrorCode.INVALID_RULE_NUM);
         }
+
+        long maxRuleNum = ruleNumSet.stream()
+                .max(Long::compareTo)
+                .orElse(0L); // 값이 없으면 0으로 처리
+
+        long expectedSum = (maxRuleNum * (maxRuleNum + 1)) / 2;
+        long actualSum = ruleNumSet.stream().mapToLong(Long::longValue).sum();
+
+        // 1부터 연속적인 수인지 검증
+        if (expectedSum != actualSum) {
+            throw new MosException(StudyRuleErrorCode.INVALID_RULE_NUM);
+        }
     }
+
 
     private List<StudyRule> getDeleteStudyRuleList(List<StudyRuleCreateRequestDto> requestDtoList, List<StudyRule> studyRuleList) {
         List<Long> requestStudyRuleIdList = requestDtoList.stream()

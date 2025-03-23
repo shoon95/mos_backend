@@ -8,6 +8,8 @@ import com.mos.backend.studybenefits.entity.StudyBenefit;
 import com.mos.backend.studybenefits.entity.exception.StudyBenefitErrorCode;
 import com.mos.backend.studybenefits.infrastructure.StudyBenefitRepository;
 import com.mos.backend.studybenefits.presentation.requestdto.StudyBenefitRequestDto;
+import com.mos.backend.studyrules.entity.exception.StudyRuleErrorCode;
+import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,12 +80,26 @@ public class StudyBenefitService {
         validateBenefitNum(benefitRequestDtoList);
     }
 
-    private void validateBenefitNum(List<StudyBenefitRequestDto> benefitRequestDtoList) {
-        Set<Long> benefitNumSet = benefitRequestDtoList.stream()
-                .map(r -> r.getBenefitNum())
+    private void validateBenefitNum(List<StudyBenefitRequestDto> requestDtoList) {
+        Set<Long> benefitNumSet = requestDtoList.stream()
+                .map(StudyBenefitRequestDto::getBenefitNum)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        if (benefitNumSet.size() != benefitRequestDtoList.size()) {
+        // null 이 있는지 확인
+        if (benefitNumSet.size() != requestDtoList.size()) {
+            throw new MosException(StudyBenefitErrorCode.INVALID_BENEFIT_NUM);
+        }
+
+        long maxRuleNum = benefitNumSet.stream()
+                .max(Long::compareTo)
+                .orElse(0L); // 값이 없으면 0으로 처리
+
+        long expectedSum = (maxRuleNum * (maxRuleNum + 1)) / 2;
+        long actualSum = benefitNumSet.stream().mapToLong(Long::longValue).sum();
+
+        // 1부터 연속적인 수인지 검증
+        if (expectedSum != actualSum) {
             throw new MosException(StudyBenefitErrorCode.INVALID_BENEFIT_NUM);
         }
     }

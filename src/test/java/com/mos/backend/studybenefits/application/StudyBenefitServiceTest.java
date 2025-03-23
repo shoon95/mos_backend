@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -41,7 +40,8 @@ class StudyBenefitServiceTest {
 
     @Nested
     @DisplayName("스터디 혜택 생성, 수정, 삭제 성공 시나리오")
-    class SuccessScenarios {
+    class CreateOrUpdateOrDeleteTest_Success {
+
         @Test
         @DisplayName("새로운 스터디 혜택 생성")
         void createStudyBenefit_Success() {
@@ -111,7 +111,76 @@ class StudyBenefitServiceTest {
 
     @Nested
     @DisplayName("스터디 혜택 생성, 수정, 삭제 실패 시나리오")
-    class FailureScenarios {
+    class createOrUpdateOrDeleteTest_Fail {
+
+        @Test
+        @DisplayName("benefitNum 순서가 빈 값이 존재하면 에러를 발생시킨다.")
+        void nullBenefitNumCreateOrUpdateOrDelete_ThrowsException() {
+            // Given
+            Long studyId = 1L;
+            List<StudyBenefitRequestDto> contents = List.of(
+                    createStudyBenefitRequestDto(null, 1L, "혜택 1"),
+                    createStudyBenefitRequestDto(null, null, "혜택 2")
+            );
+
+            // when
+            MosException mosException = assertThrows(MosException.class, () -> studyBenefitService.createOrUpdateOrDelete(studyId, contents));
+
+            // then
+            assertThat(mosException.getErrorCode()).isEqualTo(StudyBenefitErrorCode.INVALID_BENEFIT_NUM);
+        }
+
+        @Test
+        @DisplayName("benefitNum 순서가 연속된 수가 아니라면에러를 발생시킨다.")
+        void notContinuousBenefitNumCreateOrUpdateOrDelete_ThrowsException() {
+            // given
+            Long studyId = 1L;
+            List<StudyBenefitRequestDto> contents = List.of(
+                    createStudyBenefitRequestDto(null, 1L, "혜택 1"),
+                    createStudyBenefitRequestDto(null, 3L, "혜택 2")
+            );
+            // when
+            MosException mosException = assertThrows(MosException.class, () -> studyBenefitService.createOrUpdateOrDelete(studyId, contents));
+
+            // then
+            assertThat(mosException.getErrorCode()).isEqualTo(StudyBenefitErrorCode.INVALID_BENEFIT_NUM);
+        }
+
+        @Test
+        @DisplayName("benefitNum 순서가 1부터 시작되지 않으면 에러를 발생시킨다.")
+        void benefitNumNotStartFrom1CreateOrUpdateOrDelete_ThrowsException() {
+            // given
+            Long studyId = 1L;
+            List<StudyBenefitRequestDto> contents = List.of(
+                    createStudyBenefitRequestDto(null, 2L, "혜택 1"),
+                    createStudyBenefitRequestDto(null, 3L, "혜택 2")
+            );
+
+            // when
+            MosException mosException = assertThrows(MosException.class, () -> studyBenefitService.createOrUpdateOrDelete(studyId, contents));
+
+            // then
+            assertThat(mosException.getErrorCode()).isEqualTo(StudyBenefitErrorCode.INVALID_BENEFIT_NUM);
+        }
+
+        @Test
+        @DisplayName("benefitNum 순서가 중복이면 에러를 발생시킨다.")
+        void duplicatedBenefitNumCreateOrUpdateOrDelete_ThrowsException() {
+            // given
+            Long studyId = 1L;
+            List<StudyBenefitRequestDto> contents = List.of(
+                    createStudyBenefitRequestDto(null, 1L, "혜택 1"),
+                    createStudyBenefitRequestDto(null, 1L, "혜택 2")
+            );
+
+
+            // when
+            MosException mosException = assertThrows(MosException.class, () -> studyBenefitService.createOrUpdateOrDelete(studyId, contents));
+
+            // then
+            assertThat(mosException.getErrorCode()).isEqualTo(StudyBenefitErrorCode.INVALID_BENEFIT_NUM);
+        }
+
         @Test
         @DisplayName("스터디가 존재하지 않을 때 MosException 발생")
         void createStudyBenefit_StudyNotFound() {
@@ -133,23 +202,7 @@ class StudyBenefitServiceTest {
             verify(studyBenefitRepository, never()).saveAll(anyList());
         }
 
-        @Test
-        @DisplayName("중복된 benefitNum 입력 시 예외 발생")
-        void createStudyBenefit_DuplicateBenefitNum() {
-            // Given
-            Long studyId = 1L;
-            List<StudyBenefitRequestDto> contents = List.of(
-                    createStudyBenefitRequestDto(null, 1L, "혜택 1"),
-                    createStudyBenefitRequestDto(null, 1L, "혜택 2")
-            );
-            // When & Then
-            MosException exception = assertThrows(MosException.class, () -> {
-                studyBenefitService.createOrUpdateOrDelete(studyId, contents);
-            });
 
-            assertEquals(StudyBenefitErrorCode.INVALID_BENEFIT_NUM, exception.getErrorCode());
-            verify(studyBenefitRepository, never()).saveAll(anyList());
-        }
         @Test
         @DisplayName("찾을 수 없는 studyBenefit")
         void findStudyBenefit_invalidStudyBenefitId() {
