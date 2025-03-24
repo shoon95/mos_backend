@@ -38,6 +38,9 @@ public class StudySchedule extends BaseAuditableEntity {
     @Column(nullable = true)
     private LocalDateTime endTime;
 
+    @Column(nullable = false)
+    private boolean isCompleted;
+
     public static StudySchedule create(Study study, String title, String description, LocalDateTime startTime, LocalDateTime endTime) {
         StudySchedule studySchedule = new StudySchedule();
         studySchedule.study = study;
@@ -45,6 +48,7 @@ public class StudySchedule extends BaseAuditableEntity {
         studySchedule.description = description;
         studySchedule.startTime = startTime;
         studySchedule.endTime = endTime;
+        studySchedule.isCompleted = false;
         return studySchedule;
     }
 
@@ -53,5 +57,9 @@ public class StudySchedule extends BaseAuditableEntity {
         this.description = description;
         this.startTime = startDateTime;
         this.endTime = endDateTime;
+    }
+
+    public void complete() {
+        this.isCompleted = true;
     }
 }
