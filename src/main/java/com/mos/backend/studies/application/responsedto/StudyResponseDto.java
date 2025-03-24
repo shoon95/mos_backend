@@ -24,7 +24,6 @@ public class StudyResponseDto {
     private String progressStatus;
     private String meetingType;
     private List<String> tags;
-    private String requirements;
 
     public static StudyResponseDto from(Study study, int currentStudyMemberCount) {
         StudyResponseDto studyResponseDto = new StudyResponseDto();
