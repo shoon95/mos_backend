@@ -42,7 +42,6 @@ public class StudyResponseDto {
         studyResponseDto.progressStatus = study.getProgressStatus().getDescription();
         studyResponseDto.meetingType = study.getMeetingType().getDescription();
         studyResponseDto.tags = study.getTags().toList();
-        studyResponseDto.requirements = study.getRequirements();
         return studyResponseDto;
     }
 
