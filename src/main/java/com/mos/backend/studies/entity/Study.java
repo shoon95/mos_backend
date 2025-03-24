@@ -64,9 +64,6 @@ public class Study extends BaseAuditableEntity {
     @Column(nullable = false)
     private MeetingType meetingType;
 
-    @Column(nullable = true)
-    private String requirements;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default

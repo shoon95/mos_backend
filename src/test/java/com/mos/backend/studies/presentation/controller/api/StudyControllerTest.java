@@ -8,6 +8,7 @@ import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
 import com.mos.backend.studybenefits.presentation.requestdto.StudyBenefitRequestDto;
 import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCreateRequestDto;
 import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
+import com.mos.backend.studyrequirements.presentation.requestdto.StudyRequirementCreateRequestDto;
 import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -86,6 +87,10 @@ class StudyControllerTest {
                         new StudyRuleCreateRequestDto(null,2L,"스터디 룰2")
                 )
         );
+        dto.setRequirements(List.of(
+                        new StudyRequirementCreateRequestDto(null, 1L, "요구 사항1"),
+                        new StudyRequirementCreateRequestDto(null, 2L, "요구 사항2")
+        ));
         StudyBenefitRequestDto studyBenefitRequestDto = new StudyBenefitRequestDto();
         studyBenefitRequestDto.setBenefitNum(1L);
         studyBenefitRequestDto.setContent("테스트 베니핏");
@@ -120,20 +125,26 @@ class StudyControllerTest {
                                 fieldWithPath("meetingType").type(JsonFieldType.STRING).description("모임 방식"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("스터디 설명"),
                                 fieldWithPath("schedule").type(JsonFieldType.STRING).description("스터디 일정"),
-                                fieldWithPath("requirements").type(JsonFieldType.VARIES).description("스터디 요구사항 (선택)"),
-                                fieldWithPath("curriculums").type(JsonFieldType.ARRAY).description("커리큘럼 목록"),
+                                fieldWithPath("requirements").type(JsonFieldType.ARRAY).description("스터디 요구사항 (선택)"),
+                                fieldWithPath("requirements[].id").type(JsonFieldType.NULL).description("스터디 요구사항 ID)"),
+                                fieldWithPath("requirements[].requirementNum").type(JsonFieldType.NUMBER).description("스터디 요구사항 순서)"),
+                                fieldWithPath("requirements[].content").type(JsonFieldType.STRING).description("스터디 요구사항 내용)"),
+                                fieldWithPath("requirements[].id").type(JsonFieldType.NULL).description("스터디 요구사항 ID)"),
+                                fieldWithPath("requirements[].requirementNum").type(JsonFieldType.NUMBER).description("스터디 요구사항 순서)"),
+                                fieldWithPath("requirements[].content").type(JsonFieldType.STRING).description("스터디 요구사항 내용)"),
+                                fieldWithPath("curriculums").type(JsonFieldType.ARRAY).description("커리큘럼 목록 (선택)"),
                                 fieldWithPath("curriculums[].id").type(JsonFieldType.NULL).description("커리큘럼 ID"),
                                 fieldWithPath("curriculums[].sectionId").type(JsonFieldType.NUMBER).description("커리큘럼 섹션 ID"),
                                 fieldWithPath("curriculums[].title").type(JsonFieldType.STRING).description("커리큘럼 제목"),
                                 fieldWithPath("curriculums[].content").type(JsonFieldType.STRING).description("커리큘럼 내용"),
-                                fieldWithPath("rules").type(JsonFieldType.ARRAY).description("스터디 규칙 목록"),
+                                fieldWithPath("rules").type(JsonFieldType.ARRAY).description("스터디 규칙 목록 (선택)"),
                                 fieldWithPath("rules[].id").type(JsonFieldType.NULL).description("스터디 규칙 ID"),
                                 fieldWithPath("rules[].ruleNum").type(JsonFieldType.NUMBER).description("스터디 규칙 번호"),
                                 fieldWithPath("rules[].content").type(JsonFieldType.STRING).description("스터디 규칙 내용"),
                                 fieldWithPath("rules[].id").type(JsonFieldType.NULL).description("스터디 규칙 ID"),
                                 fieldWithPath("rules[].ruleNum").type(JsonFieldType.NUMBER).description("스터디 규칙 번호"),
                                 fieldWithPath("rules[].content").type(JsonFieldType.STRING).description("스터디 규칙 내용"),
-                                fieldWithPath("benefits").type(JsonFieldType.ARRAY).description("스터디 혜택 목록"),
+                                fieldWithPath("benefits").type(JsonFieldType.ARRAY).description("스터디 혜택 목록 (선택)"),
                                 fieldWithPath("benefits[].id").type(JsonFieldType.NULL).description("스터디 혜택 ID"),
                                 fieldWithPath("benefits[].benefitNum").type(JsonFieldType.NUMBER).description("스터디 혜택 번호"),
                                 fieldWithPath("benefits[].content").type(JsonFieldType.STRING).description("스터디 혜택 내용"),

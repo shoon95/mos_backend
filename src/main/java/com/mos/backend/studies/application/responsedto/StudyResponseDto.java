@@ -24,7 +24,6 @@ public class StudyResponseDto {
     private String progressStatus;
     private String meetingType;
     private List<String> tags;
-    private String requirements;
 
     public static StudyResponseDto from(Study study, int currentStudyMemberCount) {
         StudyResponseDto studyResponseDto = new StudyResponseDto();
@@ -42,7 +41,6 @@ public class StudyResponseDto {
         studyResponseDto.progressStatus = study.getProgressStatus().getDescription();
         studyResponseDto.meetingType = study.getMeetingType().getDescription();
         studyResponseDto.tags = study.getTags().toList();
-        studyResponseDto.requirements = study.getRequirements();
         return studyResponseDto;
     }
 
