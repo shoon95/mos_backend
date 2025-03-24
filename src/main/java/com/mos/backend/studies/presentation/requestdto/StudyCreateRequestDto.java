@@ -3,6 +3,7 @@ package com.mos.backend.studies.presentation.requestdto;
 import com.mos.backend.studybenefits.presentation.requestdto.StudyBenefitRequestDto;
 import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCreateRequestDto;
 import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
+import com.mos.backend.studyrequirements.presentation.requestdto.StudyRequirementCreateRequestDto;
 import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -50,19 +51,20 @@ public class StudyCreateRequestDto {
 
   @NotBlank(message = "content 필수입니다.")
   private String content;
-  private String requirements;
 
   @Valid
-  @NotNull(message = "curriculums 필수입니다.")
+  private List<StudyRequirementCreateRequestDto> requirements;
+
+  @Valid
   private List<StudyCurriculumCreateRequestDto> curriculums;
 
+  @Valid
   private List<StudyRuleCreateRequestDto> rules;
 
   @Valid
   private List<StudyBenefitRequestDto> benefits;
 
   @Valid
-  @NotNull
   private List<StudyQuestionCreateRequestDto> applicationQuestions;
 
 }

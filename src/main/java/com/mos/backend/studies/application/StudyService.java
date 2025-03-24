@@ -21,6 +21,7 @@ import com.mos.backend.studybenefits.application.StudyBenefitService;
 import com.mos.backend.studycurriculum.application.StudyCurriculumService;
 import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studyquestions.application.StudyQuestionService;
+import com.mos.backend.studyrequirements.application.StudyRequirementService;
 import com.mos.backend.studyrules.application.StudyRuleService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +50,7 @@ public class StudyService {
     private final HotStudyService hotStudyService;
     private final EntityFacade entityFacade;
     private final ViewCountService viewCountService;
+    private final StudyRequirementService studyRequirementService;
 
     /**
      * 스터디 생성
@@ -133,7 +135,6 @@ public class StudyService {
                 .tags(StudyTag.fromList(requestDto.getTags()))
                 .color(RandomColorGenerator.generateRandomColor())
                 .meetingType(MeetingType.fromDescription(requestDto.getMeetingType()))
-                .requirements(requestDto.getRequirements())
                 .build();
     }
 
@@ -149,5 +150,6 @@ public class StudyService {
         studyQuestionService.createOrUpdateOrDelete(savedStudyId, requestDto.getApplicationQuestions());
         studyCurriculumService.createOrUpdateOrDelete(savedStudyId, requestDto.getCurriculums());
         studyMemberService.create(savedStudyId, userId);
+        studyRequirementService.createOrUpdateOrDelete(savedStudyId, requestDto.getRequirements());
     }
 }

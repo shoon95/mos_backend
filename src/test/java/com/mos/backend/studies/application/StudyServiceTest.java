@@ -18,6 +18,8 @@ import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCr
 import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studyquestions.application.StudyQuestionService;
 import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
+import com.mos.backend.studyrequirements.application.StudyRequirementService;
+import com.mos.backend.studyrequirements.presentation.requestdto.StudyRequirementCreateRequestDto;
 import com.mos.backend.studyrules.application.StudyRuleService;
 import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -72,6 +74,9 @@ class StudyServiceTest {
     @Mock
     private HotStudyRepository hotStudyRepository;
 
+    @Mock
+    private StudyRequirementService studyRequirementService;
+
     @InjectMocks
     private StudyService studyService;
 
@@ -109,6 +114,10 @@ class StudyServiceTest {
         validRequestDto.setApplicationQuestions(List.of(
                 new StudyQuestionCreateRequestDto(null, 1L,  "좋은 질문", true, "객관식", List.of("A", "B", "C"))
         ));
+        validRequestDto.setRequirements((List.of(
+                new StudyRequirementCreateRequestDto(null, 1L, "요구 사항1"),
+                new StudyRequirementCreateRequestDto(null, 2L, "요구 사항2")
+        )));
     }
 
     @Nested
@@ -137,6 +146,7 @@ class StudyServiceTest {
             verify(studyBenefitService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getBenefits()));
             verify(studyQuestionService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getApplicationQuestions()));
             verify(studyCurriculumService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getCurriculums()));
+            verify(studyRequirementService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getRequirements()));
             verify(studyMemberService).create(eq(studyId), eq(testUserId));
         }
     }
@@ -197,7 +207,6 @@ class StudyServiceTest {
                 .viewCount(0)
                 .meetingType(MeetingType.OFFLINE)
                 .tags(StudyTag.fromList(Arrays.asList("testTag1", "testTag2")))
-                .requirements("testRequirements")
                 .build();
 
         when(studyRepository.findById(study.getId())).thenReturn(Optional.of(study));
