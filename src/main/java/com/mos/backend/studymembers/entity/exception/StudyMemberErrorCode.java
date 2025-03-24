@@ -9,7 +9,8 @@ import java.util.Locale;
 
 @RequiredArgsConstructor
 public enum StudyMemberErrorCode implements ErrorCode {
-    STUDY_MEMBER_FULL(HttpStatus.BAD_REQUEST, "auth.study-member.full");
+    STUDY_MEMBER_FULL(HttpStatus.BAD_REQUEST, "study-member.full")
+    ;
 
     private final HttpStatus httpStatus;
     private final String messageKey;
