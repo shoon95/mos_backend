@@ -8,6 +8,8 @@ import com.mos.backend.studyquestions.entity.StudyQuestion;
 import com.mos.backend.studyquestions.entity.StudyQuestionErrorCode;
 import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
 import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
+import com.mos.backend.studyrules.entity.exception.StudyRuleErrorCode;
+import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,11 +81,26 @@ public class StudyQuestionService {
         validateQuestionNum(questionCreateRequestDtoList);
     }
 
-    private void validateQuestionNum(List<StudyQuestionCreateRequestDto> questionRequestDtoList) {
-        Set<Long> questionNumSet = questionRequestDtoList.stream()
-                .map(q -> q.getQuestionNum())
+    private void validateQuestionNum(List<StudyQuestionCreateRequestDto> requestDtoList) {
+        Set<Long> questionNumSet = requestDtoList.stream()
+                .map(StudyQuestionCreateRequestDto::getQuestionNum)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
-        if (questionNumSet.size() != questionRequestDtoList.size()) {
+
+        // null 이 있는지 확인
+        if (questionNumSet.size() != requestDtoList.size()) {
+            throw new MosException(StudyQuestionErrorCode.INVALID_QUESTION_NUM);
+        }
+
+        long maxRuleNum = questionNumSet.stream()
+                .max(Long::compareTo)
+                .orElse(0L); // 값이 없으면 0으로 처리
+
+        long expectedSum = (maxRuleNum * (maxRuleNum + 1)) / 2;
+        long actualSum = questionNumSet.stream().mapToLong(Long::longValue).sum();
+
+        // 1부터 연속적인 수인지 검증
+        if (expectedSum != actualSum) {
             throw new MosException(StudyQuestionErrorCode.INVALID_QUESTION_NUM);
         }
     }

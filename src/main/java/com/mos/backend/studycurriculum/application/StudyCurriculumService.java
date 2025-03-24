@@ -84,12 +84,28 @@ public class StudyCurriculumService {
     private void validateSectionNum(List<StudyCurriculumCreateRequestDto> requestDtoList) {
         Set<Long> sectionIdSet = requestDtoList.stream()
                 .map(StudyCurriculumCreateRequestDto::getSectionId)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
+        // null 이 있는지 확인
         if (sectionIdSet.size() != requestDtoList.size()) {
             throw new MosException(StudyCurriculumErrorCode.INVALID_SECTION_ID);
         }
+
+
+        long maxSectionId = sectionIdSet.stream()
+                .max(Long::compareTo)
+                .orElse(0L); // 값이 없으면 0으로 처리
+
+        long expectedSum = (maxSectionId * (maxSectionId + 1)) / 2;
+        long actualSum = sectionIdSet.stream().mapToLong(Long::longValue).sum();
+
+        // 1부터 연속적인 수인지 검증
+        if (expectedSum != actualSum) {
+            throw new MosException(StudyCurriculumErrorCode.INVALID_SECTION_ID);
+        }
     }
+
 
     private List<StudyCurriculum> getDeleteCurriculumList(List<StudyCurriculumCreateRequestDto> requestDtoList, List<StudyCurriculum> curriculumList) {
         List<Long> requestCurriculumIdList = requestDtoList.stream()

@@ -1,11 +1,15 @@
 package com.mos.backend.studycurriculum.application;
 
+import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studycurriculum.application.responsedto.StudyCurriculumResponseDto;
 import com.mos.backend.studycurriculum.entity.StudyCurriculum;
+import com.mos.backend.studycurriculum.entity.exception.StudyCurriculumErrorCode;
 import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
 import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCreateRequestDto;
+import com.mos.backend.studyrules.entity.exception.StudyRuleErrorCode;
+import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -19,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,8 +41,77 @@ class StudyCurriculumServiceTest {
 
 
     @Nested
-    @DisplayName("스터디 커리큘럼 생성, 수정, 삭제 성공 시나리오")
-    class SuccessScenarios {
+    @DisplayName("스터디 커리큘럼 생성, 수정, 삭제 시나리오")
+    class CreateOrUpdateOrDeleteTest {
+
+        @Test
+        @DisplayName("sectionId 순서가 빈 값이 존재하면 에러를 발생시킨다.")
+        void nullSectionIdCreateOrUpdateOrDelete_ThrowsException() {
+            // given
+            Long studyId = 1L;
+            List<StudyCurriculumCreateRequestDto> contents = List.of(
+                    new StudyCurriculumCreateRequestDto(null, 1L, "스터디 커리큘럼 제목1", "스터디 커리큘럼 제목1"),
+                    new StudyCurriculumCreateRequestDto(null, null, "스터디 커리큘럼 제목2", "스터디 커리큘럼 제목2")
+            );
+
+            // when
+            MosException mosException = assertThrows(MosException.class, () -> studyCurriculumService.createOrUpdateOrDelete(studyId, contents));
+
+            // then
+            assertThat(mosException.getErrorCode()).isEqualTo(StudyCurriculumErrorCode.INVALID_SECTION_ID);
+        }
+
+        @Test
+        @DisplayName("sectionId 순서가 연속된 수가 아니라면에러를 발생시킨다.")
+        void notContinuousSectionIdCreateOrUpdateOrDelete_ThrowsException() {
+            // given
+            Long studyId = 1L;
+            List<StudyCurriculumCreateRequestDto> contents = List.of(
+                    new StudyCurriculumCreateRequestDto(null, 1L, "스터디 커리큘럼 제목1", "스터디 커리큘럼 제목1"),
+                    new StudyCurriculumCreateRequestDto(null, 3L, "스터디 커리큘럼 제목2", "스터디 커리큘럼 제목2")
+            );
+
+            // when
+            MosException mosException = assertThrows(MosException.class, () -> studyCurriculumService.createOrUpdateOrDelete(studyId, contents));
+
+            // then
+            assertThat(mosException.getErrorCode()).isEqualTo(StudyCurriculumErrorCode.INVALID_SECTION_ID);
+        }
+
+        @Test
+        @DisplayName("sectionId 순서가 1부터 시작되지 않으면 에러를 발생시킨다.")
+        void sectionIdNotStartFrom1CreateOrUpdateOrDelete_ThrowsException() {
+            // given
+            Long studyId = 1L;
+            List<StudyCurriculumCreateRequestDto> contents = List.of(
+                    new StudyCurriculumCreateRequestDto(null, 2L, "스터디 커리큘럼 제목1", "스터디 커리큘럼 제목1"),
+                    new StudyCurriculumCreateRequestDto(null, 3L, "스터디 커리큘럼 제목2", "스터디 커리큘럼 제목2")
+            );
+
+            // when
+            MosException mosException = assertThrows(MosException.class, () -> studyCurriculumService.createOrUpdateOrDelete(studyId, contents));
+
+            // then
+            assertThat(mosException.getErrorCode()).isEqualTo(StudyCurriculumErrorCode.INVALID_SECTION_ID);
+        }
+
+        @Test
+        @DisplayName("sectionId 순서가 중복이면 에러를 발생시킨다.")
+        void duplicatedSectionIdCreateOrUpdateOrDelete_ThrowsException() {
+            // given
+            Long studyId = 1L;
+            List<StudyCurriculumCreateRequestDto> contents = List.of(
+                    new StudyCurriculumCreateRequestDto(null, 1L, "스터디 커리큘럼 제목1", "스터디 커리큘럼 제목1"),
+                    new StudyCurriculumCreateRequestDto(null, 1L, "스터디 커리큘럼 제목2", "스터디 커리큘럼 제목2")
+            );
+
+            // when
+            MosException mosException = assertThrows(MosException.class, () -> studyCurriculumService.createOrUpdateOrDelete(studyId, contents));
+
+            // then
+            assertThat(mosException.getErrorCode()).isEqualTo(StudyCurriculumErrorCode.INVALID_SECTION_ID);
+        }
+
         @Test
         @DisplayName("새로운 스터디 커리큘럼 생성")
         void createStudyCurriculum_Success() {
@@ -76,8 +151,8 @@ class StudyCurriculumServiceTest {
         }
 
         @Test
-        @DisplayName("기존 스터디 혜택 삭제")
-        void deleteStudyBenefit_Success() {
+        @DisplayName("기존 스터디 커리큘럼 삭제")
+        void deleteStudyCurriculum_Success() {
             // Given
             Long studyId = 1L;
             Study study = Study.builder().id(studyId).build();
