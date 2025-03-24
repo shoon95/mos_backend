@@ -1,8 +1,8 @@
 package com.mos.backend.attendances.entity;
 
 import com.mos.backend.common.entity.BaseTimeEntity;
-import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studymembers.entity.StudyMember;
+import com.mos.backend.studyschedules.entity.StudySchedule;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,7 +23,7 @@ public class Attendance extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_id", nullable = false)
-    private Study study;
+    private StudySchedule studySchedule;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_member_id", nullable = false)
