@@ -25,8 +25,8 @@ public class StudyScheduleRes {
                 studySchedule.getId(),
                 studySchedule.getTitle(),
                 studySchedule.getDescription(),
-                studySchedule.getStartTime(),
-                studySchedule.getEndTime(),
+                studySchedule.getStartDateTime(),
+                studySchedule.getEndDateTime(),
                 studySchedule.getStudy().getId(),
                 studyCurriculumList
         );

@@ -1,7 +1,13 @@
 package com.mos.backend.attendances.entity;
 
+import com.mos.backend.attendances.entity.exception.AttendanceErrorCode;
+import com.mos.backend.common.exception.MosException;
+import com.mos.backend.studies.entity.ProgressStatus;
+import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
 
 @Getter
 @RequiredArgsConstructor
@@ -13,4 +19,10 @@ public enum AttendanceStatus {
     EARLY_LEAVE("조퇴");
 
     private final String description;
+
+    public static AttendanceStatus fromDescription(String description) {
+        return Arrays.stream(AttendanceStatus.values())
+                .filter(a -> a.description.equals(description))
+                .findFirst().orElseThrow(() -> new MosException(AttendanceErrorCode.INVALID_ATTENDANCE_STATUS));
+    }
 }
