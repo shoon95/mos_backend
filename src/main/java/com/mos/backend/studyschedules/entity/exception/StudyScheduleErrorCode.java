@@ -1,4 +1,4 @@
-package com.mos.backend.studymembers.entity.exception;
+package com.mos.backend.studyschedules.entity.exception;
 
 import com.mos.backend.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -8,14 +8,13 @@ import org.springframework.http.HttpStatus;
 import java.util.Locale;
 
 @RequiredArgsConstructor
-public enum StudyMemberErrorCode implements ErrorCode {
-    STUDY_MEMBER_FULL(HttpStatus.BAD_REQUEST, "study-member.full"),
-    STUDY_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "study-member.not-found")
+public enum StudyScheduleErrorCode implements ErrorCode {
+    STUDY_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "study-schedule.not-found"),
+    STUDY_SCHEDULE_COMPLETED(HttpStatus.BAD_REQUEST, "study-schedule.completed"),
     ;
 
     private final HttpStatus httpStatus;
     private final String messageKey;
-
 
     @Override
     public HttpStatus getStatus() {

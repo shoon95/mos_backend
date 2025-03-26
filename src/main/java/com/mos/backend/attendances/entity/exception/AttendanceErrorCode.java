@@ -1,4 +1,4 @@
-package com.mos.backend.studymembers.entity.exception;
+package com.mos.backend.attendances.entity.exception;
 
 import com.mos.backend.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -8,14 +8,16 @@ import org.springframework.http.HttpStatus;
 import java.util.Locale;
 
 @RequiredArgsConstructor
-public enum StudyMemberErrorCode implements ErrorCode {
-    STUDY_MEMBER_FULL(HttpStatus.BAD_REQUEST, "study-member.full"),
-    STUDY_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "study-member.not-found")
+public enum AttendanceErrorCode implements ErrorCode {
+    ATTENDANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "attendance.not-found"),
+    ATTENDANCE_ALREADY_EXISTS(HttpStatus.CONFLICT, "attendance.already-exist"),
+    INVALID_ATTENDANCE_STATUS(HttpStatus.BAD_REQUEST, "attendance.invalid-status"),
+    UNRELATED_ATTENDANCE(HttpStatus.BAD_REQUEST, "attendance.unrelated"),
+    NOT_PRESENT_TIME(HttpStatus.BAD_REQUEST, "attendance.not-present-time"),
     ;
 
     private final HttpStatus httpStatus;
     private final String messageKey;
-
 
     @Override
     public HttpStatus getStatus() {
