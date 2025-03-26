@@ -1,5 +1,8 @@
 package com.mos.backend.common.infrastructure;
 
+import com.mos.backend.attendances.entity.Attendance;
+import com.mos.backend.attendances.entity.exception.AttendanceErrorCode;
+import com.mos.backend.attendances.infrastructure.AttendanceRepository;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
@@ -38,6 +41,7 @@ public class EntityFacade {
     private final StudyCurriculumRepository studyCurriculumRepository;
     private final StudyScheduleRepository studyScheduleRepository;
     private final UserScheduleRepository userScheduleRepository;
+    private final AttendanceRepository attendanceRepository;
 
     public User getUser(Long userId) {
         return userRepository.findById(userId)
@@ -77,5 +81,10 @@ public class EntityFacade {
     public StudySchedule getStudySchedule(Long studyScheduleId) {
         return studyScheduleRepository.findById(studyScheduleId)
                 .orElseThrow(() -> new MosException(StudyQuestionErrorCode.STUDY_QUESTION_NOT_FOUND));
+    }
+
+    public Attendance getAttendance(Long attendanceId) {
+        return attendanceRepository.findById(attendanceId)
+                .orElseThrow(() -> new MosException(AttendanceErrorCode.ATTENDANCE_NOT_FOUND));
     }
 }

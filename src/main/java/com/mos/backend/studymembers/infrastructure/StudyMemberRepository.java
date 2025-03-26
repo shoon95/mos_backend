@@ -5,6 +5,7 @@ import com.mos.backend.studymembers.entity.ParticipationStatus;
 import com.mos.backend.studymembers.entity.StudyMember;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface StudyMemberRepository {
 
@@ -12,4 +13,10 @@ public interface StudyMemberRepository {
     long countByStudy(Study study);
 
     int countByStudyAndStatusIn(Study study, List<ParticipationStatus> statusList);
+
+    Optional<StudyMember> findById(Long studyMemberId);
+
+    List<StudyMember> findAllByStudyId(Long studyId);
+
+    Optional<StudyMember> findByUserIdAndStudyId(Long userId, Long studyId);
 }
