@@ -7,6 +7,7 @@ import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
 import com.mos.backend.studymembers.entity.ParticipationStatus;
 import com.mos.backend.studymembers.entity.StudyMember;
+import com.mos.backend.studymembers.entity.StudyMemberRoleType;
 import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.users.entity.User;
@@ -44,10 +45,65 @@ class StudyMemberServiceTest {
     private StudyMemberService studyMemberService;
 
     @Nested
-    @DisplayName("스터디 멤버 생성 성공 시나리오")
+    @DisplayName("스터디 리더 생성 성공 시나리오")
+    class CreateLeaderSuccessScenarios {
+        @Test
+        @DisplayName("스터디 리더 생성 성공")
+        void createStudyLeader_Success() {
+            // Given
+            Long studyId = 1L;
+            Long userId = 1L;
+            Study mockStudy = mock(Study.class);
+            User mockUser = mock(User.class);
+
+            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+            when(entityFacade.getUser(userId)).thenReturn(mockUser);
+            when(studyMemberRepository.existsByStudyAndRoleType(mockStudy, StudyMemberRoleType.LEADER)).thenReturn(false);
+
+            // When
+            studyMemberService.createStudyLeader(studyId, userId);
+
+            // Then
+            verify(entityFacade).getStudy(studyId);
+            verify(entityFacade).getUser(userId);
+            verify(studyMemberRepository).save(any(StudyMember.class));
+        }
+    }
+
+    @Nested
+    @DisplayName("스터디 리더 생성 실패 시나리오")
+    class CreateLeaderFailureScenarios {
+        @Test
+        @DisplayName("스터디 리더가 이미 존재할 때 MosException 발생")
+        void createStudyLeader_StudyLeaderAlreadyExist() {
+            // Given
+            Long studyId = 1L;
+            Long userId = 1L;
+            Study mockStudy = mock(Study.class);
+            User mockUser = mock(User.class);
+
+            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+            when(entityFacade.getUser(userId)).thenReturn(mockUser);
+            when(studyMemberRepository.existsByStudyAndRoleType(mockStudy, StudyMemberRoleType.LEADER)).thenReturn(true);
+
+            // When
+            MosException exception = assertThrows(MosException.class, () -> {
+                studyMemberService.createStudyLeader(studyId, userId);
+            });
+
+            // Then
+            assertEquals(StudyMemberErrorCode.STUDY_LEADER_ALREADY_EXIST, exception.getErrorCode());
+            verify(entityFacade).getStudy(studyId);
+            verify(entityFacade).getUser(userId);
+            verify(studyMemberRepository, never()).save(any(StudyMember.class));
+        }
+    }
+
+    @Nested
+    @DisplayName("스터디원 생성 성공 시나리오")
     class CreateSuccessScenarios {
         @Test
-        @DisplayName("정상적인 스터디 멤버 생성")
+        @DisplayName("스터디원 생성 성공")
         void createStudyMember_Success() {
             // Given
             Long studyId = 1L;
@@ -62,7 +118,7 @@ class StudyMemberServiceTest {
             when(mockStudy.getMaxStudyMemberCount()).thenReturn(5);
 
             // When
-            studyMemberService.create(studyId, userId);
+            studyMemberService.createStudyMember(studyId, userId);
 
             // Then
             verify(entityFacade, times(2)).getStudy(studyId);
@@ -72,7 +128,7 @@ class StudyMemberServiceTest {
     }
 
     @Nested
-    @DisplayName("스터디 멤버 생성 실패 시나리오")
+    @DisplayName("스터디원 생성 실패 시나리오")
     class CreateFailureScenarios {
         @Test
         @DisplayName("스터디가 존재하지 않을 때 MosException 발생")
@@ -85,7 +141,7 @@ class StudyMemberServiceTest {
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyMemberService.create(studyId, userId);
+                studyMemberService.createStudyLeader(studyId, userId);
             });
 
             assertEquals(StudyErrorCode.STUDY_NOT_FOUND, exception.getErrorCode());
@@ -107,7 +163,7 @@ class StudyMemberServiceTest {
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyMemberService.create(studyId, userId);
+                studyMemberService.createStudyLeader(studyId, userId);
             });
 
             assertEquals(UserErrorCode.USER_NOT_FOUND, exception.getErrorCode());
@@ -132,7 +188,7 @@ class StudyMemberServiceTest {
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyMemberService.create(studyId, userId);
+                studyMemberService.createStudyMember(studyId, userId);
             });
 
             assertEquals(StudyErrorCode.STUDY_NOT_FOUND, exception.getErrorCode());
@@ -158,7 +214,7 @@ class StudyMemberServiceTest {
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyMemberService.create(studyId, userId);
+                studyMemberService.createStudyMember(studyId, userId);
             });
 
             assertEquals(StudyMemberErrorCode.STUDY_MEMBER_FULL, exception.getErrorCode());

@@ -10,8 +10,10 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public enum StudyMemberErrorCode implements ErrorCode {
     STUDY_MEMBER_FULL(HttpStatus.BAD_REQUEST, "study-member.full"),
-    STUDY_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "study-member.not-found")
+    STUDY_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "study-member.not-found"),
+    STUDY_LEADER_ALREADY_EXIST(HttpStatus.CONFLICT, "study-member.leader-already-exist")
     ;
+
 
     private final HttpStatus httpStatus;
     private final String messageKey;

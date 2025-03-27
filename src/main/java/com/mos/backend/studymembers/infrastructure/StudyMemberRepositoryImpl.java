@@ -3,6 +3,7 @@ package com.mos.backend.studymembers.infrastructure;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studymembers.entity.ParticipationStatus;
 import com.mos.backend.studymembers.entity.StudyMember;
+import com.mos.backend.studymembers.entity.StudyMemberRoleType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -38,5 +39,10 @@ public class StudyMemberRepositoryImpl implements StudyMemberRepository{
     @Override
     public Optional<StudyMember> findByUserIdAndStudyId(Long userId, Long studyId) {
         return studyMemberJpaRepository.findByUserIdAndStudyId(userId, studyId);
+    }
+
+    @Override
+    public boolean existsByStudyAndRoleType(Study study, StudyMemberRoleType roleType) {
+        return studyMemberJpaRepository.existsByStudyAndRoleType(study, roleType);
     }
 }

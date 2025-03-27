@@ -148,7 +148,7 @@ public class StudyJoinService {
     }
 
     private void handleApprove(StudyJoin studyJoin, Study study) {
-        studyMemberService.create(study.getId(), studyJoin.getUser().getId());
+        studyMemberService.createStudyMember(study.getId(), studyJoin.getUser().getId());
         studyJoin.approve();
     }
 }
