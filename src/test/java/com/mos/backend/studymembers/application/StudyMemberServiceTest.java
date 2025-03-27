@@ -1,10 +1,13 @@
 package com.mos.backend.studymembers.application;
 
+import com.mos.backend.attendances.entity.Attendance;
+import com.mos.backend.attendances.infrastructure.AttendanceRepository;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
+import com.mos.backend.studymembers.application.res.StudyMemberRes;
 import com.mos.backend.studymembers.entity.ParticipationStatus;
 import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.studymembers.entity.StudyMemberRoleType;
@@ -21,8 +24,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,6 +44,8 @@ class StudyMemberServiceTest {
     private UserRepository userRepository;
     @Mock
     private StudyMemberRepository studyMemberRepository;
+    @Mock
+    private AttendanceRepository attendanceRepository;
     @Mock
     private EntityFacade entityFacade;
     @InjectMocks
@@ -221,6 +228,151 @@ class StudyMemberServiceTest {
             verify(entityFacade, times(2)).getStudy(studyId);
             verify(entityFacade).getUser(userId);
             verify(studyMemberRepository, never()).save(any(StudyMember.class));
+        }
+    }
+
+    @Nested
+    @DisplayName("스터디원 조회 성공 시나리오")
+    class GetStudyMembersSuccessScenarios {
+        @Test
+        @DisplayName("스터디원 조회 성공")
+        void getStudyMembers_Success() {
+            // Given
+            Long userId = 1L;
+            Long studyId = 1L;
+            Long studyMemberId = 1L;
+            User user = mock(User.class);
+            Study study = mock(Study.class);
+            StudyMember studyMember = mock(StudyMember.class);
+            List<StudyMember> studyMembers = List.of(studyMember);
+            Attendance attendance = mock(Attendance.class);
+            List<Attendance> attendances = List.of(attendance);
+
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(entityFacade.getStudy(studyId)).thenReturn(study);
+            when(study.getId()).thenReturn(studyId);
+            when(studyMember.getId()).thenReturn(studyMemberId);
+            when(studyMemberRepository.findAllByStudyId(studyId)).thenReturn(studyMembers);
+            when(attendanceRepository.findAllByStudyMemberId(studyMemberId)).thenReturn(attendances);
+            when(attendance.getModifiedAt()).thenReturn(LocalDateTime.now());
+            when(studyMember.getUser()).thenReturn(user);
+            when(user.getId()).thenReturn(userId);
+            when(studyMember.getRoleType()).thenReturn(StudyMemberRoleType.LEADER);
+
+            // When
+            studyMemberService.getStudyMembers(userId, studyId);
+
+            // Then
+            verify(entityFacade).getUser(userId);
+            verify(entityFacade).getStudy(studyId);
+            verify(studyMemberRepository).findAllByStudyId(studyId);
+            verify(attendanceRepository).findAllByStudyMemberId(studyMemberId);
+        }
+    }
+
+    @Nested
+    @DisplayName("스터디장 위임 성공 시나리오")
+    class DelegateLeaderSuccessScenarios {
+        @Test
+        @DisplayName("스터디장 위임 성공")
+        void delegateLeader_Success() {
+            // Given
+            Long userId = 1L;
+            Long studyId = 1L;
+            Long studyMemberId = 1L;
+            User user = mock(User.class);
+            Study study = mock(Study.class);
+            StudyMember studyLeader = mock(StudyMember.class);
+            StudyMember studyMember = mock(StudyMember.class);
+
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(entityFacade.getStudy(studyId)).thenReturn(study);
+            when(entityFacade.getStudyMember(studyMemberId)).thenReturn(studyMember);
+            when(user.getId()).thenReturn(userId);
+            when(study.getId()).thenReturn(studyId);
+            when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(studyLeader));
+            when(studyMember.getStudy()).thenReturn(study);
+            when(study.isRelational(studyId)).thenReturn(true);
+            when(studyLeader.isLeader()).thenReturn(true);
+
+            // When
+            studyMemberService.delegateLeader(userId, studyId, studyMemberId);
+
+            // Then
+            verify(entityFacade).getUser(userId);
+            verify(entityFacade).getStudy(studyId);
+            verify(entityFacade).getStudyMember(studyMemberId);
+            verify(studyMemberRepository).findByUserIdAndStudyId(userId, studyId);
+            verify(studyLeader).changeToMember();
+            verify(studyMember).changeToLeader();
+        }
+    }
+
+    @Nested
+    @DisplayName("스터디장 위임 실패 시나리오")
+    class DelegateLeaderFailureScenarios {
+        @Test
+        @DisplayName("스터디가 연관되어 있지 않을 때 MosException 발생")
+        void delegateLeader_UnrelatedStudy() {
+            // Given
+            Long userId = 1L;
+            Long studyId = 1L;
+            Long studyMemberId = 1L;
+            User user = mock(User.class);
+            Study study = mock(Study.class);
+            StudyMember studyMember = mock(StudyMember.class);
+
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(entityFacade.getStudy(studyId)).thenReturn(study);
+            when(entityFacade.getStudyMember(studyMemberId)).thenReturn(studyMember);
+            when(user.getId()).thenReturn(userId);
+            when(study.getId()).thenReturn(studyId);
+            when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(studyMember));
+            when(studyMember.getStudy()).thenReturn(study);
+            when(study.isRelational(studyId)).thenReturn(false);
+
+            // When
+            MosException exception = assertThrows(MosException.class, () -> {
+                studyMemberService.delegateLeader(userId, studyId, studyMemberId);
+            });
+
+            // Then
+            assertEquals(StudyErrorCode.UNRELATED_STUDY, exception.getErrorCode());
+            verify(studyMember, never()).changeToMember();
+            verify(studyMember, never()).changeToLeader();
+        }
+
+        @Test
+        @DisplayName("스터디장이 아닐 때 MosException 발생")
+        void delegateLeader_NotLeader() {
+            // Given
+            Long userId = 1L;
+            Long studyId = 1L;
+            Long studyMemberId = 1L;
+            User user = mock(User.class);
+            Study study = mock(Study.class);
+            StudyMember studyMember = mock(StudyMember.class);
+            StudyMember studyLeader = mock(StudyMember.class);
+
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(entityFacade.getStudy(studyId)).thenReturn(study);
+            when(entityFacade.getStudyMember(studyMemberId)).thenReturn(studyMember);
+            when(user.getId()).thenReturn(userId);
+            when(study.getId()).thenReturn(studyId);
+            when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(studyLeader));
+            when(studyMember.getStudy()).thenReturn(study);
+            when(study.isRelational(studyId)).thenReturn(true);
+            when(studyLeader.isLeader()).thenReturn(false);
+
+            // When
+            MosException exception = assertThrows(MosException.class, () -> {
+                studyMemberService.delegateLeader(userId, studyId, studyMemberId);
+            });
+
+            // Then
+            assertEquals(StudyMemberErrorCode.ONLY_LEADER_CAN_DELEGATE, exception.getErrorCode());
+            verify(studyLeader, never()).changeToMember();
+            verify(studyMember, never()).changeToLeader();
         }
     }
 }
