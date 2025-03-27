@@ -11,8 +11,10 @@ import java.util.Locale;
 public enum StudyMemberErrorCode implements ErrorCode {
     STUDY_MEMBER_FULL(HttpStatus.BAD_REQUEST, "study-member.full"),
     STUDY_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "study-member.not-found"),
-    STUDY_LEADER_ALREADY_EXIST(HttpStatus.CONFLICT, "study-member.leader-already-exist")
-    ;
+    STUDY_LEADER_ALREADY_EXIST(HttpStatus.CONFLICT, "study-member.leader-already-exist"),
+    STUDY_LEADER_WITHDRAW_FORBIDDEN(HttpStatus.FORBIDDEN, "study-member.leader-withdraw-forbidden"),
+    INVALID_STUDY_MEMBER_ROLE_TYPE(HttpStatus.BAD_REQUEST, "study-member.invalid-role-type"),
+    ONLY_LEADER_CAN_DELEGATE(HttpStatus.FORBIDDEN, "study-member.only-leader-can-delegate");
 
 
     private final HttpStatus httpStatus;

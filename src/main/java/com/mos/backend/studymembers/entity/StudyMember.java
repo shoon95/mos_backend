@@ -62,4 +62,16 @@ public class StudyMember extends BaseAuditableEntity {
     public void withDrawStudy() {
         status = ParticipationStatus.WITHDRAWN;
     }
+
+    public boolean isLeader() {
+        return roleType == StudyMemberRoleType.LEADER;
+    }
+
+    public void changeToMember() {
+        roleType = StudyMemberRoleType.MEMBER;
+    }
+
+    public void changeToLeader() {
+        roleType = StudyMemberRoleType.LEADER;
+    }
 }

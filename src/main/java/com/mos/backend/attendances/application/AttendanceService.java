@@ -159,7 +159,7 @@ public class AttendanceService {
             throw new MosException(AttendanceErrorCode.UNRELATED_ATTENDANCE);
     }
 
-    private static double calculateAttendanceRate(List<Attendance> attendances) {
+    public static double calculateAttendanceRate(List<Attendance> attendances) {
         if (attendances.isEmpty()) {
             return 0.0;
         }

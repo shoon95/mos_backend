@@ -21,4 +21,5 @@ public interface StudyMemberRepository {
     Optional<StudyMember> findByUserIdAndStudyId(Long userId, Long studyId);
 
     boolean existsByStudyAndRoleType(Study study, StudyMemberRoleType roleType);
+
 }
