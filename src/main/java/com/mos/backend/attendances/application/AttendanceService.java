@@ -176,7 +176,7 @@ public class AttendanceService {
     }
 
     private static void validateRelation(Study study, StudySchedule studySchedule) {
-        if (!study.isRelational(studySchedule.getStudy().getId()))
+        if (!study.isRelated(studySchedule.getStudy().getId()))
             throw new MosException(StudyErrorCode.UNRELATED_STUDY);
     }
 

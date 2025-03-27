@@ -59,7 +59,7 @@ class StudyScheduleServiceTest {
             when(req.getCurriculumIds()).thenReturn(curriculumIds);
             when(mockCurriculum.getStudy()).thenReturn(mockStudy);
             when(mockStudy.getId()).thenReturn(studyId);
-            when(mockStudy.isRelational(studyId)).thenReturn(true);
+            when(mockStudy.isRelated(studyId)).thenReturn(true);
 
             // When
             studyScheduleService.createStudySchedule(userId, studyId, req);
@@ -96,7 +96,7 @@ class StudyScheduleServiceTest {
             when(req.getCurriculumIds()).thenReturn(curriculumIds);
             when(mockCurriculum.getStudy()).thenReturn(mockStudy);
             when(mockStudy.getId()).thenReturn(studyId);
-            when(mockStudy.isRelational(studyId)).thenReturn(false);
+            when(mockStudy.isRelated(studyId)).thenReturn(false);
 
             // When & Then
             MosException exception = assertThrows(MosException.class,
@@ -190,7 +190,7 @@ class StudyScheduleServiceTest {
             when(entityFacade.getStudySchedule(studyScheduleId)).thenReturn(studySchedule);
             when(studySchedule.getStudy()).thenReturn(study);
             when(study.getId()).thenReturn(studyId);
-            when(study.isRelational(studyId)).thenReturn(true);
+            when(study.isRelated(studyId)).thenReturn(true);
 
             // When
             studyScheduleService.updateStudySchedule(userId, studyId, studyScheduleId, mock(StudyScheduleUpdateReq.class));
@@ -221,7 +221,7 @@ class StudyScheduleServiceTest {
             when(entityFacade.getStudySchedule(studyScheduleId)).thenReturn(studySchedule);
             when(studySchedule.getStudy()).thenReturn(study);
             when(study.getId()).thenReturn(studyId);
-            when(study.isRelational(studyId)).thenReturn(false);
+            when(study.isRelated(studyId)).thenReturn(false);
 
             // When & Then
             MosException exception = assertThrows(MosException.class,
@@ -254,7 +254,7 @@ class StudyScheduleServiceTest {
             when(entityFacade.getStudySchedule(studyScheduleId)).thenReturn(studySchedule);
             when(studySchedule.getStudy()).thenReturn(study);
             when(study.getId()).thenReturn(studyId);
-            when(study.isRelational(studyId)).thenReturn(true);
+            when(study.isRelated(studyId)).thenReturn(true);
 
             // When
             studyScheduleService.deleteStudySchedule(userId, studyId, studyScheduleId);
@@ -285,7 +285,7 @@ class StudyScheduleServiceTest {
             when(entityFacade.getStudySchedule(studyScheduleId)).thenReturn(studySchedule);
             when(studySchedule.getStudy()).thenReturn(study);
             when(study.getId()).thenReturn(studyId);
-            when(study.isRelational(studyId)).thenReturn(false);
+            when(study.isRelated(studyId)).thenReturn(false);
 
             // When & Then
             MosException exception = assertThrows(MosException.class,

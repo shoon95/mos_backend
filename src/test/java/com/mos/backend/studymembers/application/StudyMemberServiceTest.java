@@ -7,7 +7,6 @@ import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
-import com.mos.backend.studymembers.application.res.StudyMemberRes;
 import com.mos.backend.studymembers.entity.ParticipationStatus;
 import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.studymembers.entity.StudyMemberRoleType;
@@ -292,7 +291,7 @@ class StudyMemberServiceTest {
             when(study.getId()).thenReturn(studyId);
             when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(studyLeader));
             when(studyMember.getStudy()).thenReturn(study);
-            when(study.isRelational(studyId)).thenReturn(true);
+            when(study.isRelated(studyId)).thenReturn(true);
             when(studyLeader.isLeader()).thenReturn(true);
 
             // When
@@ -329,7 +328,7 @@ class StudyMemberServiceTest {
             when(study.getId()).thenReturn(studyId);
             when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(studyMember));
             when(studyMember.getStudy()).thenReturn(study);
-            when(study.isRelational(studyId)).thenReturn(false);
+            when(study.isRelated(studyId)).thenReturn(false);
 
             // When
             MosException exception = assertThrows(MosException.class, () -> {
@@ -361,7 +360,7 @@ class StudyMemberServiceTest {
             when(study.getId()).thenReturn(studyId);
             when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(studyLeader));
             when(studyMember.getStudy()).thenReturn(study);
-            when(study.isRelational(studyId)).thenReturn(true);
+            when(study.isRelated(studyId)).thenReturn(true);
             when(studyLeader.isLeader()).thenReturn(false);
 
             // When

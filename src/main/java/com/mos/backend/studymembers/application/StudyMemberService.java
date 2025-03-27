@@ -84,7 +84,7 @@ public class StudyMemberService {
         StudyMember expectedStudyLeader = studyMemberRepository.findByUserIdAndStudyId(user.getId(), study.getId())
                 .orElseThrow(() -> new MosException(StudyMemberErrorCode.STUDY_MEMBER_NOT_FOUND));
 
-        if (!study.isRelational(studyMember.getStudy().getId()))
+        if (!study.isRelated(studyMember.getStudy().getId()))
             throw new MosException(StudyErrorCode.UNRELATED_STUDY);
 
         if (!expectedStudyLeader.isLeader())
@@ -101,7 +101,7 @@ public class StudyMemberService {
         StudyMember studyMember = studyMemberRepository.findByUserIdAndStudyId(userId, studyId)
                 .orElseThrow(() -> new MosException(StudyMemberErrorCode.STUDY_MEMBER_NOT_FOUND));
 
-        if (study.isRelational(studyMember.getStudy().getId()))
+        if (study.isRelated(studyMember.getStudy().getId()))
             throw new MosException(StudyErrorCode.UNRELATED_STUDY);
 
         if (studyMember.isLeader())
