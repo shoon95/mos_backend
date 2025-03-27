@@ -15,7 +15,6 @@ public class StudyMemberRepositoryImpl implements StudyMemberRepository{
 
     private final StudyMemberJpaRepository studyMemberJpaRepository;
 
-
     @Override
     public StudyMember save(StudyMember studyMember) {
         return studyMemberJpaRepository.save(studyMember);
@@ -39,10 +38,5 @@ public class StudyMemberRepositoryImpl implements StudyMemberRepository{
     @Override
     public Optional<StudyMember> findByUserIdAndStudyId(Long userId, Long studyId) {
         return studyMemberJpaRepository.findByUserIdAndStudyId(userId, studyId);
-    }
-
-    @Override
-    public long countByStudy(Study study) {
-        return studyMemberJpaRepository.countByStudy(study);
     }
 }

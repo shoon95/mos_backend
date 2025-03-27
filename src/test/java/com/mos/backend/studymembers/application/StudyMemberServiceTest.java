@@ -5,7 +5,9 @@ import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
+import com.mos.backend.studymembers.entity.ParticipationStatus;
 import com.mos.backend.studymembers.entity.StudyMember;
+import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.users.entity.exception.UserErrorCode;
@@ -17,6 +19,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -49,15 +54,18 @@ class StudyMemberServiceTest {
             Long userId = 1L;
             Study mockStudy = mock(Study.class);
             User mockUser = mock(User.class);
+            List<ParticipationStatus> currentParticipationStatusList = Arrays.asList(ParticipationStatus.ACTIVATED, ParticipationStatus.COMPLETED);
 
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
             when(entityFacade.getUser(userId)).thenReturn(mockUser);
+            when(studyMemberRepository.countByStudyAndStatusIn(mockStudy, currentParticipationStatusList)).thenReturn(1);
+            when(mockStudy.getMaxStudyMemberCount()).thenReturn(5);
 
             // When
             studyMemberService.create(studyId, userId);
 
             // Then
-            verify(entityFacade).getStudy(studyId);
+            verify(entityFacade, times(2)).getStudy(studyId);
             verify(entityFacade).getUser(userId);
             verify(studyMemberRepository).save(any(StudyMember.class));
         }
@@ -104,6 +112,57 @@ class StudyMemberServiceTest {
 
             assertEquals(UserErrorCode.USER_NOT_FOUND, exception.getErrorCode());
             verify(entityFacade).getStudy(studyId);
+            verify(entityFacade).getUser(userId);
+            verify(studyMemberRepository, never()).save(any(StudyMember.class));
+        }
+
+        @Test
+        @DisplayName("스터디 멤버 수가 0일 때 MosException 발생")
+        void createStudyMember_StudyMemberCountZero() {
+            // Given
+            Long studyId = 1L;
+            Long userId = 1L;
+            Study mockStudy = mock(Study.class);
+            User mockUser = mock(User.class);
+            List<ParticipationStatus> currentParticipationStatusList = Arrays.asList(ParticipationStatus.ACTIVATED, ParticipationStatus.COMPLETED);
+
+            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+            when(entityFacade.getUser(userId)).thenReturn(mockUser);
+            when(studyMemberRepository.countByStudyAndStatusIn(mockStudy, currentParticipationStatusList)).thenReturn(0);
+
+            // When & Then
+            MosException exception = assertThrows(MosException.class, () -> {
+                studyMemberService.create(studyId, userId);
+            });
+
+            assertEquals(StudyErrorCode.STUDY_NOT_FOUND, exception.getErrorCode());
+            verify(entityFacade, times(2)).getStudy(studyId);
+            verify(entityFacade).getUser(userId);
+            verify(studyMemberRepository, never()).save(any(StudyMember.class));
+        }
+
+        @Test
+        @DisplayName("스터디 멤버 수가 최대 스터디 멤버 수 이상일 때 MosException 발생")
+        void createStudyMember_StudyMemberCountOver() {
+            // Given
+            Long studyId = 1L;
+            Long userId = 1L;
+            Study mockStudy = mock(Study.class);
+            User mockUser = mock(User.class);
+            List<ParticipationStatus> currentParticipationStatusList = Arrays.asList(ParticipationStatus.ACTIVATED, ParticipationStatus.COMPLETED);
+
+            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+            when(entityFacade.getUser(userId)).thenReturn(mockUser);
+            when(studyMemberRepository.countByStudyAndStatusIn(mockStudy, currentParticipationStatusList)).thenReturn(5);
+            when(mockStudy.getMaxStudyMemberCount()).thenReturn(5);
+
+            // When & Then
+            MosException exception = assertThrows(MosException.class, () -> {
+                studyMemberService.create(studyId, userId);
+            });
+
+            assertEquals(StudyMemberErrorCode.STUDY_MEMBER_FULL, exception.getErrorCode());
+            verify(entityFacade, times(2)).getStudy(studyId);
             verify(entityFacade).getUser(userId);
             verify(studyMemberRepository, never()).save(any(StudyMember.class));
         }

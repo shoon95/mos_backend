@@ -10,7 +10,6 @@ import java.util.Optional;
 public interface StudyMemberRepository {
 
     StudyMember save(StudyMember studyMember);
-    long countByStudy(Study study);
 
     int countByStudyAndStatusIn(Study study, List<ParticipationStatus> statusList);
 

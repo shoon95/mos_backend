@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface StudyMemberJpaRepository extends JpaRepository<StudyMember, Long> {
-    long countByStudy(Study study);
-
     int countByStudyAndStatusIn(Study study, List<ParticipationStatus> statusList);
 
     List<StudyMember> findAllByStudyId(Long studyId);
