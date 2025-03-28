@@ -149,7 +149,7 @@ public class StudyService {
         studyBenefitService.createOrUpdateOrDelete(savedStudyId, requestDto.getBenefits());
         studyQuestionService.createOrUpdateOrDelete(savedStudyId, requestDto.getApplicationQuestions());
         studyCurriculumService.createOrUpdateOrDelete(savedStudyId, requestDto.getCurriculums());
-        studyMemberService.create(savedStudyId, userId);
+        studyMemberService.createStudyLeader(savedStudyId, userId);
         studyRequirementService.createOrUpdateOrDelete(savedStudyId, requestDto.getRequirements());
     }
 }

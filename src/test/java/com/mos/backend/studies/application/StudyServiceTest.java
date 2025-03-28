@@ -147,7 +147,7 @@ class StudyServiceTest {
             verify(studyQuestionService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getApplicationQuestions()));
             verify(studyCurriculumService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getCurriculums()));
             verify(studyRequirementService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getRequirements()));
-            verify(studyMemberService).create(eq(studyId), eq(testUserId));
+            verify(studyMemberService).createStudyLeader(eq(studyId), eq(testUserId));
         }
     }
 

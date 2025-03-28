@@ -102,7 +102,7 @@ public class StudyScheduleService {
     }
 
     public void validateRelationalStudy(Study study, Long studyId) {
-        if (!study.isRelational(studyId))
+        if (!study.isRelated(studyId))
             throw new MosException(StudyErrorCode.UNRELATED_STUDY);
     }
 }
