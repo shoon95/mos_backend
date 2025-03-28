@@ -33,11 +33,25 @@ public class StudyMember extends BaseAuditableEntity {
     @Column(nullable = false, length = 20)
     private ParticipationStatus status = ParticipationStatus.ACTIVATED;
 
-    public static StudyMember create(Study study, User user) {
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StudyMemberRoleType roleType;
+
+    public static StudyMember createStudyLeader(Study study, User user) {
         StudyMember studyMember = new StudyMember();
         studyMember.study = study;
         studyMember.user = user;
         studyMember.status = ParticipationStatus.ACTIVATED;
+        studyMember.roleType = StudyMemberRoleType.LEADER;
+        return studyMember;
+    }
+
+    public static StudyMember createStudyMember(Study study, User user) {
+        StudyMember studyMember = new StudyMember();
+        studyMember.study = study;
+        studyMember.user = user;
+        studyMember.status = ParticipationStatus.ACTIVATED;
+        studyMember.roleType = StudyMemberRoleType.MEMBER;
         return studyMember;
     }
 
@@ -47,5 +61,17 @@ public class StudyMember extends BaseAuditableEntity {
 
     public void withDrawStudy() {
         status = ParticipationStatus.WITHDRAWN;
+    }
+
+    public boolean isLeader() {
+        return roleType == StudyMemberRoleType.LEADER;
+    }
+
+    public void changeToMember() {
+        roleType = StudyMemberRoleType.MEMBER;
+    }
+
+    public void changeToLeader() {
+        roleType = StudyMemberRoleType.LEADER;
     }
 }

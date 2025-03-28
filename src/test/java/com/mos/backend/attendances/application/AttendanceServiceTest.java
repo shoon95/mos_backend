@@ -67,7 +67,7 @@ class AttendanceServiceTest {
             when(study.getId()).thenReturn(studyId);
             when(user.getId()).thenReturn(userId);
             when(studySchedule.getStudy()).thenReturn(study);
-            when(study.isRelational(studyId)).thenReturn(true);
+            when(study.isRelated(studyId)).thenReturn(true);
             when(studySchedule.isPresentTime()).thenReturn(true);
 
             // When
@@ -100,7 +100,7 @@ class AttendanceServiceTest {
             when(study.getId()).thenReturn(studyId);
             when(user.getId()).thenReturn(userId);
             when(studySchedule.getStudy()).thenReturn(study);
-            when(study.isRelational(studyId)).thenReturn(true);
+            when(study.isRelated(studyId)).thenReturn(true);
             when(studySchedule.isPresentTime()).thenReturn(false);
 
             // When
@@ -136,7 +136,7 @@ class AttendanceServiceTest {
             when(study.getId()).thenReturn(studyId);
             when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(mock(StudyMember.class)));
             when(studySchedule.getStudy()).thenReturn(study);
-            when(study.isRelational(studyId)).thenReturn(true);
+            when(study.isRelated(studyId)).thenReturn(true);
             when(studySchedule.isBeforePresentTime()).thenReturn(true);
 
             // When
@@ -162,7 +162,7 @@ class AttendanceServiceTest {
             when(entityFacade.getStudySchedule(studyScheduleId)).thenReturn(studySchedule);
             when(studySchedule.getStudy()).thenReturn(study);
             when(study.getId()).thenReturn(studyId);
-            when(study.isRelational(studyId)).thenReturn(true);
+            when(study.isRelated(studyId)).thenReturn(true);
             when(studySchedule.isCompleted()).thenReturn(true);
 
             // When
@@ -192,7 +192,7 @@ class AttendanceServiceTest {
             when(study.getId()).thenReturn(studyId);
             when(user.getId()).thenReturn(userId);
             when(studySchedule.getStudy()).thenReturn(study);
-            when(study.isRelational(studyId)).thenReturn(true);
+            when(study.isRelated(studyId)).thenReturn(true);
             when(attendanceRepository.findByStudyScheduleAndStudyMember(studySchedule, studyMember)).thenReturn(OptionalAttendance);
 
             // When
@@ -228,7 +228,7 @@ class AttendanceServiceTest {
             when(study.getId()).thenReturn(studyId);
             when(user.getId()).thenReturn(userId);
             when(studySchedule.getStudy()).thenReturn(study);
-            when(study.isRelational(studyId)).thenReturn(true);
+            when(study.isRelated(studyId)).thenReturn(true);
             when(attendanceRepository.findByStudyScheduleAndStudyMember(studySchedule, studyMember)).thenReturn(optionalAttendance);
 
             // When
@@ -268,7 +268,7 @@ class AttendanceServiceTest {
             when(study.getId()).thenReturn(studyId);
             when(user.getId()).thenReturn(userId);
             when(studySchedule.getStudy()).thenReturn(study);
-            when(study.isRelational(studyId)).thenReturn(true);
+            when(study.isRelated(studyId)).thenReturn(true);
             when(studySchedule.isCompleted()).thenReturn(false);
             when(attendanceRepository.findByStudyScheduleAndStudyMember(studySchedule, studyMember)).thenReturn(optionalAttendance);
 
@@ -305,7 +305,7 @@ class AttendanceServiceTest {
             when(entityFacade.getStudySchedule(studyScheduleId)).thenReturn(studySchedule);
             when(study.getId()).thenReturn(studyId);
             when(studySchedule.getStudy()).thenReturn(study);
-            when(study.isRelational(studyId)).thenReturn(true);
+            when(study.isRelated(studyId)).thenReturn(true);
             when(studySchedule.isCompleted()).thenReturn(true);
 
             // When
@@ -423,7 +423,7 @@ class AttendanceServiceTest {
             when(study.getId()).thenReturn(studyId);
             when(user.getId()).thenReturn(userId);
             when(studySchedule.getStudy()).thenReturn(study);
-            when(study.isRelational(studyId)).thenReturn(true);
+            when(study.isRelated(studyId)).thenReturn(true);
             when(studySchedule.getId()).thenReturn(studyScheduleId);
             when(studyMember.getId()).thenReturn(studyMemberId);
             when(attendance.isRelated(studyScheduleId, studyMemberId)).thenReturn(true);

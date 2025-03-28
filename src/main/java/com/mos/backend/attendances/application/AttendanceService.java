@@ -159,7 +159,7 @@ public class AttendanceService {
             throw new MosException(AttendanceErrorCode.UNRELATED_ATTENDANCE);
     }
 
-    private static double calculateAttendanceRate(List<Attendance> attendances) {
+    public static double calculateAttendanceRate(List<Attendance> attendances) {
         if (attendances.isEmpty()) {
             return 0.0;
         }
@@ -176,7 +176,7 @@ public class AttendanceService {
     }
 
     private static void validateRelation(Study study, StudySchedule studySchedule) {
-        if (!study.isRelational(studySchedule.getStudy().getId()))
+        if (!study.isRelated(studySchedule.getStudy().getId()))
             throw new MosException(StudyErrorCode.UNRELATED_STUDY);
     }
 

@@ -100,7 +100,7 @@ public class EntitySaver {
     }
 
     public StudyMember saveStudyMember(User user, Study study) {
-        return studyMemberRepository.save(StudyMember.create(study, user));
+        return studyMemberRepository.save(StudyMember.createStudyMember(study, user));
     }
 
     public StudySchedule saveStudySchedule(Study study) {
