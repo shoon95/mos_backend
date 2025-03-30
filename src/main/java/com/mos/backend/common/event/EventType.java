@@ -8,5 +8,5 @@ public enum EventType {
     STUDY_VIEWED,
     STUDY_JOINED,
     STUDY_JOIN_CANCELED,
-    STUDY_DELETE
+    STUDY_DELETED
 }
