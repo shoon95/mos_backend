@@ -16,4 +16,6 @@ public interface StudyRepository {
     Page<StudiesResponseDto> findStudies(Pageable pageable, String categoryCond, String meetingTypeCond, String recruitmentStatusCond, String progressStatusCond);
 
     long count();
+
+    void delete(Study study);
 }

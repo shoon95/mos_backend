@@ -65,9 +65,20 @@ public class StudyController {
     /**
      * 인기 스터디 조회
      */
+
     @GetMapping("/hots")
     @ResponseStatus(HttpStatus.OK)
     public List<StudiesResponseDto> getHotStudyList() {
         return studyService.readHotStudies();
+    }
+
+    /**
+     * 스터디 삭제
+     */
+    
+    @DeleteMapping("/{studyId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable("studyId") Long  studyId, @AuthenticationPrincipal Long userId) {
+        studyService.delete(userId, studyId);
     }
 }

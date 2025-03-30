@@ -9,6 +9,7 @@ import com.mos.backend.common.utils.RandomColorGenerator;
 import com.mos.backend.hotstudies.entity.HotStudyEventType;
 import com.mos.backend.hotstudies.infrastructure.HotStudyRepository;
 import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
+import com.mos.backend.studies.application.event.StudyDeletedEventPayload;
 import com.mos.backend.studies.application.event.StudyViewedEventPayload;
 import com.mos.backend.studies.application.responsedto.StudiesResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyCardListResponseDto;
@@ -106,6 +107,17 @@ public class StudyService {
                 })
                 .filter(Objects::nonNull)
                 .toList();
+    }
+
+    /**
+     * Study 삭제
+     */
+
+    @Transactional
+    public void delete(Long userId, Long studyId) {
+        Study study = entityFacade.getStudy(studyId);
+        studyRepository.delete(study);
+        eventPublisher.publishEvent(new Event(EventType.STUDY_DELETED, new StudyDeletedEventPayload(HotStudyEventType.DELETE, userId, studyId)));
     }
 
     @Transactional
