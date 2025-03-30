@@ -1,4 +1,4 @@
-package com.mos.backend.studymaterials.application.fileuploader;
+package com.mos.backend.studymaterials.infrastructure.fileuploader.aws.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

@@ -1,7 +1,8 @@
-package com.mos.backend.studymaterials.application.fileuploader;
+package com.mos.backend.studymaterials.infrastructure.event.consumer;
 
 import com.mos.backend.common.event.Event;
 import com.mos.backend.studymaterials.application.StudyMaterialService;
+import com.mos.backend.studymaterials.application.event.FileUploadFailedEventPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;

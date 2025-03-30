@@ -1,10 +1,12 @@
-package com.mos.backend.studymaterials.application.fileuploader;
+package com.mos.backend.studymaterials.infrastructure.fileuploader.aws;
 
 import com.mos.backend.common.event.Event;
 import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studymaterials.application.UploadType;
+import com.mos.backend.studymaterials.application.event.FileUploadFailedEventPayload;
 import com.mos.backend.studymaterials.entity.FileUploadErrorCode;
+import com.mos.backend.studymaterials.infrastructure.fileuploader.Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

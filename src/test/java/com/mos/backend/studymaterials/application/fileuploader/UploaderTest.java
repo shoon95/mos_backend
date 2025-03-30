@@ -3,6 +3,7 @@ package com.mos.backend.studymaterials.application.fileuploader;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studymaterials.application.UploadType;
 import com.mos.backend.studymaterials.entity.FileUploadErrorCode;
+import com.mos.backend.studymaterials.infrastructure.fileuploader.Uploader;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -1,4 +1,4 @@
-package com.mos.backend.studymaterials.application.fileuploader;
+package com.mos.backend.studymaterials.application.event;
 
 import com.mos.backend.common.event.Payload;
 import lombok.AllArgsConstructor;
