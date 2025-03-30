@@ -1,8 +1,9 @@
 package com.mos.backend.studies.application;
 
+import com.mos.backend.common.event.Event;
+import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.hotstudies.application.HotStudyService;
-import com.mos.backend.hotstudies.infrastructure.HotStudyRepository;
 import com.mos.backend.studies.application.responsedto.StudyResponseDto;
 import com.mos.backend.studies.entity.Category;
 import com.mos.backend.studies.entity.MeetingType;
@@ -11,24 +12,20 @@ import com.mos.backend.studies.entity.StudyTag;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
-import com.mos.backend.studybenefits.application.StudyBenefitService;
 import com.mos.backend.studybenefits.presentation.requestdto.StudyBenefitRequestDto;
-import com.mos.backend.studycurriculum.application.StudyCurriculumService;
 import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCreateRequestDto;
 import com.mos.backend.studymembers.application.StudyMemberService;
-import com.mos.backend.studyquestions.application.StudyQuestionService;
 import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
-import com.mos.backend.studyrequirements.application.StudyRequirementService;
 import com.mos.backend.studyrequirements.presentation.requestdto.StudyRequirementCreateRequestDto;
-import com.mos.backend.studyrules.application.StudyRuleService;
 import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -39,6 +36,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -52,18 +50,6 @@ class StudyServiceTest {
     private StudyRepository studyRepository;
 
     @Mock
-    private StudyRuleService studyRuleService;
-
-    @Mock
-    private StudyBenefitService studyBenefitService;
-
-    @Mock
-    private StudyQuestionService studyQuestionService;
-
-    @Mock
-    private StudyCurriculumService studyCurriculumService;
-
-    @Mock
     private StudyMemberService studyMemberService;
 
     @Mock
@@ -73,16 +59,12 @@ class StudyServiceTest {
     private HotStudyService hotStudyService;
 
     @Mock
-    private HotStudyRepository hotStudyRepository;
-
-    @Mock
-    private StudyRequirementService studyRequirementService;
-
-    @Mock
     private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private StudyService studyService;
+
+    @Captor private ArgumentCaptor<Event<StudyCreatedEventPayload>> eventCaptor;
 
     private StudyCreateRequestDto validRequestDto;
     private Long testUserId;
@@ -145,13 +127,14 @@ class StudyServiceTest {
             assertNotNull(studyId);
             assertEquals(1L, studyId);
 
-            // 연관된 서비스 메서드 호출 검증
-            verify(studyRuleService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getRules()));
-            verify(studyBenefitService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getBenefits()));
-            verify(studyQuestionService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getApplicationQuestions()));
-            verify(studyCurriculumService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getCurriculums()));
-            verify(studyRequirementService).createOrUpdateOrDelete(eq(studyId), eq(validRequestDto.getRequirements()));
-            verify(studyMemberService).createStudyLeader(eq(studyId), eq(testUserId));
+            // 스터디 생성 이벤트 생성 검증
+            verify(eventPublisher).publishEvent(eventCaptor.capture());
+            Event<StudyCreatedEventPayload> event = eventCaptor.getValue();
+            assertThat(event.getEventType()).isEqualTo(EventType.STUDY_CREATED);
+            assertThat(event.getPayload()).isInstanceOf(StudyCreatedEventPayload.class);
+            assertThat(event.getPayload().getStudyId()).isEqualTo(studyId);
+            assertThat(event.getPayload().getUserId()).isEqualTo(testUserId);
+
         }
     }
 
@@ -242,6 +225,6 @@ class StudyServiceTest {
 
         // then
         verify(viewCountService).handleViewCount(eq(studyId), anyString());
-        Assertions.assertThat(mosException.getErrorCode()).isEqualTo(StudyErrorCode.STUDY_NOT_FOUND);
+        assertThat(mosException.getErrorCode()).isEqualTo(StudyErrorCode.STUDY_NOT_FOUND);
     }
 }
