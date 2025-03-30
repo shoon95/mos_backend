@@ -1,7 +1,7 @@
 package com.mos.backend.studymembers.infrastructure.event.consumer;
 
 import com.mos.backend.common.event.Event;
-import com.mos.backend.studies.application.StudyCreatedEventPayload;
+import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
 import com.mos.backend.studymembers.application.StudyMemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
