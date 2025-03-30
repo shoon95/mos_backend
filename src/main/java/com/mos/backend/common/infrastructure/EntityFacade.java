@@ -1,5 +1,8 @@
 package com.mos.backend.common.infrastructure;
 
+import com.mos.backend.attendances.entity.Attendance;
+import com.mos.backend.attendances.entity.exception.AttendanceErrorCode;
+import com.mos.backend.attendances.infrastructure.AttendanceRepository;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
@@ -7,15 +10,24 @@ import com.mos.backend.studies.infrastructure.StudyRepository;
 import com.mos.backend.studybenefits.entity.StudyBenefit;
 import com.mos.backend.studybenefits.entity.exception.StudyBenefitErrorCode;
 import com.mos.backend.studybenefits.infrastructure.StudyBenefitRepository;
+import com.mos.backend.studycurriculum.entity.StudyCurriculum;
+import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
 import com.mos.backend.studyjoins.entity.StudyJoin;
 import com.mos.backend.studyjoins.entity.exception.StudyJoinErrorCode;
 import com.mos.backend.studyjoins.infrastructure.StudyJoinRepository;
+import com.mos.backend.studymembers.entity.StudyMember;
+import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
+import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.studyquestions.entity.StudyQuestion;
 import com.mos.backend.studyquestions.entity.StudyQuestionErrorCode;
 import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
+import com.mos.backend.studyschedules.entity.StudySchedule;
+import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.users.entity.exception.UserErrorCode;
 import com.mos.backend.users.infrastructure.respository.UserRepository;
+import com.mos.backend.userschedules.entity.UserSchedule;
+import com.mos.backend.userschedules.infrastructure.UserScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +41,11 @@ public class EntityFacade {
     private final StudyJoinRepository studyJoinRepository;
     private final StudyBenefitRepository studyBenefitRepository;
     private final StudyQuestionRepository studyQuestionRepository;
+    private final StudyCurriculumRepository studyCurriculumRepository;
+    private final StudyScheduleRepository studyScheduleRepository;
+    private final UserScheduleRepository userScheduleRepository;
+    private final AttendanceRepository attendanceRepository;
+    private final StudyMemberRepository studyMemberRepository;
 
     public User getUser(Long userId) {
         return userRepository.findById(userId)
@@ -53,5 +70,30 @@ public class EntityFacade {
     public StudyQuestion getStudyQuestion(Long studyQuestionId) {
         return studyQuestionRepository.findById(studyQuestionId)
                 .orElseThrow(() -> new MosException(StudyQuestionErrorCode.STUDY_QUESTION_NOT_FOUND));
+    }
+
+    public UserSchedule getUserSchedule(Long userScheduleId) {
+        return userScheduleRepository.findById(userScheduleId)
+                .orElseThrow(() -> new MosException(UserErrorCode.USER_NOT_FOUND));
+    }
+
+    public StudyCurriculum getStudyCurriculum(Long studyCurriculumId) {
+        return studyCurriculumRepository.findById(studyCurriculumId)
+                .orElseThrow(() -> new MosException(StudyQuestionErrorCode.STUDY_QUESTION_NOT_FOUND));
+    }
+
+    public StudySchedule getStudySchedule(Long studyScheduleId) {
+        return studyScheduleRepository.findById(studyScheduleId)
+                .orElseThrow(() -> new MosException(StudyQuestionErrorCode.STUDY_QUESTION_NOT_FOUND));
+    }
+
+    public Attendance getAttendance(Long attendanceId) {
+        return attendanceRepository.findById(attendanceId)
+                .orElseThrow(() -> new MosException(AttendanceErrorCode.ATTENDANCE_NOT_FOUND));
+    }
+
+    public StudyMember getStudyMember(Long studyMemberId) {
+        return studyMemberRepository.findById(studyMemberId)
+                .orElseThrow(() -> new MosException(StudyMemberErrorCode.STUDY_MEMBER_NOT_FOUND));
     }
 }

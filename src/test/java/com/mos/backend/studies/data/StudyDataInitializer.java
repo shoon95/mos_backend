@@ -87,7 +87,6 @@ public class StudyDataInitializer {
                         .meetingType(MeetingType.values()[random.nextInt(MeetingType.values().length)])
                         .tags(StudyTag.fromList(Arrays.asList("tag" + random.nextInt(10),
                                 "tag" + (random.nextInt(10) + 1))))
-                        .requirements("requirement" + random.nextInt(10))
                         .build();
 
                 entityManager.persist(study);

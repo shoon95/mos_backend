@@ -42,7 +42,7 @@ class StudyMemberRepositoryTest extends AbstractTestContainer {
     @DirtiesContext
     void countByStudyAndStatusInTest() {
         // given
-        Study study = createStudy();
+        Study study = createStudyMember();
         Study savedStudy = studyRepository.save(study);
 
         User user1 = createUser("user1");
@@ -54,11 +54,11 @@ class StudyMemberRepositoryTest extends AbstractTestContainer {
         userRepository.save(user3);
         userRepository.save(user4);
 
-        StudyMember studyMember1 = StudyMember.create(savedStudy, user1);
-        StudyMember studyMember2 = StudyMember.create(savedStudy, user2);
-        StudyMember studyMember3 = StudyMember.create(savedStudy, user3);
+        StudyMember studyMember1 = StudyMember.createStudyMember(savedStudy, user1);
+        StudyMember studyMember2 = StudyMember.createStudyMember(savedStudy, user2);
+        StudyMember studyMember3 = StudyMember.createStudyMember(savedStudy, user3);
         studyMember3.withDrawStudy();
-        StudyMember studyMember4 = StudyMember.create(savedStudy, user4);
+        StudyMember studyMember4 = StudyMember.createStudyMember(savedStudy, user4);
         studyMember4.completeStudy();
         studyMemberJpaRepository.saveAll(Arrays.asList(studyMember1, studyMember2, studyMember3, studyMember4));
 
@@ -69,7 +69,7 @@ class StudyMemberRepositoryTest extends AbstractTestContainer {
         assertThat(count).isEqualTo(3);
     }
 
-    private Study createStudy() {
+    private Study createStudyMember() {
         return Study.builder()
                 .title("Test Study")
                 .content("Test Content")
@@ -82,7 +82,6 @@ class StudyMemberRepositoryTest extends AbstractTestContainer {
                 .color("red")
                 .meetingType(MeetingType.OFFLINE)
                 .tags(StudyTag.fromList(Arrays.asList("tag1", "tag2")))
-                .requirements("None")
                 .build();
     }
 

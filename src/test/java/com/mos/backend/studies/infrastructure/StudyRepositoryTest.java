@@ -59,7 +59,6 @@ class StudyRepositoryTest extends AbstractTestContainer{
                 .color("red")
                 .meetingType(MeetingType.OFFLINE)
                 .tags(StudyTag.fromList(Arrays.asList("tag1", "tag2")))
-                .requirements("None")
                 .build();
 
         Study savedStudy = studyRepository.save(study);

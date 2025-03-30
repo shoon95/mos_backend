@@ -64,9 +64,6 @@ public class Study extends BaseAuditableEntity {
     @Column(nullable = false)
     private MeetingType meetingType;
 
-    @Column(nullable = true)
-    private String requirements;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
@@ -77,4 +74,7 @@ public class Study extends BaseAuditableEntity {
     @Builder.Default
     private RecruitmentStatus recruitmentStatus = RecruitmentStatus.OPEN;
 
+    public boolean isRelated(Long studyId) {
+        return this.id.equals(studyId);
+    }
 }

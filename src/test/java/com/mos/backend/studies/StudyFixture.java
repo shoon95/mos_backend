@@ -29,7 +29,6 @@ public class StudyFixture {
                         .color(RandomColorGenerator.generateRandomColor())
                         .meetingType(MeetingType.values()[i % MeetingType.values().length]) // 미팅 타입 순환
                         .tags(StudyTag.fromList(Arrays.asList("tag" + i, "tag" + (i + 1))))
-                        .requirements("requirement" + i)
                         .build();
                 studies.add(study);
             }

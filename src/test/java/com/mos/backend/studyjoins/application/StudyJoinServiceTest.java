@@ -15,6 +15,7 @@ import com.mos.backend.studyjoins.entity.StudyJoinStatus;
 import com.mos.backend.studyjoins.entity.exception.StudyJoinErrorCode;
 import com.mos.backend.studyjoins.infrastructure.StudyJoinRepository;
 import com.mos.backend.studyjoins.presentation.controller.req.StudyJoinReq;
+import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
@@ -42,9 +43,11 @@ import static org.mockito.Mockito.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-@DisplayName("StudyApplicationService 테스트")
+@DisplayName("StudyJoinService 테스트")
 public class StudyJoinServiceTest {
 
+    @Mock
+    private StudyMemberService studyMemberService;
     @Mock
     private StudyMemberRepository studyMemberRepository;
     @Mock
@@ -278,8 +281,9 @@ public class StudyJoinServiceTest {
             when(entityFacade.getUser(userId)).thenReturn(mockUser);
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
             when(entityFacade.getStudyJoin(studyJoinId)).thenReturn(mockStudyJoin);
+            when(mockStudyJoin.getUser()).thenReturn(mockUser);
+            when(mockUser.getId()).thenReturn(userId);
             when(mockStudyJoin.isSameStudy(mockStudy)).thenReturn(true);
-            when(studyMemberRepository.countByStudy(mockStudy)).thenReturn(1L);
             when(mockStudy.getMaxStudyMemberCount()).thenReturn(5);
 
             // When
@@ -291,7 +295,6 @@ public class StudyJoinServiceTest {
             verify(entityFacade).getStudyJoin(studyJoinId);
             verify(mockStudyJoin).isSameStudy(mockStudy);
             verify(mockStudyJoin).approve();
-            verify(studyMemberRepository).save(any(StudyMember.class));
         }
     }
 
@@ -323,39 +326,6 @@ public class StudyJoinServiceTest {
             verify(entityFacade).getStudy(studyId);
             verify(entityFacade, never()).getStudyJoin(studyJoinId);
             verify(mockStudyJoin, never()).isSameStudy(mockStudy);
-            verify(mockStudyJoin, never()).approve();
-            verify(studyMemberRepository, never()).save(any(StudyMember.class));
-        }
-
-        @Test
-        @DisplayName("스터디 멤버가 가득 찼을 때 MosException 발생")
-        void approveStudyMember_StudyMemberFull() {
-            // Given
-            Long userId = 1L;
-            Long studyId = 1L;
-            Long studyJoinId = 1L;
-            User mockUser = mock(User.class);
-            Study mockStudy = mock(Study.class);
-            StudyJoin mockStudyJoin = mock(StudyJoin.class);
-
-            when(entityFacade.getUser(userId)).thenReturn(mockUser);
-            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
-            when(entityFacade.getStudyJoin(studyJoinId)).thenReturn(mockStudyJoin);
-            when(mockStudyJoin.isSameStudy(mockStudy)).thenReturn(true);
-            when(studyMemberRepository.countByStudy(mockStudy)).thenReturn(4L);
-            when(mockStudy.getMaxStudyMemberCount()).thenReturn(4);
-
-            // When & Then
-            MosException exception = assertThrows(MosException.class, () -> {
-                studyJoinService.approveStudyJoin(userId, studyId, studyJoinId);
-            });
-
-            assertEquals(StudyMemberErrorCode.STUDY_MEMBER_FULL, exception.getErrorCode());
-
-            verify(entityFacade).getUser(userId);
-            verify(entityFacade).getStudy(studyId);
-            verify(entityFacade).getStudyJoin(studyJoinId);
-            verify(mockStudyJoin).isSameStudy(mockStudy);
             verify(mockStudyJoin, never()).approve();
             verify(studyMemberRepository, never()).save(any(StudyMember.class));
         }

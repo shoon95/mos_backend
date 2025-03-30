@@ -10,6 +10,8 @@ import com.mos.backend.studyquestions.entity.StudyQuestion;
 import com.mos.backend.studyquestions.entity.StudyQuestionErrorCode;
 import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
 import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
+import com.mos.backend.studyrules.entity.exception.StudyRuleErrorCode;
+import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -43,6 +45,78 @@ class StudyQuestionServiceTest {
     @Nested
     @DisplayName("createOrUpdateOrDelete() 테스트")
     class CreateOrUpdateOrDeleteTest {
+
+        @Test
+        @DisplayName("questionNum 순서가 빈 값이 존재하면 에러를 발생시킨다.")
+        void nullQuestionNumCreateOrUpdateOrDelete_ThrowsException() {
+            // given
+            Long studyId = 1L;
+            List<StudyQuestionCreateRequestDto> contents = List.of(
+                    new StudyQuestionCreateRequestDto(null, 1L, "질문1", true, "주관식", List.of()),
+                    new StudyQuestionCreateRequestDto(null, null, "질문2", true, "객관식", List.of("옵션1", "옵션2"))
+            );
+
+            // when
+            MosException mosException = assertThrows(MosException.class, () -> studyQuestionService.createOrUpdateOrDelete(studyId, contents));
+
+            // then
+            assertThat(mosException.getErrorCode()).isEqualTo(StudyQuestionErrorCode.INVALID_QUESTION_NUM);
+        }
+
+        @Test
+        @DisplayName("ruleNum 순서가 연속된 수가 아니라면에러를 발생시킨다.")
+        void notContinuousRuleNumCreateOrUpdateOrDelete_ThrowsException() {
+            // given
+            Long studyId = 1L;
+            List<StudyQuestionCreateRequestDto> contents = List.of(
+                    new StudyQuestionCreateRequestDto(null, 1L, "질문1", true, "주관식", List.of()),
+                    new StudyQuestionCreateRequestDto(null, 3L, "질문2", true, "객관식", List.of("옵션1", "옵션2"))
+            );
+
+            // when
+            MosException mosException = assertThrows(MosException.class, () -> studyQuestionService.createOrUpdateOrDelete(studyId, contents));
+
+            // then
+            assertThat(mosException.getErrorCode()).isEqualTo(StudyQuestionErrorCode.INVALID_QUESTION_NUM);
+        }
+
+        @Test
+        @DisplayName("ruleNum 순서가 1부터 시작되지 않으면 에러를 발생시킨다.")
+        void ruleNumNotStartFrom1CreateOrUpdateOrDelete_ThrowsException() {
+            // given
+            Long studyId = 1L;
+            List<StudyQuestionCreateRequestDto> contents = List.of(
+                    new StudyQuestionCreateRequestDto(null, 1L, "질문2", true, "주관식", List.of()),
+                    new StudyQuestionCreateRequestDto(null, 3L, "질문3", true, "객관식", List.of("옵션1", "옵션2"))
+            );
+
+            // when
+            MosException mosException = assertThrows(MosException.class, () -> studyQuestionService.createOrUpdateOrDelete(studyId, contents));
+
+            // then
+            assertThat(mosException.getErrorCode()).isEqualTo(StudyQuestionErrorCode.INVALID_QUESTION_NUM);
+        }
+
+        @Test
+        @DisplayName("중복된 questionNum 입력 시 예외 발생")
+        void createOrUpdateOrDelete_DuplicateQuestionNum() {
+            // Given
+            Long studyId = 1L;
+            List<StudyQuestionCreateRequestDto> requestDtos = List.of(
+                    new StudyQuestionCreateRequestDto(null, 1L, "질문1", true, "주관식", List.of()),
+                    new StudyQuestionCreateRequestDto(null, 1L, "질문2", true, "객관식", List.of("옵션1", "옵션2"))
+            );
+
+            // When
+            MosException exception = assertThrows(MosException.class, () -> {
+                studyQuestionService.createOrUpdateOrDelete(studyId, requestDtos);
+            });
+
+            // then
+            assertEquals(StudyQuestionErrorCode.INVALID_QUESTION_NUM, exception.getErrorCode());
+        }
+
+
         @Test
         @DisplayName("새로운 질문 생성 성공")
         void createStudyQuestion_Success() {
@@ -137,25 +211,6 @@ class StudyQuestionServiceTest {
             });
 
             assertThat(exception.getErrorCode()).isEqualTo(StudyQuestionErrorCode.STUDY_QUESTION_NOT_FOUND);
-        }
-
-        @Test
-        @DisplayName("중복된 questionNum 입력 시 예외 발생")
-        void createOrUpdateOrDelete_DuplicateQuestionNum() {
-            // Given
-            Long studyId = 1L;
-            List<StudyQuestionCreateRequestDto> requestDtos = List.of(
-                    new StudyQuestionCreateRequestDto(null, 1L, "질문1", true, "주관식", List.of()),
-                    new StudyQuestionCreateRequestDto(null, 1L, "질문2", true, "객관식", List.of("옵션1", "옵션2"))
-            );
-
-            // When
-            MosException exception = assertThrows(MosException.class, () -> {
-                studyQuestionService.createOrUpdateOrDelete(studyId, requestDtos);
-            });
-
-            // then
-            assertEquals(StudyQuestionErrorCode.INVALID_QUESTION_NUM, exception.getErrorCode());
         }
 
         @Test

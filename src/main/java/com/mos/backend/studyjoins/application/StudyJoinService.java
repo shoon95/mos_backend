@@ -5,7 +5,6 @@ import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.questionanswers.entity.QuestionAnswer;
 import com.mos.backend.questionanswers.infrastructure.QuestionAnswerRepository;
 import com.mos.backend.studies.entity.Study;
-import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studyjoins.application.res.MyStudyJoinRes;
 import com.mos.backend.studyjoins.application.res.QuestionAnswerRes;
 import com.mos.backend.studyjoins.application.res.StudyJoinRes;
@@ -14,9 +13,7 @@ import com.mos.backend.studyjoins.entity.StudyJoinStatus;
 import com.mos.backend.studyjoins.entity.exception.StudyJoinErrorCode;
 import com.mos.backend.studyjoins.infrastructure.StudyJoinRepository;
 import com.mos.backend.studyjoins.presentation.controller.req.StudyJoinReq;
-import com.mos.backend.studymembers.entity.StudyMember;
-import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
-import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
+import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studyquestions.entity.StudyQuestion;
 import com.mos.backend.studyquestions.entity.StudyQuestionErrorCode;
 import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
@@ -33,8 +30,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StudyJoinService {
 
+    private final StudyMemberService studyMemberService;
     private final StudyJoinRepository studyJoinRepository;
-    private final StudyMemberRepository studyMemberRepository;
     private final StudyQuestionRepository studyQuestionRepository;
     private final QuestionAnswerRepository questionAnswerRepository;
     private final EntityFacade entityFacade;
@@ -81,10 +78,7 @@ public class StudyJoinService {
 
         validateSameStudy(studyJoin, study);
 
-        long studyMemberCnt = studyMemberRepository.countByStudy(study);
-        validateStudyMemberCnt(studyMemberCnt, study);
-
-        handleApprove(studyJoin, study, user);
+        handleApprove(studyJoin, study);
     }
 
     @Transactional
@@ -153,16 +147,8 @@ public class StudyJoinService {
             throw new MosException(StudyJoinErrorCode.STUDY_JOIN_MISMATCH);
     }
 
-    private static void validateStudyMemberCnt(long studyMemberCnt, Study study) {
-        if (studyMemberCnt == 0)
-            throw new MosException(StudyErrorCode.STUDY_NOT_FOUND);
-
-        if (studyMemberCnt >= study.getMaxStudyMemberCount())
-            throw new MosException(StudyMemberErrorCode.STUDY_MEMBER_FULL);
-    }
-
-    private void handleApprove(StudyJoin studyJoin, Study study, User user) {
+    private void handleApprove(StudyJoin studyJoin, Study study) {
+        studyMemberService.createStudyMember(study.getId(), studyJoin.getUser().getId());
         studyJoin.approve();
-        studyMemberRepository.save(StudyMember.create(study, user));
     }
 }
