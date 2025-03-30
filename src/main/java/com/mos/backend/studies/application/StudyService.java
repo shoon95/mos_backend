@@ -6,9 +6,10 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.common.utils.ClientInfoExtractor;
 import com.mos.backend.common.utils.RandomColorGenerator;
-import com.mos.backend.hotstudies.application.HotStudyService;
 import com.mos.backend.hotstudies.entity.HotStudyEventType;
 import com.mos.backend.hotstudies.infrastructure.HotStudyRepository;
+import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
+import com.mos.backend.studies.application.event.StudyViewedEventPayload;
 import com.mos.backend.studies.application.responsedto.StudiesResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyCardListResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyResponseDto;
@@ -42,7 +43,6 @@ public class StudyService {
     private final StudyRepository studyRepository;
     private final StudyMemberService studyMemberService;
     private final HotStudyRepository hotStudyRepository;
-    private final HotStudyService hotStudyService;
     private final EntityFacade entityFacade;
     private final ViewCountService viewCountService;
     private final ApplicationEventPublisher eventPublisher;
@@ -75,7 +75,8 @@ public class StudyService {
         Study study = findStudyById(studyId);
         int studyMemberCount = studyMemberService.countCurrentStudyMember(studyId);
 
-        hotStudyService.handleEvent(HotStudyEventType.VIEW, studyId);
+        eventPublisher.publishEvent(new Event<>(EventType.STUDY_VIEWED, new StudyViewedEventPayload(HotStudyEventType.VIEW, studyId)));
+
         return StudyResponseDto.from(study, studyMemberCount);
     }
 

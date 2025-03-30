@@ -1,10 +1,14 @@
 package com.mos.backend.studyjoins.application;
 
+import com.mos.backend.common.event.Event;
+import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
+import com.mos.backend.hotstudies.entity.HotStudyEventType;
 import com.mos.backend.questionanswers.entity.QuestionAnswer;
 import com.mos.backend.questionanswers.infrastructure.QuestionAnswerRepository;
 import com.mos.backend.studies.entity.Study;
+import com.mos.backend.studyjoins.application.event.StudyJoinEventPayload;
 import com.mos.backend.studyjoins.application.res.MyStudyJoinRes;
 import com.mos.backend.studyjoins.application.res.QuestionAnswerRes;
 import com.mos.backend.studyjoins.application.res.StudyJoinRes;
@@ -19,6 +23,7 @@ import com.mos.backend.studyquestions.entity.StudyQuestionErrorCode;
 import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
 import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +40,7 @@ public class StudyJoinService {
     private final StudyQuestionRepository studyQuestionRepository;
     private final QuestionAnswerRepository questionAnswerRepository;
     private final EntityFacade entityFacade;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void joinStudy(Long userId, Long studyId, List<StudyJoinReq> studyJoinReqs) {
@@ -53,6 +59,7 @@ public class StudyJoinService {
 
             saveQuestionAnswers(newStudyJoin, studyQuestion, studyJoinReq.getAnswer());
         }
+        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOINED, new StudyJoinEventPayload(HotStudyEventType.JOIN, studyId)));
     }
 
     @Transactional(readOnly = true)
@@ -102,6 +109,7 @@ public class StudyJoinService {
         validatePendingStatus(studyJoin);
 
         studyJoin.cancel();
+        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOIN_CANCELED, new StudyJoinEventPayload(HotStudyEventType.JOIN_CANCEL, studyId)));
     }
 
     @Transactional(readOnly = true)
