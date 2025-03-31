@@ -3,7 +3,6 @@ package com.mos.backend.userschedules.presentation.controller.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mos.backend.common.jwt.TokenUtil;
 import com.mos.backend.securityuser.WithMockCustomUser;
-import com.mos.backend.studyjoins.presentation.controller.req.StudyJoinReq;
 import com.mos.backend.userschedules.application.UserScheduleService;
 import com.mos.backend.userschedules.presentation.req.UserScheduleCreateReq;
 import com.mos.backend.userschedules.presentation.req.UserScheduleUpdateReq;
@@ -18,13 +17,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserScheduleController.class)
