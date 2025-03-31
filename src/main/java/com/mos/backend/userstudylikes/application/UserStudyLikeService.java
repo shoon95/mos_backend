@@ -30,8 +30,8 @@ public class UserStudyLikeService {
         User user = entityFacade.getUser(userId);
         if (!existsUserStudyLike(user, study)) {
             userStudyLikeRepository.save(UserStudyLike.create(user, study));
+            eventPublisher.publishEvent(new Event<>(EventType.STUDY_LIKED, new StudyLikeEventPayload(HotStudyEventType.LIKE, studyId)));
         }
-        eventPublisher.publishEvent(new Event<>(EventType.STUDY_LIKED, new StudyLikeEventPayload(HotStudyEventType.LIKE, studyId)));
     }
 
     @Transactional
@@ -40,8 +40,8 @@ public class UserStudyLikeService {
         User user = entityFacade.getUser(userId);
         if (existsUserStudyLike(user, study)) {
             userStudyLikeRepository.deleteByUserAndStudy(user, study);
+            eventPublisher.publishEvent(new Event<>(EventType.STUDY_LIKE_CANCELED, new StudyLikeEventPayload(HotStudyEventType.LIKE_CANCEL, studyId)));
         }
-        eventPublisher.publishEvent(new Event<>(EventType.STUDY_LIKE_CANCELED, new StudyLikeEventPayload(HotStudyEventType.LIKE_CANCEL, studyId)));
     }
 
     private boolean existsUserStudyLike(User user, Study study) {
