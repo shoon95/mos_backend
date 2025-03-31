@@ -30,7 +30,7 @@
 
 <br> <br/>
 ## 🪄 나의 개발 기능
-* [API 명세서 보러가기!](https://fir-turkey-016.notion.site/API-1aae2b2fe1ba8069ae79dba9ce6a190e?pvs=4)
+#### 🚚 [API 명세서 보러가기!](https://fir-turkey-016.notion.site/API-1aae2b2fe1ba8069ae79dba9ce6a190e?pvs=4)
 > 프로젝트 전체 기획
 - 모든 페이지 및 기능 직접 기획
 - 모든 페이지 샘플 용(Demo) 프론트 엔드개발(Svelte)
