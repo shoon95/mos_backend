@@ -110,6 +110,9 @@ public class StudyMemberService {
         studyMember.withDrawStudy();
     }
 
+    public StudyMember findByStudyAndUser(Study study, User user) {
+        return studyMemberRepository.findByStudyAndUser(study, user).orElseThrow(() -> new MosException(StudyMemberErrorCode.STUDY_MEMBER_NOT_FOUND));
+    }
     private static LocalDate getLastAttendanceDate(List<Attendance> attendances) {
         return attendances.stream()
                 .map(Attendance::getModifiedAt)

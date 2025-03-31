@@ -14,4 +14,5 @@ public interface StudyRequirementRepository {
     void save(StudyRequirement studyRequirement);
 
     Optional<StudyRequirement> findByIdAndStudy(Long id, Study study);
+
 }

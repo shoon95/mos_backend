@@ -17,7 +17,6 @@ import com.mos.backend.studyjoins.infrastructure.StudyJoinRepository;
 import com.mos.backend.studyjoins.presentation.controller.req.StudyJoinReq;
 import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studymembers.entity.StudyMember;
-import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.studyquestions.entity.StudyQuestion;
 import com.mos.backend.studyquestions.entity.StudyQuestionErrorCode;

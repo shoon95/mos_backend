@@ -3,19 +3,11 @@ package com.mos.backend.studyrules.application;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
-import com.mos.backend.studies.entity.exception.StudyErrorCode;
-import com.mos.backend.studies.infrastructure.StudyRepository;
-import com.mos.backend.studycurriculum.application.StudyCurriculumService;
-import com.mos.backend.studycurriculum.entity.StudyCurriculum;
-import com.mos.backend.studycurriculum.entity.exception.StudyCurriculumErrorCode;
-import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
-import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCreateRequestDto;
 import com.mos.backend.studyrules.application.responsedto.StudyRuleResponseDto;
 import com.mos.backend.studyrules.entity.StudyRule;
 import com.mos.backend.studyrules.entity.exception.StudyRuleErrorCode;
 import com.mos.backend.studyrules.infrastructure.StudyRuleRepository;
 import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -28,11 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

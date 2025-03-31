@@ -3,8 +3,6 @@ package com.mos.backend.studyrules.application;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
-import com.mos.backend.studycurriculum.entity.exception.StudyCurriculumErrorCode;
-import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCreateRequestDto;
 import com.mos.backend.studyrules.application.responsedto.StudyRuleResponseDto;
 import com.mos.backend.studyrules.entity.StudyRule;
 import com.mos.backend.studyrules.entity.exception.StudyRuleErrorCode;

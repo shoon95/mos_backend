@@ -34,9 +34,18 @@ public class StudyMaterial extends BaseAuditableEntity {
     private String filePath;
 
     @Column(nullable = false)
-    private String originName;
+    private String originalName;
 
     @Column(nullable = false)
-    private Double fileSize;
+    private Long fileSize;
 
+    public static StudyMaterial create(Study study, StudyMember studyMember, String filePath, String originalName, Long fileSize) {
+        StudyMaterial studyMaterial = new StudyMaterial();
+        studyMaterial.study = study;
+        studyMaterial.studyMember = studyMember;
+        studyMaterial.filePath = filePath;
+        studyMaterial.originalName = originalName;
+        studyMaterial.fileSize = fileSize;
+        return studyMaterial;
+    }
 }

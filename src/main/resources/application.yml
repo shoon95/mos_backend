@@ -59,3 +59,13 @@ oauth:
     client_id: ${NAVER_CLIENT_ID}
     client_secret: ${NAVER_CLIENT_SECRET}
     redirect_uri: ${NAVER_REDIRECT_URI}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: ${AWS_S3_BUCKET}

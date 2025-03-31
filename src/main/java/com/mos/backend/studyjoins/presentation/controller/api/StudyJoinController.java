@@ -3,7 +3,6 @@ package com.mos.backend.studyjoins.presentation.controller.api;
 import com.mos.backend.studyjoins.application.StudyJoinService;
 import com.mos.backend.studyjoins.application.res.MyStudyJoinRes;
 import com.mos.backend.studyjoins.application.res.StudyJoinRes;
-import com.mos.backend.studyjoins.entity.StudyJoinStatus;
 import com.mos.backend.studyjoins.presentation.controller.req.StudyJoinReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

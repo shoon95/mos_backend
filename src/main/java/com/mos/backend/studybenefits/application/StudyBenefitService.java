@@ -8,8 +8,6 @@ import com.mos.backend.studybenefits.entity.StudyBenefit;
 import com.mos.backend.studybenefits.entity.exception.StudyBenefitErrorCode;
 import com.mos.backend.studybenefits.infrastructure.StudyBenefitRepository;
 import com.mos.backend.studybenefits.presentation.requestdto.StudyBenefitRequestDto;
-import com.mos.backend.studyrules.entity.exception.StudyRuleErrorCode;
-import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -2,7 +2,6 @@ package com.mos.backend.studyrules.entity;
 
 import com.mos.backend.common.entity.BaseAuditableEntity;
 import com.mos.backend.studies.entity.Study;
-import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
