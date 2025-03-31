@@ -163,6 +163,8 @@ public class StudyService {
         studyCurriculumService.createOrUpdateOrDelete(savedStudyId, requestDto.getCurriculums());
         studyMemberService.createStudyLeader(savedStudyId, userId);
         studyRequirementService.createOrUpdateOrDelete(savedStudyId, requestDto.getRequirements());
+        log.info("event 발행 전");
         eventPublisher.publishEvent(new Event<>(EventType.STUDY_CREATED, new StudyCreatedEventPayload(userId, requestDto, savedStudyId)));
+        log.info("event 발행 완료");
     }
 }
