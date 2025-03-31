@@ -1,6 +1,7 @@
 package com.mos.backend.studies.entity;
 
 import com.mos.backend.common.entity.BaseAuditableEntity;
+import com.mos.backend.studymaterials.application.UploadType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,7 +29,7 @@ public class Study extends BaseAuditableEntity {
     private String title;
 
     @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String content;
 
     @Column(nullable = true)
@@ -76,5 +77,16 @@ public class Study extends BaseAuditableEntity {
 
     public boolean isRelated(Long studyId) {
         return this.id.equals(studyId);
+    }
+    public void changeImageToPermanent(Long userId, Long studyId) {
+        content = content.replace(getOldChar(userId), getNewChar(studyId));
+    }
+
+    private String getOldChar(Long userId) {
+        return UploadType.TEMP.getFolderPath() + "/" + userId;
+    }
+
+    private String getNewChar(Long studyId) {
+        return UploadType.STUDY.getFolderPath() + "/" + studyId;
     }
 }

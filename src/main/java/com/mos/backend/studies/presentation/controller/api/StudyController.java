@@ -1,6 +1,5 @@
 package com.mos.backend.studies.presentation.controller.api;
 
-import com.mos.backend.hotstudies.application.HotStudyService;
 import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.application.responsedto.StudiesResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyCardListResponseDto;

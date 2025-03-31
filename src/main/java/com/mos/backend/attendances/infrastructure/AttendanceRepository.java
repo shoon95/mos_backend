@@ -1,7 +1,6 @@
 package com.mos.backend.attendances.infrastructure;
 
 import com.mos.backend.attendances.entity.Attendance;
-import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.studyschedules.entity.StudySchedule;
 

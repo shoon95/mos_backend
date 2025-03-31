@@ -4,6 +4,7 @@ import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studymembers.entity.ParticipationStatus;
 import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.studymembers.entity.StudyMemberRoleType;
+import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -24,6 +25,11 @@ public class StudyMemberRepositoryImpl implements StudyMemberRepository{
     @Override
     public int countByStudyAndStatusIn(Study study, List<ParticipationStatus> statusList) {
         return studyMemberJpaRepository.countByStudyAndStatusIn(study, statusList);
+    }
+
+    @Override
+    public Optional<StudyMember> findByStudyAndUser(Study study, User user) {
+        return studyMemberJpaRepository.findByStudyAndUser(study, user);
     }
 
     @Override
