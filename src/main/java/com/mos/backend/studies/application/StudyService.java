@@ -117,7 +117,7 @@ public class StudyService {
     public void delete(Long userId, Long studyId) {
         Study study = entityFacade.getStudy(studyId);
         studyRepository.delete(study);
-        eventPublisher.publishEvent(new Event(EventType.STUDY_DELETED, new StudyDeletedEventPayload(HotStudyEventType.DELETE, userId, studyId)));
+        eventPublisher.publishEvent(new Event<>(EventType.STUDY_DELETED, new StudyDeletedEventPayload(HotStudyEventType.DELETE, userId, studyId)));
     }
 
     @Transactional
