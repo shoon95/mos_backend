@@ -26,7 +26,8 @@
 <br> <br/>
 ## 🗺️ 인프라 설계도
 ![image](https://github.com/user-attachments/assets/d90ffbdb-32d7-4c34-8636-480d1ca5ee20)
-
+<br> <br/>
+* [API 명세서 보러가기!](https://fir-turkey-016.notion.site/API-1aae2b2fe1ba8069ae79dba9ce6a190e?pvs=4)
 
 <br> <br/>
 ## 🪄 나의 개발 기능
@@ -39,6 +40,9 @@
 - 좋아요
 - 스터디 혜택 CRUD
 - 스터디 지원 질문 CRUD
+- 스터디 커리큘럼 CRUD
+- 스터디 규칙 CRUD
+- 스터디 지원 자격 CRUD
 
 > 인기글 서비스
 - Redis Sorted Set을 활용해 인기글 순위 제공
