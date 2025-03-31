@@ -8,6 +8,7 @@ import lombok.*;
 
 import java.util.List;
 
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
@@ -34,6 +35,7 @@ public class StudyQuestion extends BaseAuditableEntity {
     private String question;
 
     @Column(nullable = false)
+    @Enumerated(value = STRING)
     private QuestionType type;
 
     @Embedded

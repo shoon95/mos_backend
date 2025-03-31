@@ -15,6 +15,9 @@ import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
 import com.mos.backend.studyjoins.entity.StudyJoin;
 import com.mos.backend.studyjoins.entity.exception.StudyJoinErrorCode;
 import com.mos.backend.studyjoins.infrastructure.StudyJoinRepository;
+import com.mos.backend.studymaterials.entity.StudyMaterial;
+import com.mos.backend.studymaterials.entity.StudyMaterialErrorCode;
+import com.mos.backend.studymaterials.infrastructure.StudyMaterialRepository;
 import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
@@ -46,6 +49,7 @@ public class EntityFacade {
     private final UserScheduleRepository userScheduleRepository;
     private final AttendanceRepository attendanceRepository;
     private final StudyMemberRepository studyMemberRepository;
+    private final StudyMaterialRepository studyMaterialRepository;
 
     public User getUser(Long userId) {
         return userRepository.findById(userId)
@@ -95,5 +99,9 @@ public class EntityFacade {
     public StudyMember getStudyMember(Long studyMemberId) {
         return studyMemberRepository.findById(studyMemberId)
                 .orElseThrow(() -> new MosException(StudyMemberErrorCode.STUDY_MEMBER_NOT_FOUND));
+    }
+
+    public StudyMaterial getStudyMaterial(Long studyMaterialId) {
+        return studyMaterialRepository.findById(studyMaterialId).orElseThrow(() -> new MosException(StudyMaterialErrorCode.STUDY_MATERIAL_NOT_FOUND));
     }
 }

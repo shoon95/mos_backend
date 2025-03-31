@@ -8,8 +8,6 @@ import com.mos.backend.studycurriculum.entity.StudyCurriculum;
 import com.mos.backend.studycurriculum.entity.exception.StudyCurriculumErrorCode;
 import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
 import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCreateRequestDto;
-import com.mos.backend.studyrules.entity.exception.StudyRuleErrorCode;
-import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

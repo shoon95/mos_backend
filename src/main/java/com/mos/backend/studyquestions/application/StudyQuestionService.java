@@ -8,8 +8,6 @@ import com.mos.backend.studyquestions.entity.StudyQuestion;
 import com.mos.backend.studyquestions.entity.StudyQuestionErrorCode;
 import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
 import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
-import com.mos.backend.studyrules.entity.exception.StudyRuleErrorCode;
-import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

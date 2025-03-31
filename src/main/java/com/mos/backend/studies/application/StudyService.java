@@ -1,5 +1,7 @@
 package com.mos.backend.studies.application;
 
+import com.mos.backend.common.event.Event;
+import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.common.utils.ClientInfoExtractor;
@@ -25,6 +27,8 @@ import com.mos.backend.studyrequirements.application.StudyRequirementService;
 import com.mos.backend.studyrules.application.StudyRuleService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,6 +41,7 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class StudyService {
 
     private final StudyRepository studyRepository;
@@ -51,6 +56,7 @@ public class StudyService {
     private final EntityFacade entityFacade;
     private final ViewCountService viewCountService;
     private final StudyRequirementService studyRequirementService;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 스터디 생성
@@ -112,6 +118,12 @@ public class StudyService {
                 .toList();
     }
 
+    @Transactional
+    public void changeImageToPermanent(Long userId, Long studyId) {
+        Study study = entityFacade.getStudy(studyId);
+        study.changeImageToPermanent(userId, studyId);
+    }
+
     public StudiesResponseDto getHotStudy(Long studyId) {
         Study study = entityFacade.getStudy(studyId);
         int currentStudyMembers = studyMemberService.countCurrentStudyMember(studyId);
@@ -151,5 +163,8 @@ public class StudyService {
         studyCurriculumService.createOrUpdateOrDelete(savedStudyId, requestDto.getCurriculums());
         studyMemberService.createStudyLeader(savedStudyId, userId);
         studyRequirementService.createOrUpdateOrDelete(savedStudyId, requestDto.getRequirements());
+        log.info("event 발행 전");
+        eventPublisher.publishEvent(new Event<>(EventType.STUDY_CREATED, new StudyCreatedEventPayload(userId, requestDto, savedStudyId)));
+        log.info("event 발행 완료");
     }
 }

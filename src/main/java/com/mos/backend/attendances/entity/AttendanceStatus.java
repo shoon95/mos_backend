@@ -2,8 +2,6 @@ package com.mos.backend.attendances.entity;
 
 import com.mos.backend.attendances.entity.exception.AttendanceErrorCode;
 import com.mos.backend.common.exception.MosException;
-import com.mos.backend.studies.entity.ProgressStatus;
-import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
