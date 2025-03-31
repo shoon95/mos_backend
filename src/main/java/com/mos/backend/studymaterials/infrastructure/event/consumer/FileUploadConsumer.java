@@ -14,7 +14,7 @@ public class FileUploadConsumer {
     private final StudyMaterialService studyMaterialService;
 
     @EventListener
-    public void fileUploadFailedEventHandle(Event<FileUploadFailedEventPayload> event) {
+    public void handleFileUploadFailedEvent(Event<FileUploadFailedEventPayload> event) {
         FileUploadFailedEventPayload payload = event.getPayload();
         studyMaterialService.delete(payload.getFilePath());
     }

@@ -1,7 +1,8 @@
-package com.mos.backend.studyrecruitmentimage.application;
+package com.mos.backend.studyrecruitmentimage.infrastructure.event.consumer;
 
 import com.mos.backend.common.event.Event;
 import com.mos.backend.studies.application.StudyCreatedEventPayload;
+import com.mos.backend.studyrecruitmentimage.application.StudyRecruitmentImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

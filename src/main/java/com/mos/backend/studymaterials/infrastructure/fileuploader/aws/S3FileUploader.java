@@ -5,8 +5,8 @@ import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studymaterials.application.UploadType;
 import com.mos.backend.studymaterials.application.event.FileUploadFailedEventPayload;
-import com.mos.backend.studymaterials.entity.FileUploadErrorCode;
-import com.mos.backend.studymaterials.infrastructure.fileuploader.Uploader;
+import com.mos.backend.studymaterials.entity.UploaderErrorCode;
+import com.mos.backend.studymaterials.infrastructure.fileuploader.FileUploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +32,7 @@ import java.nio.file.Path;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class S3FileUploader extends Uploader {
+public class S3FileUploader extends FileUploader {
 
     private final S3Client s3Client;
     private final S3TransferManager s3TransferManager;
@@ -60,7 +60,7 @@ public class S3FileUploader extends Uploader {
                     RequestBody.fromInputStream(file.getInputStream(), file.getSize())
             );
         } catch (Exception e) {
-            throw new MosException(FileUploadErrorCode.FILE_UPLOAD_EXCEPTION);
+            throw new MosException(UploaderErrorCode.FILE_UPLOAD_EXCEPTION);
         }
 
         return generateFileUrl(filePath);
@@ -100,7 +100,7 @@ public class S3FileUploader extends Uploader {
                 deleteTemporaryFile(tempFilePath);
             }
             eventPublisher.publishEvent(Event.create(EventType.FILE_UPLOAD_FAILED, new FileUploadFailedEventPayload(filePath)));
-            throw new MosException(FileUploadErrorCode.FILE_UPLOAD_EXCEPTION);
+            throw new MosException(UploaderErrorCode.FILE_UPLOAD_EXCEPTION);
         }
     }
 
@@ -121,7 +121,7 @@ public class S3FileUploader extends Uploader {
                     });
         } catch (Exception e) {
             log.error("비동기 S3 파일 삭제 요청 오료 발생 Bucket: {}, key: {}", bucketName, objectKey, e);
-            throw new MosException(FileUploadErrorCode.FILE_DELETE_EXCEPTION);
+            throw new MosException(UploaderErrorCode.FILE_DELETE_EXCEPTION);
         }
     }
 

@@ -5,7 +5,7 @@ import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
 import com.mos.backend.studymaterials.application.UploadType;
-import com.mos.backend.studymaterials.application.fileuploader.FileUploader;
+import com.mos.backend.studymaterials.application.fileuploader.Uploader;
 import com.mos.backend.studyrecruitmentimage.entity.StudyRecruitmentImage;
 import com.mos.backend.studyrecruitmentimage.infrastructure.StudyRecruitmentImageRepository;
 import com.mos.backend.users.entity.User;
@@ -37,7 +37,7 @@ class StudyRecruitmentImageServiceTest {
     @Mock
     private StudyRecruitmentImageRepository studyRecruitmentImageRepository;
     @Mock
-    private FileUploader fileUploader;
+    private Uploader uploader;
     @Mock
     private EntityFacade entityFacade;
     @Mock
@@ -62,8 +62,8 @@ class StudyRecruitmentImageServiceTest {
         MultipartFile mockMultipartFile = new MockMultipartFile("file", originalFilename, "image/png", new byte[]{1, 2, 3});
 
         given(entityFacade.getUser(userId)).willReturn(mockUser);
-        given(fileUploader.generateUUIDFileName(any(MultipartFile.class))).willReturn(generatedUUID);
-        given(fileUploader.uploadFileSync(eq(generatedUUID), eq(userId), eq(uploadType), any(MultipartFile.class)))
+        given(uploader.generateUUIDFileName(any(MultipartFile.class))).willReturn(generatedUUID);
+        given(uploader.uploadFileSync(eq(generatedUUID), eq(userId), eq(uploadType), any(MultipartFile.class)))
                 .willReturn(expectedFilePath);
 
         String resultFilePath = studyRecruitmentImageService.temporaryUpload(uploadType, mockMultipartFile, userId);
@@ -74,7 +74,7 @@ class StudyRecruitmentImageServiceTest {
         assertThat(savedImage.getUser()).isEqualTo(mockUser);
         assertThat(savedImage.getFilePath()).isEqualTo(expectedFilePath);
         assertThat(savedImage.getOriginalName()).isEqualTo(originalFilename); // Assuming getter is getOriginalFileName
-        verify(fileUploader).uploadFileSync(eq(generatedUUID), eq(userId), eq(uploadType), eq(mockMultipartFile));
+        verify(uploader).uploadFileSync(eq(generatedUUID), eq(userId), eq(uploadType), eq(mockMultipartFile));
     }
 
     @Test
@@ -103,24 +103,24 @@ class StudyRecruitmentImageServiceTest {
 
         String usedImageSourceKey = "temp/1/used-image.jpg";
         String usedImageDestinationKey = "study/" + studyId + "/" + usedImageUUID;
-        given(fileUploader.uriToFileObjectKey(usedImagePath)).willReturn(usedImageSourceKey);
-        given(fileUploader.generateFileObjectKey(UploadType.STUDY, studyId, usedImageUUID)).willReturn(usedImageDestinationKey);
-        willDoNothing().given(fileUploader).moveFile(anyString(), anyString());
-        willDoNothing().given(fileUploader).deleteFile(unusedImagePath);
+        given(uploader.uriToFileObjectKey(usedImagePath)).willReturn(usedImageSourceKey);
+        given(uploader.generateFileObjectKey(UploadType.STUDY, studyId, usedImageUUID)).willReturn(usedImageDestinationKey);
+        willDoNothing().given(uploader).moveFile(anyString(), anyString());
+        willDoNothing().given(uploader).deleteFile(unusedImagePath);
         willDoNothing().given(studyRecruitmentImageRepository).delete(imageUnused);
         willDoNothing().given(imageUsed).changeToPermanent(userId, mockStudy);
         willDoNothing().given(studyService).changeImageToPermanent(userId, studyId);
 
         studyRecruitmentImageService.permanentUpload(userId, mockRequestDto, studyId);
 
-        verify(fileUploader).uriToFileObjectKey(usedImagePath);
-        verify(fileUploader).generateFileObjectKey(UploadType.STUDY, studyId, usedImageUUID);
-        verify(fileUploader).moveFile(usedImageSourceKey, usedImageDestinationKey);
+        verify(uploader).uriToFileObjectKey(usedImagePath);
+        verify(uploader).generateFileObjectKey(UploadType.STUDY, studyId, usedImageUUID);
+        verify(uploader).moveFile(usedImageSourceKey, usedImageDestinationKey);
         verify(imageUsed).changeToPermanent(userId, mockStudy);
         verify(studyService).changeImageToPermanent(userId, studyId);
-        verify(fileUploader).deleteFile(unusedImagePath);
+        verify(uploader).deleteFile(unusedImagePath);
         verify(studyRecruitmentImageRepository).delete(imageUnused);
-        verify(fileUploader, never()).deleteFile(usedImagePath);
+        verify(uploader, never()).deleteFile(usedImagePath);
         verify(studyRecruitmentImageRepository, never()).delete(imageUsed);
         verify(imageUnused, never()).changeToPermanent(anyLong(), any(Study.class));
     }
@@ -152,26 +152,26 @@ class StudyRecruitmentImageServiceTest {
 
         String sourceKey1 = "temp/1/image1.png";
         String destKey1 = "study/" + studyId + "/" + uuid1;
-        given(fileUploader.uriToFileObjectKey(path1)).willReturn(sourceKey1);
-        given(fileUploader.generateFileObjectKey(UploadType.STUDY, studyId, uuid1)).willReturn(destKey1);
+        given(uploader.uriToFileObjectKey(path1)).willReturn(sourceKey1);
+        given(uploader.generateFileObjectKey(UploadType.STUDY, studyId, uuid1)).willReturn(destKey1);
         String sourceKey2 = "temp/1/image2.gif";
         String destKey2 = "study/" + studyId + "/" + uuid2;
-        given(fileUploader.uriToFileObjectKey(path2)).willReturn(sourceKey2);
-        given(fileUploader.generateFileObjectKey(UploadType.STUDY, studyId, uuid2)).willReturn(destKey2);
+        given(uploader.uriToFileObjectKey(path2)).willReturn(sourceKey2);
+        given(uploader.generateFileObjectKey(UploadType.STUDY, studyId, uuid2)).willReturn(destKey2);
 
-        willDoNothing().given(fileUploader).moveFile(anyString(), anyString());
+        willDoNothing().given(uploader).moveFile(anyString(), anyString());
         willDoNothing().given(image1).changeToPermanent(anyLong(), any(Study.class));
         willDoNothing().given(image2).changeToPermanent(anyLong(), any(Study.class));
         willDoNothing().given(studyService).changeImageToPermanent(anyLong(), anyLong());
 
         studyRecruitmentImageService.permanentUpload(userId, mockRequestDto, studyId);
 
-        verify(fileUploader, times(2)).moveFile(stringCaptor.capture(), stringCaptor.capture());
+        verify(uploader, times(2)).moveFile(stringCaptor.capture(), stringCaptor.capture());
         assertThat(stringCaptor.getAllValues()).containsExactlyInAnyOrder(sourceKey1, destKey1, sourceKey2, destKey2);
         verify(image1).changeToPermanent(userId, mockStudy);
         verify(image2).changeToPermanent(userId, mockStudy);
         verify(studyService, times(2)).changeImageToPermanent(userId, studyId);
-        verify(fileUploader, never()).deleteFile(anyString());
+        verify(uploader, never()).deleteFile(anyString());
         verify(studyRecruitmentImageRepository, never()).delete(any(StudyRecruitmentImage.class));
     }
 
@@ -198,16 +198,16 @@ class StudyRecruitmentImageServiceTest {
         String contentWithoutImages = "Content without any images.";
         given(mockRequestDto.getContent()).willReturn(contentWithoutImages);
 
-        willDoNothing().given(fileUploader).deleteFile(anyString());
+        willDoNothing().given(uploader).deleteFile(anyString());
         willDoNothing().given(studyRecruitmentImageRepository).delete(any(StudyRecruitmentImage.class));
 
         studyRecruitmentImageService.permanentUpload(userId, mockRequestDto, studyId);
 
-        verify(fileUploader, times(2)).deleteFile(stringCaptor.capture());
+        verify(uploader, times(2)).deleteFile(stringCaptor.capture());
         assertThat(stringCaptor.getAllValues()).containsExactlyInAnyOrder(path1, path2);
         verify(studyRecruitmentImageRepository, times(2)).delete(deletedImageCaptor.capture());
         assertThat(deletedImageCaptor.getAllValues()).containsExactlyInAnyOrder(image1, image2);
-        verify(fileUploader, never()).moveFile(anyString(), anyString());
+        verify(uploader, never()).moveFile(anyString(), anyString());
         verify(image1, never()).changeToPermanent(anyLong(), any(Study.class));
         verify(image2, never()).changeToPermanent(anyLong(), any(Study.class));
         verify(studyService, never()).changeImageToPermanent(anyLong(), anyLong());
@@ -229,8 +229,8 @@ class StudyRecruitmentImageServiceTest {
 
         studyRecruitmentImageService.permanentUpload(userId, mockRequestDto, studyId);
 
-        verify(fileUploader, never()).moveFile(anyString(), anyString());
-        verify(fileUploader, never()).deleteFile(anyString());
+        verify(uploader, never()).moveFile(anyString(), anyString());
+        verify(uploader, never()).deleteFile(anyString());
         verify(studyRecruitmentImageRepository, never()).delete(any(StudyRecruitmentImage.class));
         verify(studyService, never()).changeImageToPermanent(anyLong(), anyLong());
     }

@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
 
-public interface FileUploader {
+public interface Uploader {
 
     String generateFileUrl(UploadType type, Long folderName, String fileName);
 

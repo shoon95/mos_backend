@@ -10,7 +10,7 @@ import java.util.Locale;
 
 @RequiredArgsConstructor
 @Getter
-public enum FileUploadErrorCode implements ErrorCode {
+public enum UploaderErrorCode implements ErrorCode {
     FILE_UPLOAD_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "file-upload.internal-server-error"),
     FILE_DELETE_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "file_delete.internal-server-error")
     ;

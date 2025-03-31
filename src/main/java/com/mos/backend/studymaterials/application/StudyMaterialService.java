@@ -3,7 +3,7 @@ package com.mos.backend.studymaterials.application;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
-import com.mos.backend.studymaterials.application.fileuploader.FileUploader;
+import com.mos.backend.studymaterials.application.fileuploader.Uploader;
 import com.mos.backend.studymaterials.application.responsedto.ReadAllStudyMaterialResponseDto;
 import com.mos.backend.studymaterials.application.responsedto.ReadStudyMaterialResponseDto;
 import com.mos.backend.studymaterials.entity.StudyMaterial;
@@ -29,7 +29,7 @@ public class StudyMaterialService {
 
     private final StudyMaterialRepository studyMaterialRepository;
     private final StudyMemberService studyMemberService;
-    private final FileUploader fileUploader;
+    private final Uploader uploader;
     private final EntityFacade entityFacade;
 
     /**
@@ -45,13 +45,13 @@ public class StudyMaterialService {
         // 단일 파일, 전체 파일 용량 검증
         validateCreateStudyMaterialRequest(study, type, file);
 
-        String uuidFileName = fileUploader.generateUUIDFileName(file);
-        String filePath = fileUploader.generateFileUrl(type, studyId, uuidFileName);
+        String uuidFileName = uploader.generateUUIDFileName(file);
+        String filePath = uploader.generateFileUrl(type, studyId, uuidFileName);
 
         StudyMaterial studyMaterial = StudyMaterial.create(study, studyMember, filePath, file.getOriginalFilename(), file.getSize());
         studyMaterialRepository.save(studyMaterial);
 
-        fileUploader.uploadFileAsync(uuidFileName, studyId, type, file);
+        uploader.uploadFileAsync(uuidFileName, studyId, type, file);
 
         return ReadStudyMaterialResponseDto.from(studyMaterial);
     }
@@ -66,7 +66,7 @@ public class StudyMaterialService {
         StudyMaterial studyMaterial = entityFacade.getStudyMaterial(studyMaterialId);
         validateStudyMaterialRequest(study, studyMaterial);
         studyMaterialRepository.delete(studyMaterial);
-        fileUploader.deleteFile(studyMaterial.getFilePath());
+        uploader.deleteFile(studyMaterial.getFilePath());
     }
 
     /**
@@ -76,7 +76,7 @@ public class StudyMaterialService {
     @Transactional
     public void delete(String filePath) {
         studyMaterialRepository.deleteByFilePath(filePath);
-        fileUploader.deleteFile(filePath);
+        uploader.deleteFile(filePath);
     }
 
     /**

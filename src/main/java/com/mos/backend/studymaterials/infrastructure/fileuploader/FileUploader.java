@@ -1,8 +1,8 @@
 package com.mos.backend.studymaterials.infrastructure.fileuploader;
 
 import com.mos.backend.common.exception.MosException;
-import com.mos.backend.studymaterials.application.fileuploader.FileUploader;
-import com.mos.backend.studymaterials.entity.FileUploadErrorCode;
+import com.mos.backend.studymaterials.application.fileuploader.Uploader;
+import com.mos.backend.studymaterials.entity.UploaderErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,7 +13,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Slf4j
-public abstract class Uploader implements FileUploader {
+public abstract class FileUploader implements Uploader {
 
     private static final String TEMP_FILE_PATH_PREFIX = "upload-async-";
     private static final String TEMP_FILE_PATH_SUFFIX_PREFIX = "-";
@@ -28,7 +28,7 @@ public abstract class Uploader implements FileUploader {
             if (tempFilePath != null) {
                 deleteTemporaryFile(tempFilePath);
             }
-            throw new MosException(FileUploadErrorCode.FILE_UPLOAD_EXCEPTION);
+            throw new MosException(UploaderErrorCode.FILE_UPLOAD_EXCEPTION);
         }
         return tempFilePath;
     }

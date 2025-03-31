@@ -5,7 +5,7 @@ import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studymaterials.application.UploadType;
 import com.mos.backend.studymaterials.application.event.FileUploadFailedEventPayload;
-import com.mos.backend.studymaterials.entity.FileUploadErrorCode;
+import com.mos.backend.studymaterials.entity.UploaderErrorCode;
 import com.mos.backend.studymaterials.infrastructure.fileuploader.aws.S3FileUploader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -179,7 +179,7 @@ class S3FileUploaderTest {
         // When & Then
         assertThatThrownBy(() -> s3FileUploader.uploadFileSync(uuidFileName, folderName, UploadType.STUDY, mockFile))
                 .isInstanceOf(MosException.class)
-                .hasFieldOrPropertyWithValue("errorCode", FileUploadErrorCode.FILE_UPLOAD_EXCEPTION);
+                .hasFieldOrPropertyWithValue("errorCode", UploaderErrorCode.FILE_UPLOAD_EXCEPTION);
     }
 
     @Test
@@ -196,7 +196,7 @@ class S3FileUploaderTest {
         // When & Then
         assertThatThrownBy(() -> s3FileUploader.uploadFileSync(uuidFileName, folderName, UploadType.STUDY, mockFile))
                 .isInstanceOf(MosException.class)
-                .hasFieldOrPropertyWithValue("errorCode", FileUploadErrorCode.FILE_UPLOAD_EXCEPTION);
+                .hasFieldOrPropertyWithValue("errorCode", UploaderErrorCode.FILE_UPLOAD_EXCEPTION);
 
         verify(s3Client, never()).putObject(any(PutObjectRequest.class), any(RequestBody.class));
     }
@@ -294,7 +294,7 @@ class S3FileUploaderTest {
         // When & Then:
         assertThatThrownBy(() -> s3FileUploader.uploadFileAsync(fileName, folderName, UploadType.TEMP, mockFile))
                 .isInstanceOf(MosException.class)
-                .hasFieldOrPropertyWithValue("errorCode", FileUploadErrorCode.FILE_UPLOAD_EXCEPTION);
+                .hasFieldOrPropertyWithValue("errorCode", UploaderErrorCode.FILE_UPLOAD_EXCEPTION);
 
         verify(s3TransferManager, never()).upload(any(UploadRequest.class));
 
@@ -340,7 +340,7 @@ class S3FileUploaderTest {
         // When & Then
         assertThatThrownBy(() -> s3FileUploader.deleteFile(uriString))
                 .isInstanceOf(MosException.class)
-                .hasFieldOrPropertyWithValue("errorCode", FileUploadErrorCode.FILE_DELETE_EXCEPTION);
+                .hasFieldOrPropertyWithValue("errorCode", UploaderErrorCode.FILE_DELETE_EXCEPTION);
     }
 
     @Test
@@ -403,7 +403,7 @@ class S3FileUploaderTest {
         // When & Then:
         assertThatThrownBy(() -> s3FileUploader.moveFile(sourceKey, destinationKey))
                 .isInstanceOf(MosException.class)
-                .hasFieldOrPropertyWithValue("errorCode", FileUploadErrorCode.FILE_DELETE_EXCEPTION);
+                .hasFieldOrPropertyWithValue("errorCode", UploaderErrorCode.FILE_DELETE_EXCEPTION);
 
         verify(s3Client).copyObject(any(CopyObjectRequest.class));
         verify(s3AsyncClient).deleteObject(any(DeleteObjectRequest.class));

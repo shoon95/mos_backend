@@ -3,7 +3,7 @@ package com.mos.backend.studymaterials.application;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
-import com.mos.backend.studymaterials.application.fileuploader.FileUploader;
+import com.mos.backend.studymaterials.application.fileuploader.Uploader;
 import com.mos.backend.studymaterials.application.responsedto.ReadAllStudyMaterialResponseDto;
 import com.mos.backend.studymaterials.application.responsedto.ReadStudyMaterialResponseDto;
 import com.mos.backend.studymaterials.entity.StudyMaterial;
@@ -40,7 +40,7 @@ class StudyMaterialServiceTest {
 
     @Mock private StudyMaterialRepository studyMaterialRepository;
     @Mock private StudyMemberService studyMemberService;
-    @Mock private FileUploader fileUploader;
+    @Mock private Uploader uploader;
     @Mock private EntityFacade entityFacade;
 
     @Mock private Study mockStudy;
@@ -74,8 +74,8 @@ class StudyMaterialServiceTest {
         given(mockStudyMember.getId()).willReturn(STUDY_MEMBER_ID);
         given(mockStudyMember.getUser()).willReturn(mockUser);
         given(studyMaterialRepository.sumTotalFileSizeByStudy(mockStudy)).willReturn(Optional.of(0L));
-        given(fileUploader.generateUUIDFileName(any(MultipartFile.class))).willReturn("dummy-uuid.txt");
-        given(fileUploader.generateFileUrl(UploadType.STUDY, STUDY_ID, "dummy-uuid.txt")).willReturn(FILE_PATH);
+        given(uploader.generateUUIDFileName(any(MultipartFile.class))).willReturn("dummy-uuid.txt");
+        given(uploader.generateFileUrl(UploadType.STUDY, STUDY_ID, "dummy-uuid.txt")).willReturn(FILE_PATH);
 
 
         MultipartFile mockMultipartFile = new MockMultipartFile("file", ORIGINAL_FILENAME, "text/plain", new byte[(int)FILE_SIZE]);
@@ -92,7 +92,7 @@ class StudyMaterialServiceTest {
         assertThat(savedMaterial.getOriginalName()).isEqualTo(ORIGINAL_FILENAME);
         assertThat(savedMaterial.getFileSize()).isEqualTo(FILE_SIZE);
 
-        verify(fileUploader).uploadFileAsync(eq("dummy-uuid.txt"), eq(STUDY_ID), eq(UploadType.STUDY), eq(mockMultipartFile));
+        verify(uploader).uploadFileAsync(eq("dummy-uuid.txt"), eq(STUDY_ID), eq(UploadType.STUDY), eq(mockMultipartFile));
 
         assertThat(resultDto).isNotNull();
         assertThat(resultDto.getFilePath()).isEqualTo(FILE_PATH);
@@ -118,7 +118,7 @@ class StudyMaterialServiceTest {
                 .hasFieldOrPropertyWithValue("errorCode", StudyMaterialErrorCode.FILE_SIZE_EXCEEDED);
 
         verify(studyMaterialRepository, never()).save(any());
-        verify(fileUploader, never()).uploadFileAsync(any(), anyLong(), any(), any());
+        verify(uploader, never()).uploadFileAsync(any(), anyLong(), any(), any());
     }
 
     @Test
@@ -138,7 +138,7 @@ class StudyMaterialServiceTest {
                 .hasFieldOrPropertyWithValue("errorCode", StudyMaterialErrorCode.TOTAL_STUDY_SIZE_EXCEEDED);
 
         verify(studyMaterialRepository, never()).save(any());
-        verify(fileUploader, never()).uploadFileAsync(any(), anyLong(), any(), any());
+        verify(uploader, never()).uploadFileAsync(any(), anyLong(), any(), any());
     }
 //
     @Test
@@ -150,7 +150,7 @@ class StudyMaterialServiceTest {
         given(studyMemberService.findByStudyAndUser(mockStudy, mockUser)).willReturn(mockStudyMember);
         given(mockStudyMember.getUser()).willReturn(mockUser);
         given(mockStudyMember.getId()).willReturn(STUDY_MEMBER_ID);
-        given(fileUploader.generateUUIDFileName(any(MultipartFile.class))).willReturn("uuid-other.png");
+        given(uploader.generateUUIDFileName(any(MultipartFile.class))).willReturn("uuid-other.png");
 
         MultipartFile largeFileButNotStudyType = spy(new MockMultipartFile("file", "profile.png", "image/png", new byte[(int) (0)]));
         doReturn(MAX_FILE_SIZE + 10L).when(largeFileButNotStudyType).getSize();
@@ -161,7 +161,7 @@ class StudyMaterialServiceTest {
 
         // Then
         verify(studyMaterialRepository).save(any(StudyMaterial.class));
-        verify(fileUploader).uploadFileAsync(eq("uuid-other.png"), eq(STUDY_ID), eq(UploadType.TEMP), eq(largeFileButNotStudyType));
+        verify(uploader).uploadFileAsync(eq("uuid-other.png"), eq(STUDY_ID), eq(UploadType.TEMP), eq(largeFileButNotStudyType));
         verify(studyMaterialRepository, never()).sumTotalFileSizeByStudy(any());
         assertThat(resultDto).isNotNull();
     }
@@ -175,14 +175,14 @@ class StudyMaterialServiceTest {
         given(mockStudyMaterial.getStudy()).willReturn(mockStudy);
         given(mockStudyMaterial.getFilePath()).willReturn(FILE_PATH);
         willDoNothing().given(studyMaterialRepository).delete(any(StudyMaterial.class));
-        willDoNothing().given(fileUploader).deleteFile(anyString());
+        willDoNothing().given(uploader).deleteFile(anyString());
 
         // When
         studyMaterialService.delete(STUDY_ID, STUDY_MATERIAL_ID);
 
         // Then
         verify(studyMaterialRepository).delete(mockStudyMaterial);
-        verify(fileUploader).deleteFile(FILE_PATH);
+        verify(uploader).deleteFile(FILE_PATH);
     }
 
     @Test
@@ -200,7 +200,7 @@ class StudyMaterialServiceTest {
                 .hasFieldOrPropertyWithValue("errorCode", StudyMaterialErrorCode.STUDY_NOT_MATCH);
 
         verify(studyMaterialRepository, never()).delete(any());
-        verify(fileUploader, never()).deleteFile(anyString());
+        verify(uploader, never()).deleteFile(anyString());
     }
 
     @Test
@@ -208,14 +208,14 @@ class StudyMaterialServiceTest {
     void deleteByPath_Success() {
         // Given
         willDoNothing().given(studyMaterialRepository).deleteByFilePath(anyString());
-        willDoNothing().given(fileUploader).deleteFile(anyString());
+        willDoNothing().given(uploader).deleteFile(anyString());
 
         // When
         studyMaterialService.delete(FILE_PATH);
 
         // Then
         verify(studyMaterialRepository).deleteByFilePath(FILE_PATH);
-        verify(fileUploader).deleteFile(FILE_PATH);
+        verify(uploader).deleteFile(FILE_PATH);
     }
 
     @Test

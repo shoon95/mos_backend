@@ -2,8 +2,8 @@ package com.mos.backend.studymaterials.application.fileuploader;
 
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studymaterials.application.UploadType;
-import com.mos.backend.studymaterials.entity.FileUploadErrorCode;
-import com.mos.backend.studymaterials.infrastructure.fileuploader.Uploader;
+import com.mos.backend.studymaterials.entity.UploaderErrorCode;
+import com.mos.backend.studymaterials.infrastructure.fileuploader.FileUploader;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,11 +31,11 @@ import static org.mockito.BDDMockito.given;
 
 
 @ExtendWith(MockitoExtension.class)
-class UploaderTest {
+class FileUploaderTest {
 
     private static final String UUID_VALUE = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
 
-    static class TestUploader extends Uploader {
+    static class TestFileUploader extends FileUploader {
         @Override
         public String generateFileUrl(UploadType type, Long folderName, String fileName) {
             return "";
@@ -74,7 +74,7 @@ class UploaderTest {
 
     }
 
-    private TestUploader uploader;
+    private TestFileUploader uploader;
 
     @Mock
     private MultipartFile mockFile;
@@ -86,7 +86,7 @@ class UploaderTest {
 
     @BeforeEach
     void setUp() {
-        uploader = new TestUploader();
+        uploader = new TestFileUploader();
     }
 
     @AfterEach
@@ -227,12 +227,12 @@ class UploaderTest {
 
                 if (tempFile != null) filesToDelete.add(tempFile);
             } catch (MosException e) {
-                assertThat(e.getErrorCode()).isEqualTo(FileUploadErrorCode.FILE_UPLOAD_EXCEPTION);
+                assertThat(e.getErrorCode()).isEqualTo(UploaderErrorCode.FILE_UPLOAD_EXCEPTION);
                 throw e;
             }
         });
 
-        assertThat(exception.getErrorCode()).isEqualTo(FileUploadErrorCode.FILE_UPLOAD_EXCEPTION);
+        assertThat(exception.getErrorCode()).isEqualTo(UploaderErrorCode.FILE_UPLOAD_EXCEPTION);
     }
 
 

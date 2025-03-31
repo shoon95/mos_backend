@@ -5,7 +5,7 @@ import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
 import com.mos.backend.studymaterials.application.UploadType;
-import com.mos.backend.studymaterials.application.fileuploader.FileUploader;
+import com.mos.backend.studymaterials.application.fileuploader.Uploader;
 import com.mos.backend.studyrecruitmentimage.entity.StudyRecruitmentImage;
 import com.mos.backend.studyrecruitmentimage.infrastructure.StudyRecruitmentImageRepository;
 import com.mos.backend.users.entity.User;
@@ -25,15 +25,15 @@ import java.util.stream.Collectors;
 public class StudyRecruitmentImageService {
 
     private final StudyRecruitmentImageRepository studyRecruitmentImageRepository;
-    private final FileUploader fileUploader;
+    private final Uploader uploader;
     private final EntityFacade entityFacade;
     private final StudyService studyService;
 
     @Transactional
     public String temporaryUpload(UploadType type, MultipartFile file, Long userId) {
         User user = entityFacade.getUser(userId);
-        String uuidFileName = fileUploader.generateUUIDFileName(file);
-        String filePath = fileUploader.uploadFileSync(uuidFileName, userId, type, file);
+        String uuidFileName = uploader.generateUUIDFileName(file);
+        String filePath = uploader.uploadFileSync(uuidFileName, userId, type, file);
         StudyRecruitmentImage studyRecruitmentImage = StudyRecruitmentImage.create(user, filePath, file.getOriginalFilename(), file.getSize());
         studyRecruitmentImageRepository.save(studyRecruitmentImage);
         return filePath;
@@ -66,16 +66,16 @@ public class StudyRecruitmentImageService {
     }
 
     private void delete(StudyRecruitmentImage studyRecruitmentImage) {
-        fileUploader.deleteFile(studyRecruitmentImage.getFilePath());
+        uploader.deleteFile(studyRecruitmentImage.getFilePath());
         studyRecruitmentImageRepository.delete(studyRecruitmentImage);
     }
 
     private void process(StudyRecruitmentImage studyRecruitmentImage, Long studyId) {
         String filePath = studyRecruitmentImage.getFilePath();
-        String sourceKey = fileUploader.uriToFileObjectKey(filePath);
+        String sourceKey = uploader.uriToFileObjectKey(filePath);
         String uuidFileName = filePathToUUIDString(filePath);
-        String destinationKey = fileUploader.generateFileObjectKey(UploadType.STUDY, studyId, uuidFileName);
-        fileUploader.moveFile(sourceKey, destinationKey);
+        String destinationKey = uploader.generateFileObjectKey(UploadType.STUDY, studyId, uuidFileName);
+        uploader.moveFile(sourceKey, destinationKey);
     }
 
     private String filePathToUUIDString(String filePath) {
