@@ -81,26 +81,6 @@ public class AttendanceService {
                 );
     }
 
-    @Transactional
-    public void leaveEarly(Long userId, Long studyId, Long studyScheduleId) {
-        User user = entityFacade.getUser(userId);
-        Study study = entityFacade.getStudy(studyId);
-        StudySchedule studySchedule = entityFacade.getStudySchedule(studyScheduleId);
-
-        validateRelation(study, studySchedule);
-        validateIsCompleted(studySchedule);
-
-        StudyMember studyMember = studyMemberRepository.findByUserIdAndStudyId(user.getId(), study.getId())
-                .orElseThrow(() -> new MosException(StudyMemberErrorCode.STUDY_MEMBER_NOT_FOUND));
-
-        attendanceRepository.findByStudyScheduleAndStudyMember(studySchedule, studyMember)
-                .ifPresentOrElse(Attendance::leaveEarly
-                        , () -> {
-                            throw new MosException(AttendanceErrorCode.ATTENDANCE_NOT_FOUND);
-                        }
-                );
-    }
-
     @Transactional(readOnly = true)
     public List<StudyMemberAttendanceRes> getStudyMemberAttendances(Long userId, Long studyId) {
         User user = entityFacade.getUser(userId);
