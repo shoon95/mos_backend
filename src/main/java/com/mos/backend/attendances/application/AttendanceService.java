@@ -72,6 +72,9 @@ public class AttendanceService {
 
         AttendanceStatus attendanceStatus = AttendanceStatus.fromDescription(attendanceStatusDescription);
 
+        if (!attendanceStatus.isModifiable())
+            throw new MosException(AttendanceErrorCode.UNMODIFIABLE_STATUS);
+
         attendanceRepository.findByStudyScheduleAndStudyMember(studySchedule, studyMember)
                 .ifPresentOrElse(attendance -> attendance.updateStatus(attendanceStatus)
                         , () -> {

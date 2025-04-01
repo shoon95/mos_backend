@@ -220,6 +220,7 @@ class AttendanceServiceTest {
             StudyMember studyMember = mock(StudyMember.class);
             Attendance attendance = mock(Attendance.class);
             Optional<Attendance> optionalAttendance = Optional.of(attendance);
+            AttendanceStatus modifiableAttendanceStatus = AttendanceStatus.EARLY_LEAVE;
 
             when(entityFacade.getUser(userId)).thenReturn(user);
             when(entityFacade.getStudy(studyId)).thenReturn(study);
@@ -232,7 +233,48 @@ class AttendanceServiceTest {
             when(attendanceRepository.findByStudyScheduleAndStudyMember(studySchedule, studyMember)).thenReturn(optionalAttendance);
 
             // When
-            attendanceService.update(userId, studyId, studyScheduleId, AttendanceStatus.PRESENT.getDescription());
+            attendanceService.update(userId, studyId, studyScheduleId, modifiableAttendanceStatus.getDescription());
+
+            // Then
+            verify(entityFacade).getUser(userId);
+            verify(entityFacade).getStudy(studyId);
+            verify(entityFacade).getStudySchedule(studyScheduleId);
+            verify(studyMemberRepository).findByUserIdAndStudyId(userId, studyId);
+            verify(attendanceRepository).findByStudyScheduleAndStudyMember(studySchedule, studyMember);
+            verify(attendance).updateStatus(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("출석 수정 실패 시나리오")
+    class UpdateAttendanceFailScenario {
+        @Test
+        @DisplayName("출석 수정 실패")
+        void updateAttendance_Fail() {
+            // Given
+            Long userId = 1L;
+            Long studyId = 1L;
+            Long studyScheduleId = 1L;
+            User user = mock(User.class);
+            Study study = mock(Study.class);
+            StudySchedule studySchedule = mock(StudySchedule.class);
+            StudyMember studyMember = mock(StudyMember.class);
+            Attendance attendance = mock(Attendance.class);
+            Optional<Attendance> optionalAttendance = Optional.of(attendance);
+            AttendanceStatus unModifiableAttendanceStatus = AttendanceStatus.EARLY_LEAVE;
+
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(entityFacade.getStudy(studyId)).thenReturn(study);
+            when(entityFacade.getStudySchedule(studyScheduleId)).thenReturn(studySchedule);
+            when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(studyMember));
+            when(study.getId()).thenReturn(studyId);
+            when(user.getId()).thenReturn(userId);
+            when(studySchedule.getStudy()).thenReturn(study);
+            when(study.isRelated(studyId)).thenReturn(true);
+            when(attendanceRepository.findByStudyScheduleAndStudyMember(studySchedule, studyMember)).thenReturn(optionalAttendance);
+
+            // When
+            attendanceService.update(userId, studyId, studyScheduleId, unModifiableAttendanceStatus.getDescription());
 
             // Then
             verify(entityFacade).getUser(userId);
