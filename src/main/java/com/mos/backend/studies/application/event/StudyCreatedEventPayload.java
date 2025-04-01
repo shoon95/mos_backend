@@ -1,4 +1,4 @@
-package com.mos.backend.studies.application;
+package com.mos.backend.studies.application.event;
 
 import com.mos.backend.common.event.Payload;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
