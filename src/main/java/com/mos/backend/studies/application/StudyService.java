@@ -6,9 +6,11 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.common.utils.ClientInfoExtractor;
 import com.mos.backend.common.utils.RandomColorGenerator;
-import com.mos.backend.hotstudies.application.HotStudyService;
 import com.mos.backend.hotstudies.entity.HotStudyEventType;
 import com.mos.backend.hotstudies.infrastructure.HotStudyRepository;
+import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
+import com.mos.backend.studies.application.event.StudyDeletedEventPayload;
+import com.mos.backend.studies.application.event.StudyViewedEventPayload;
 import com.mos.backend.studies.application.responsedto.StudiesResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyCardListResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyResponseDto;
@@ -19,12 +21,7 @@ import com.mos.backend.studies.entity.StudyTag;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
-import com.mos.backend.studybenefits.application.StudyBenefitService;
-import com.mos.backend.studycurriculum.application.StudyCurriculumService;
 import com.mos.backend.studymembers.application.StudyMemberService;
-import com.mos.backend.studyquestions.application.StudyQuestionService;
-import com.mos.backend.studyrequirements.application.StudyRequirementService;
-import com.mos.backend.studyrules.application.StudyRuleService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,17 +42,10 @@ import java.util.Objects;
 public class StudyService {
 
     private final StudyRepository studyRepository;
-
-    private final StudyRuleService studyRuleService;
-    private final StudyBenefitService studyBenefitService;
-    private final StudyQuestionService studyQuestionService;
-    private final StudyCurriculumService studyCurriculumService;
     private final StudyMemberService studyMemberService;
     private final HotStudyRepository hotStudyRepository;
-    private final HotStudyService hotStudyService;
     private final EntityFacade entityFacade;
     private final ViewCountService viewCountService;
-    private final StudyRequirementService studyRequirementService;
     private final ApplicationEventPublisher eventPublisher;
 
     /**
@@ -69,7 +59,7 @@ public class StudyService {
         Study study = convertToEntity(requestDto);
         Study savedStudy = studyRepository.save(study);
 
-        handleStudyRelations(userId, requestDto, savedStudy.getId());
+        eventPublisher.publishEvent(new Event<>(EventType.STUDY_CREATED, new StudyCreatedEventPayload(userId, requestDto, savedStudy.getId())));
         return savedStudy.getId();
     }
 
@@ -86,7 +76,8 @@ public class StudyService {
         Study study = findStudyById(studyId);
         int studyMemberCount = studyMemberService.countCurrentStudyMember(studyId);
 
-        hotStudyService.handleEvent(HotStudyEventType.VIEW, studyId);
+        eventPublisher.publishEvent(new Event<>(EventType.STUDY_VIEWED, new StudyViewedEventPayload(HotStudyEventType.VIEW, studyId)));
+
         return StudyResponseDto.from(study, studyMemberCount);
     }
 
@@ -116,6 +107,17 @@ public class StudyService {
                 })
                 .filter(Objects::nonNull)
                 .toList();
+    }
+
+    /**
+     * Study 삭제
+     */
+
+    @Transactional
+    public void delete(Long userId, Long studyId) {
+        Study study = entityFacade.getStudy(studyId);
+        studyRepository.delete(study);
+        eventPublisher.publishEvent(new Event<>(EventType.STUDY_DELETED, new StudyDeletedEventPayload(HotStudyEventType.DELETE, userId, studyId)));
     }
 
     @Transactional
@@ -154,17 +156,5 @@ public class StudyService {
         if (requestDto.getRecruitmentStartDate().isAfter(requestDto.getRecruitmentEndDate())) {
             throw new MosException(StudyErrorCode.INVALID_RECRUITMENT_DATES);
         }
-    }
-
-    private void handleStudyRelations(Long userId, StudyCreateRequestDto requestDto, Long savedStudyId) {
-        studyRuleService.createOrUpdateOrDelete(savedStudyId, requestDto.getRules());
-        studyBenefitService.createOrUpdateOrDelete(savedStudyId, requestDto.getBenefits());
-        studyQuestionService.createOrUpdateOrDelete(savedStudyId, requestDto.getApplicationQuestions());
-        studyCurriculumService.createOrUpdateOrDelete(savedStudyId, requestDto.getCurriculums());
-        studyMemberService.createStudyLeader(savedStudyId, userId);
-        studyRequirementService.createOrUpdateOrDelete(savedStudyId, requestDto.getRequirements());
-        log.info("event 발행 전");
-        eventPublisher.publishEvent(new Event<>(EventType.STUDY_CREATED, new StudyCreatedEventPayload(userId, requestDto, savedStudyId)));
-        log.info("event 발행 완료");
     }
 }
