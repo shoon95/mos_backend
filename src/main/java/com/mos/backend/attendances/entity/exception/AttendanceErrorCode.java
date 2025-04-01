@@ -14,7 +14,7 @@ public enum AttendanceErrorCode implements ErrorCode {
     INVALID_ATTENDANCE_STATUS(HttpStatus.BAD_REQUEST, "attendance.invalid-status"),
     UNRELATED_ATTENDANCE(HttpStatus.BAD_REQUEST, "attendance.unrelated"),
     NOT_PRESENT_TIME(HttpStatus.BAD_REQUEST, "attendance.not-present-time"),
-    ;
+    UNMODIFIABLE_STATUS(HttpStatus.BAD_REQUEST, "attendance.unmodifiable-status");
 
     private final HttpStatus httpStatus;
     private final String messageKey;
