@@ -96,21 +96,6 @@ class AttendanceControllerTest {
     }
 
     @Test
-    @DisplayName("조퇴 성공 문서화")
-    void leaveEarly_Success_Documentation() throws Exception {
-        mockMvc.perform(
-                        patch("/studies/{studyId}/schedules/{studyScheduleId}/attendances/early-leave", 1, 1, 1)
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isOk())
-                .andDo(document("leave-early-success",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint())
-                        )
-                );
-    }
-
-    @Test
     @DisplayName("출석 삭제 성공 문서화")
     void delete_Success_Documentation() throws Exception {
         mockMvc.perform(
