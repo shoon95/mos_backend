@@ -41,4 +41,9 @@ public class StudyRepositoryImpl implements StudyRepository{
     public long count() {
         return studyJpaRepository.count();
     }
+
+    @Override
+    public void delete(Study study) {
+        studyJpaRepository.delete(study);
+    }
 }
