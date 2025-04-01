@@ -316,6 +316,7 @@ class AttendanceServiceTest {
             when(attendance.getStudySchedule()).thenReturn(studySchedule);
             when(studySchedule.getId()).thenReturn(studyScheduleId);
             when(attendance.isAttended()).thenReturn(true);
+            when(attendance.getAttendanceStatus()).thenReturn(AttendanceStatus.PRESENT);
 
             // When
             attendanceService.getStudyMemberAttendances(userId, studyId);
@@ -327,7 +328,7 @@ class AttendanceServiceTest {
             verify(attendanceRepository).findAllByStudyMemberId(studyMemberId);
             verify(studyMemberRepository).findAllByStudyId(studyId);
             verify(attendanceRepository).findAllByStudyMemberId(studyMemberId);
-            verify(attendance, times(2)).isAttended();
+            verify(attendance).isAttended();
         }
     }
 

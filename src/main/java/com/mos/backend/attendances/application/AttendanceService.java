@@ -152,10 +152,8 @@ public class AttendanceService {
 
     private static List<AttendanceRes> convertToRes(List<Attendance> attendances) {
         return attendances.stream()
-                .map(attendance -> {
-                    boolean isAttended = attendance.isAttended();
-                    return AttendanceRes.of(attendance, isAttended);
-                }).toList();
+                .map(AttendanceRes::of)
+                .toList();
     }
 
     private static void validateRelation(Study study, StudySchedule studySchedule) {
