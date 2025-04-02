@@ -5,7 +5,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.mos.backend.common.entity.TokenType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.redis.RedisTokenUtil;
 import com.mos.backend.users.entity.exception.UserErrorCode;
@@ -33,8 +32,8 @@ public class TokenUtil {
     private Long accessTokenExpirationPeriod;
     @Value("${jwt.refresh.expiration}")
     private Long refreshTokenExpirationPeriod;
-    @Value("${jwt.access.cookie}")
-    private String accessCookie;
+    @Value("${jwt.access.header}")
+    private String accessHeader;
     @Value("${jwt.refresh.cookie}")
     private String refreshCookie;
 
@@ -79,8 +78,16 @@ public class TokenUtil {
         return issueAccessToken(memberId);
     }
 
-    public String extractToken(HttpServletRequest request, TokenType tokenType) {
-        String cookieName = (tokenType == TokenType.ACCESS_TOKEN) ? accessCookie : refreshCookie;
+    public String extractAccessToken(HttpServletRequest request) {
+        Optional<String> requestToken = Optional.ofNullable(request.getHeader(accessHeader))
+                .filter(token -> token.startsWith(BEARER))
+                .map(token -> token.substring(7));
+
+        return requestToken.orElse(null);
+    }
+
+    public String extractRefreshToken(HttpServletRequest request) {
+        String cookieName = refreshCookie;
 
         Cookie[] cookies = request.getCookies();
 
