@@ -32,7 +32,7 @@ public class OauthService {
 
         User user = byOauthProviderAndSocialId.orElseGet(() -> userRepositoryImpl.save(new User(oauthMemberInfo)));
 
-        tokenUtil.addTokenToCookie(response, user.getId());
+        tokenUtil.setJwtToResponse(response, user.getId());
     }
 
     private static OauthParams createOauthParams(OauthLoginReq req) {

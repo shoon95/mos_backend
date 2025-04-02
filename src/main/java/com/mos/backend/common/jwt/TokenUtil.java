@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 
 @Slf4j
 @Getter
@@ -113,17 +114,21 @@ public class TokenUtil {
         }
     }
 
-    public void addTokenToCookie(HttpServletResponse response, Long memberId) {
+    public void setJwtToResponse(HttpServletResponse response, Long memberId) {
         String accessToken = issueAccessToken(memberId);
         String refreshToken = issueRefreshToken(memberId);
 
-        addCookie(response, accessCookie, accessToken, accessTokenExpirationPeriod.intValue());
-        addCookie(response, refreshCookie, refreshToken, refreshTokenExpirationPeriod.intValue());
+        addAccessTokenToHeader(response, accessToken);
+        addRefreshTokenToCookie(response, refreshToken, refreshTokenExpirationPeriod.intValue());
+    }
+
+    private void addAccessTokenToHeader(HttpServletResponse response, String accessToken) {
+        response.setHeader(accessHeader, BEARER + accessToken);
     }
 
 
-    private void addCookie(HttpServletResponse response, String tokenName, String tokenValue, Integer expiration) {
-        Cookie tokenCookie = new Cookie(tokenName, tokenValue);
+    private void addRefreshTokenToCookie(HttpServletResponse response, String tokenValue, int expiration) {
+        Cookie tokenCookie = new Cookie(refreshCookie, tokenValue);
         tokenCookie.setHttpOnly(true);
         tokenCookie.setPath("/");
         tokenCookie.setMaxAge(expiration);
