@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            String token = tokenUtil.extractToken(request, TokenType.ACCESS_TOKEN);
+            String token = tokenUtil.extractAccessToken(request);
 
             DecodedJWT decodedJWT = tokenUtil.decodedJWT(token);
             Long id = decodedJWT.getClaim("id").asLong();
