@@ -4,6 +4,9 @@ import com.mos.backend.attendances.entity.Attendance;
 import com.mos.backend.attendances.entity.exception.AttendanceErrorCode;
 import com.mos.backend.attendances.infrastructure.AttendanceRepository;
 import com.mos.backend.common.exception.MosException;
+import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
+import com.mos.backend.privatechatrooms.entity.PrivateChatRoomErrorCode;
+import com.mos.backend.privatechatrooms.infrastructure.PrivateChatRoomRepository;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
@@ -50,6 +53,7 @@ public class EntityFacade {
     private final AttendanceRepository attendanceRepository;
     private final StudyMemberRepository studyMemberRepository;
     private final StudyMaterialRepository studyMaterialRepository;
+    private final PrivateChatRoomRepository privateChatRoomRepository;
 
     public User getUser(Long userId) {
         return userRepository.findById(userId)
@@ -104,4 +108,10 @@ public class EntityFacade {
     public StudyMaterial getStudyMaterial(Long studyMaterialId) {
         return studyMaterialRepository.findById(studyMaterialId).orElseThrow(() -> new MosException(StudyMaterialErrorCode.STUDY_MATERIAL_NOT_FOUND));
     }
+
+    public PrivateChatRoom getPrivateChatRoom(Long privateChatRoomId) {
+        return privateChatRoomRepository.findById(privateChatRoomId)
+                .orElseThrow(() -> new MosException(PrivateChatRoomErrorCode.NOT_FOUND));
+    }
+
 }

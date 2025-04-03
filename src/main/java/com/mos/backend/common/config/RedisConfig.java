@@ -31,7 +31,8 @@ public class RedisConfig {
         return lettuceConnectionFactory;
     }
 
-    // (refreshToken, memberId)
+    // refreshToken -> memberId
+    // chatRoomId -> (userId1, userid2, ...)
     @Bean
     public RedisTemplate<String, Long> StringLongRedisTemplate() {
         RedisTemplate<String, Long> redisTemplate = new RedisTemplate<>();
