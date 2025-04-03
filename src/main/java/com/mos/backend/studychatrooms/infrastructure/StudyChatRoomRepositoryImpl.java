@@ -1,0 +1,18 @@
+package com.mos.backend.studychatrooms.infrastructure;
+
+import com.mos.backend.studychatrooms.entity.StudyChatRoom;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@RequiredArgsConstructor
+@Repository
+public class StudyChatRoomRepositoryImpl implements StudyChatRoomRepository {
+    private final StudyChatRoomJpaRepository studyChatRoomJpaRepository;
+
+    @Override
+    public Optional<StudyChatRoom> findById(Long id) {
+        return studyChatRoomJpaRepository.findById(id);
+    }
+}
