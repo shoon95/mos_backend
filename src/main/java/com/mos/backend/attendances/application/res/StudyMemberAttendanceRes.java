@@ -32,14 +32,14 @@ public class StudyMemberAttendanceRes {
     @AllArgsConstructor
     public static class AttendanceRes {
         private Long attendanceId;
-        private boolean isAttended;
+        private String attendanceStatus;
 
         private Long studyScheduleId;
         private LocalDateTime StudyScheduleStartDateTime;
 
-        public static AttendanceRes of(Attendance attendance, boolean isAttended) {
+        public static AttendanceRes of(Attendance attendance) {
             StudySchedule studySchedule = attendance.getStudySchedule();
-            return new AttendanceRes(attendance.getId(), isAttended, studySchedule.getId(), studySchedule.getStartDateTime());
+            return new AttendanceRes(attendance.getId(), attendance.getAttendanceStatus().getDescription(), studySchedule.getId(), studySchedule.getStartDateTime());
         }
     }
 }

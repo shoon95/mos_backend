@@ -220,6 +220,7 @@ class AttendanceServiceTest {
             StudyMember studyMember = mock(StudyMember.class);
             Attendance attendance = mock(Attendance.class);
             Optional<Attendance> optionalAttendance = Optional.of(attendance);
+            AttendanceStatus modifiableAttendanceStatus = AttendanceStatus.EARLY_LEAVE;
 
             when(entityFacade.getUser(userId)).thenReturn(user);
             when(entityFacade.getStudy(studyId)).thenReturn(study);
@@ -232,7 +233,7 @@ class AttendanceServiceTest {
             when(attendanceRepository.findByStudyScheduleAndStudyMember(studySchedule, studyMember)).thenReturn(optionalAttendance);
 
             // When
-            attendanceService.update(userId, studyId, studyScheduleId, AttendanceStatus.PRESENT.getDescription());
+            attendanceService.update(userId, studyId, studyScheduleId, modifiableAttendanceStatus.getDescription());
 
             // Then
             verify(entityFacade).getUser(userId);
@@ -245,11 +246,11 @@ class AttendanceServiceTest {
     }
 
     @Nested
-    @DisplayName("조퇴 성공 시나리오")
-    class LeaveEarlySuccessScenario {
+    @DisplayName("출석 수정 실패 시나리오")
+    class UpdateAttendanceFailScenario {
         @Test
-        @DisplayName("조퇴 성공")
-        void leaveEarly_Success() {
+        @DisplayName("출석 수정 실패")
+        void updateAttendance_Fail() {
             // Given
             Long userId = 1L;
             Long studyId = 1L;
@@ -260,6 +261,7 @@ class AttendanceServiceTest {
             StudyMember studyMember = mock(StudyMember.class);
             Attendance attendance = mock(Attendance.class);
             Optional<Attendance> optionalAttendance = Optional.of(attendance);
+            AttendanceStatus unModifiableAttendanceStatus = AttendanceStatus.EARLY_LEAVE;
 
             when(entityFacade.getUser(userId)).thenReturn(user);
             when(entityFacade.getStudy(studyId)).thenReturn(study);
@@ -269,11 +271,10 @@ class AttendanceServiceTest {
             when(user.getId()).thenReturn(userId);
             when(studySchedule.getStudy()).thenReturn(study);
             when(study.isRelated(studyId)).thenReturn(true);
-            when(studySchedule.isCompleted()).thenReturn(false);
             when(attendanceRepository.findByStudyScheduleAndStudyMember(studySchedule, studyMember)).thenReturn(optionalAttendance);
 
             // When
-            attendanceService.leaveEarly(userId, studyId, studyScheduleId);
+            attendanceService.update(userId, studyId, studyScheduleId, unModifiableAttendanceStatus.getDescription());
 
             // Then
             verify(entityFacade).getUser(userId);
@@ -281,38 +282,7 @@ class AttendanceServiceTest {
             verify(entityFacade).getStudySchedule(studyScheduleId);
             verify(studyMemberRepository).findByUserIdAndStudyId(userId, studyId);
             verify(attendanceRepository).findByStudyScheduleAndStudyMember(studySchedule, studyMember);
-            verify(attendance).leaveEarly();
-        }
-    }
-
-    @Nested
-    @DisplayName("조퇴 실패 시나리오")
-    class LeaveEarlyFailScenario {
-        // 이미 완료된 스터디 일정일 겨우 MosException 발생
-        @Test
-        @DisplayName("스터디 일정이 완료된 경우 MosException 발생")
-        void leaveEarly_Fail_StudyScheduleCompleted() {
-            // Given
-            Long userId = 1L;
-            Long studyId = 1L;
-            Long studyScheduleId = 1L;
-            User user = mock(User.class);
-            Study study = mock(Study.class);
-            StudySchedule studySchedule = mock(StudySchedule.class);
-
-            when(entityFacade.getUser(userId)).thenReturn(user);
-            when(entityFacade.getStudy(studyId)).thenReturn(study);
-            when(entityFacade.getStudySchedule(studyScheduleId)).thenReturn(studySchedule);
-            when(study.getId()).thenReturn(studyId);
-            when(studySchedule.getStudy()).thenReturn(study);
-            when(study.isRelated(studyId)).thenReturn(true);
-            when(studySchedule.isCompleted()).thenReturn(true);
-
-            // When
-            MosException exception = assertThrows(MosException.class, () -> attendanceService.leaveEarly(userId, studyId, studyScheduleId));
-
-            // Then
-            assertEquals(exception.getErrorCode(), StudyScheduleErrorCode.STUDY_SCHEDULE_COMPLETED);
+            verify(attendance).updateStatus(any());
         }
     }
 
@@ -346,6 +316,7 @@ class AttendanceServiceTest {
             when(attendance.getStudySchedule()).thenReturn(studySchedule);
             when(studySchedule.getId()).thenReturn(studyScheduleId);
             when(attendance.isAttended()).thenReturn(true);
+            when(attendance.getAttendanceStatus()).thenReturn(AttendanceStatus.PRESENT);
 
             // When
             attendanceService.getStudyMemberAttendances(userId, studyId);
@@ -357,7 +328,7 @@ class AttendanceServiceTest {
             verify(attendanceRepository).findAllByStudyMemberId(studyMemberId);
             verify(studyMemberRepository).findAllByStudyId(studyId);
             verify(attendanceRepository).findAllByStudyMemberId(studyMemberId);
-            verify(attendance, times(2)).isAttended();
+            verify(attendance).isAttended();
         }
     }
 

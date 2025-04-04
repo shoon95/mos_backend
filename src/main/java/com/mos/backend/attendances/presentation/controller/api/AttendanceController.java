@@ -45,14 +45,6 @@ public class AttendanceController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping("/studies/{studyId}/schedules/{studyScheduleId}/attendances/early-leave")
-    public void leaveEarly(@AuthenticationPrincipal Long userId,
-                           @PathVariable Long studyId,
-                           @PathVariable Long studyScheduleId) {
-        attendanceService.leaveEarly(userId, studyId, studyScheduleId);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/studies/{studyId}/schedules/{studyScheduleId}/attendances/{attendanceId}")
     public void delete(@AuthenticationPrincipal Long userId,
                        @PathVariable Long studyId,

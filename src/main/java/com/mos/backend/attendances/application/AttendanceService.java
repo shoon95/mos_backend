@@ -72,31 +72,14 @@ public class AttendanceService {
 
         AttendanceStatus attendanceStatus = AttendanceStatus.fromDescription(attendanceStatusDescription);
 
+        if (!attendanceStatus.isModifiable())
+            throw new MosException(AttendanceErrorCode.UNMODIFIABLE_STATUS);
+
         attendanceRepository.findByStudyScheduleAndStudyMember(studySchedule, studyMember)
                 .ifPresentOrElse(attendance -> attendance.updateStatus(attendanceStatus)
                         , () -> {
                             Attendance attendance = Attendance.create(studySchedule, studyMember, attendanceStatus);
                             attendanceRepository.save(attendance);
-                        }
-                );
-    }
-
-    @Transactional
-    public void leaveEarly(Long userId, Long studyId, Long studyScheduleId) {
-        User user = entityFacade.getUser(userId);
-        Study study = entityFacade.getStudy(studyId);
-        StudySchedule studySchedule = entityFacade.getStudySchedule(studyScheduleId);
-
-        validateRelation(study, studySchedule);
-        validateIsCompleted(studySchedule);
-
-        StudyMember studyMember = studyMemberRepository.findByUserIdAndStudyId(user.getId(), study.getId())
-                .orElseThrow(() -> new MosException(StudyMemberErrorCode.STUDY_MEMBER_NOT_FOUND));
-
-        attendanceRepository.findByStudyScheduleAndStudyMember(studySchedule, studyMember)
-                .ifPresentOrElse(Attendance::leaveEarly
-                        , () -> {
-                            throw new MosException(AttendanceErrorCode.ATTENDANCE_NOT_FOUND);
                         }
                 );
     }
@@ -169,10 +152,8 @@ public class AttendanceService {
 
     private static List<AttendanceRes> convertToRes(List<Attendance> attendances) {
         return attendances.stream()
-                .map(attendance -> {
-                    boolean isAttended = attendance.isAttended();
-                    return AttendanceRes.of(attendance, isAttended);
-                }).toList();
+                .map(AttendanceRes::of)
+                .toList();
     }
 
     private static void validateRelation(Study study, StudySchedule studySchedule) {
