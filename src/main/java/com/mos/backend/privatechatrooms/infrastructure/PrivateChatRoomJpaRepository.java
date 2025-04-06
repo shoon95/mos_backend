@@ -6,6 +6,7 @@ import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PrivateChatRoomJpaRepository extends JpaRepository<PrivateChatRoom, Long> {
@@ -15,4 +16,6 @@ public interface PrivateChatRoomJpaRepository extends JpaRepository<PrivateChatR
                OR (p.requester = :user2 AND p.receiver = :user1)
             """)
     Optional<Long> findPrivateChatRoomIdByUsers(@Param("user1") User user1, @Param("user2") User user2);
+
+    List<PrivateChatRoom> findByUser(User user);
 }

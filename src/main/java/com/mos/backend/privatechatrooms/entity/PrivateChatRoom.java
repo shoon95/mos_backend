@@ -1,7 +1,9 @@
 package com.mos.backend.privatechatrooms.entity;
 
 import com.mos.backend.common.entity.BaseAuditableEntity;
+import com.mos.backend.common.exception.MosException;
 import com.mos.backend.users.entity.User;
+import com.mos.backend.users.entity.exception.UserErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -39,5 +41,12 @@ public class PrivateChatRoom extends BaseAuditableEntity {
 
     public void visible() {
         status = PrivateChatRoomStatus.VISIBLE;
+    }
+
+    public User getCounterpart(User user) {
+        if (!user.equals(requester) && !user.equals(receiver)) {
+            throw new MosException(UserErrorCode.USER_FORBIDDEN);
+        }
+        return user.equals(requester) ? receiver : requester;
     }
 }

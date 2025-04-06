@@ -5,6 +5,7 @@ import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -25,5 +26,10 @@ public class PrivateChatRoomRepositoryImpl implements PrivateChatRoomRepository 
     @Override
     public Optional<Long> findPrivateChatRoomIdByUsers(User user1, User user2) {
         return privateChatRoomJpaRepository.findPrivateChatRoomIdByUsers(user1, user2);
+    }
+
+    @Override
+    public List<PrivateChatRoom> findByUser(User user) {
+        return privateChatRoomJpaRepository.findByUser(user);
     }
 }
