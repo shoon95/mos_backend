@@ -19,4 +19,10 @@ public class StudyChatRoom {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "study_id")
     private Study study;
+
+    public static StudyChatRoom create(Study study) {
+        StudyChatRoom studyChatRoom = new StudyChatRoom();
+        studyChatRoom.study = study;
+        return studyChatRoom;
+    }
 }

@@ -6,4 +6,6 @@ import java.util.Optional;
 
 public interface StudyChatRoomRepository {
     Optional<StudyChatRoom> findById(Long id);
+
+    StudyChatRoom save(StudyChatRoom studyChatRoom);
 }

@@ -15,4 +15,9 @@ public class StudyChatRoomRepositoryImpl implements StudyChatRoomRepository {
     public Optional<StudyChatRoom> findById(Long id) {
         return studyChatRoomJpaRepository.findById(id);
     }
+
+    @Override
+    public StudyChatRoom save(StudyChatRoom studyChatRoom) {
+        return studyChatRoomJpaRepository.save(studyChatRoom);
+    }
 }
