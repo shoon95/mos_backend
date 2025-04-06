@@ -4,7 +4,7 @@ import com.mos.backend.common.event.Event;
 import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studymaterials.application.UploadType;
-import com.mos.backend.studymaterials.application.event.FileUploadFailedEventPayload;
+import com.mos.backend.studymaterials.application.event.FileUploadFailedEventPayloadWithNotification;
 import com.mos.backend.studymaterials.application.event.FileUploadedEventPayloadWithNotification;
 import com.mos.backend.studymaterials.entity.UploaderErrorCode;
 import com.mos.backend.studymaterials.infrastructure.fileuploader.FileUploader;
@@ -88,7 +88,7 @@ public class S3FileUploader extends FileUploader {
                     .completionFuture()
                     .whenComplete(((completedUpload, throwable) -> {
                         if (throwable != null) {
-                            eventPublisher.publishEvent(Event.create(EventType.FILE_UPLOAD_FAILED, new FileUploadFailedEventPayload(filePath)));
+                            eventPublisher.publishEvent(Event.create(EventType.FILE_UPLOAD_FAILED, new FileUploadFailedEventPayloadWithNotification(userId, folderName, filePath, file.getOriginalFilename())));
                             log.error("비동기 S3 업로드 실패. Key: {}", filePath, throwable);
                         } else {
                             log.info("비동기 S3 업로드 성공 완료. Key: {}", filePath);
@@ -101,7 +101,7 @@ public class S3FileUploader extends FileUploader {
             if (tempFilePath != null) {
                 deleteTemporaryFile(tempFilePath);
             }
-            eventPublisher.publishEvent(Event.create(EventType.FILE_UPLOAD_FAILED, new FileUploadFailedEventPayload(filePath)));
+            eventPublisher.publishEvent(Event.create(EventType.FILE_UPLOAD_FAILED, new FileUploadFailedEventPayloadWithNotification(userId, folderName, filePath, file.getOriginalFilename())));
             throw new MosException(UploaderErrorCode.FILE_UPLOAD_EXCEPTION);
         }
     }
