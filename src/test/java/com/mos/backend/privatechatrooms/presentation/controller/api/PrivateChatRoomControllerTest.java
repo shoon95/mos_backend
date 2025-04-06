@@ -67,4 +67,19 @@ class PrivateChatRoomControllerTest {
                         )
                 );
     }
+
+    @Test
+    @DisplayName("나의 개인 채팅방 목록 조회 성공 문서화")
+    void get_My_Private_Chat_Rooms_Success_Documentation() throws Exception {
+        mockMvc.perform(
+                        get("/private-chat-rooms")
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andDo(document("get-my-private-chat-rooms-success",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint())
+                        )
+                );
+    }
 }

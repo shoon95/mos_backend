@@ -2,7 +2,10 @@ package com.mos.backend.privatechatrooms.application;
 
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
+import com.mos.backend.privatechatmessages.entity.PrivateChatMessage;
 import com.mos.backend.privatechatmessages.entity.PrivateChatMessageErrorCode;
+import com.mos.backend.privatechatmessages.infrastructure.PrivateChatMessageRepository;
+import com.mos.backend.privatechatrooms.application.res.PrivateChatRoomRes;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoomErrorCode;
 import com.mos.backend.privatechatrooms.infrastructure.PrivateChatRoomRepository;
@@ -16,10 +19,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +33,8 @@ class PrivateChatRoomServiceTest {
     private EntityFacade entityFacade;
     @Mock
     private PrivateChatRoomRepository privateChatRoomRepository;
+    @Mock
+    private PrivateChatMessageRepository privateChatMessageRepository;
 
     @InjectMocks
     private PrivateChatRoomService privateChatRoomService;
@@ -144,6 +150,87 @@ class PrivateChatRoomServiceTest {
             verify(entityFacade).getUser(userId1);
             verify(entityFacade).getUser(userId2);
             verify(privateChatRoomRepository).findPrivateChatRoomIdByUsers(user1, user2);
+        }
+    }
+
+    @Nested
+    @DisplayName("나의 1:1 채팅방 조회 성공 시나리오")
+    class GetMyPrivateChatRoomsSuccessScenarios {
+        @Test
+        @DisplayName("메시지가 존재하는 경우")
+        void getMyPrivateChatRooms_WithMessages() {
+            // Given
+            Long userId = 1L;
+            User user = mock(User.class);
+            PrivateChatRoom privateChatRoom = mock(PrivateChatRoom.class);
+            User counterpart = mock(User.class);
+            PrivateChatMessage privateChatMessage = mock(PrivateChatMessage.class);
+
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(privateChatRoomRepository.findByUser(user)).thenReturn(List.of(privateChatRoom));
+            when(privateChatRoom.getCounterpart(user)).thenReturn(counterpart);
+            when(counterpart.getId()).thenReturn(2L);
+            when(privateChatMessageRepository.findFirstByPrivateChatRoomOrderByCreatedByDesc(privateChatRoom))
+                    .thenReturn(Optional.of(privateChatMessage));
+
+            // When
+            List<PrivateChatRoomRes> result = privateChatRoomService.getMyPrivateChatRooms(userId);
+
+            // Then
+            assertEquals(1, result.size());
+            verify(entityFacade).getUser(userId);
+            verify(privateChatRoomRepository).findByUser(user);
+            verify(privateChatRoom).getCounterpart(user);
+            verify(counterpart).getId();
+            verify(privateChatMessageRepository).findFirstByPrivateChatRoomOrderByCreatedByDesc(privateChatRoom);
+        }
+
+        @Test
+        @DisplayName("메시지가 존재하지 않는 경우")
+        void getMyPrivateChatRooms_NoMessages() {
+            // Given
+            Long userId = 1L;
+            User user = mock(User.class);
+            PrivateChatRoom privateChatRoom = mock(PrivateChatRoom.class);
+            User counterpart = mock(User.class);
+
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(privateChatRoomRepository.findByUser(user)).thenReturn(List.of(privateChatRoom));
+            when(privateChatRoom.getCounterpart(user)).thenReturn(counterpart);
+            when(counterpart.getId()).thenReturn(2L);
+            when(privateChatMessageRepository.findFirstByPrivateChatRoomOrderByCreatedByDesc(privateChatRoom))
+                    .thenReturn(Optional.empty());
+
+            // When
+            List<PrivateChatRoomRes> result = privateChatRoomService.getMyPrivateChatRooms(userId);
+
+            // Then
+            assertEquals(1, result.size());
+            verify(entityFacade).getUser(userId);
+            verify(privateChatRoomRepository).findByUser(user);
+            verify(privateChatRoom).getCounterpart(user);
+            verify(counterpart).getId();
+            verify(privateChatMessageRepository).findFirstByPrivateChatRoomOrderByCreatedByDesc(privateChatRoom);
+        }
+
+        @Test
+        @DisplayName("채팅방이 없는 경우")
+        void getMyPrivateChatRooms_NoChatRooms() {
+            // Given
+            Long userId = 1L;
+            User user = mock(User.class);
+
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(privateChatRoomRepository.findByUser(user)).thenReturn(Collections.emptyList());
+
+            // When
+            List<PrivateChatRoomRes> result = privateChatRoomService.getMyPrivateChatRooms(userId);
+
+            // Then
+            assertTrue(result.isEmpty());
+            verify(entityFacade).getUser(userId);
+            verify(privateChatRoomRepository).findByUser(user);
+            verifyNoMoreInteractions(privateChatRoomRepository, privateChatMessageRepository);
         }
     }
 }
