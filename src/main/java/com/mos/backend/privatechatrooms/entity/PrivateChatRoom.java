@@ -25,4 +25,19 @@ public class PrivateChatRoom extends BaseAuditableEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "receiver_id")
     private User receiver;
+
+    @Enumerated(EnumType.STRING)
+    private PrivateChatRoomStatus status;
+
+    public static PrivateChatRoom createInvisibleChatRoom(User requester, User receiver) {
+        PrivateChatRoom privateChatRoom = new PrivateChatRoom();
+        privateChatRoom.requester = requester;
+        privateChatRoom.receiver = receiver;
+        privateChatRoom.status = PrivateChatRoomStatus.INVISIBLE;
+        return privateChatRoom;
+    }
+
+    public void visible() {
+        status = PrivateChatRoomStatus.VISIBLE;
+    }
 }

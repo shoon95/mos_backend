@@ -1,6 +1,7 @@
 package com.mos.backend.privatechatrooms.infrastructure;
 
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
+import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -14,5 +15,15 @@ public class PrivateChatRoomRepositoryImpl implements PrivateChatRoomRepository 
     @Override
     public Optional<PrivateChatRoom> findById(Long id) {
         return privateChatRoomJpaRepository.findById(id);
+    }
+
+    @Override
+    public PrivateChatRoom save(PrivateChatRoom privateChatRoom) {
+        return privateChatRoomJpaRepository.save(privateChatRoom);
+    }
+
+    @Override
+    public Optional<Long> findPrivateChatRoomIdByUsers(User user1, User user2) {
+        return privateChatRoomJpaRepository.findPrivateChatRoomIdByUsers(user1, user2);
     }
 }
