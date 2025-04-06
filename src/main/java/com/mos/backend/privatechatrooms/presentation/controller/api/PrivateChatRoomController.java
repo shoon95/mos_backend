@@ -23,7 +23,7 @@ public class PrivateChatRoomController {
         return ResponseEntity.created(URI.create(BASE_URL + privateChatRoomId)).build();
     }
 
-    @GetMapping("/private-chat-rooms")
+    @GetMapping("/private-chat-rooms/search")
     public Long getPrivateChatRoomId(@AuthenticationPrincipal Long userId, @RequestParam Long counterpartId) {
         return privateChatRoomService.getPrivateChatRoomId(userId, counterpartId);
     }

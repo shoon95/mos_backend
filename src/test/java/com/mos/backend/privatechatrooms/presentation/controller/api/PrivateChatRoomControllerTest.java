@@ -56,7 +56,7 @@ class PrivateChatRoomControllerTest {
     @DisplayName("개인 채팅방 조회 성공 문서화")
     void get_Private_Chat_Room_Id_Success_Documentation() throws Exception {
         mockMvc.perform(
-                        get("/private-chat-rooms")
+                        get("/private-chat-rooms/search")
                                 .param("counterpartId", String.valueOf(2L))
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
