@@ -5,6 +5,7 @@ import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studymaterials.application.UploadType;
 import com.mos.backend.studymaterials.application.event.FileUploadFailedEventPayload;
+import com.mos.backend.studymaterials.application.event.FileUploadedEventPayloadWithNotification;
 import com.mos.backend.studymaterials.entity.UploaderErrorCode;
 import com.mos.backend.studymaterials.infrastructure.fileuploader.aws.S3FileUploader;
 import org.junit.jupiter.api.BeforeEach;
@@ -224,7 +225,7 @@ class S3FileUploaderTest {
         given(s3TransferManager.upload(any(UploadRequest.class))).willReturn(mockUpload);
 
         // When
-        assertDoesNotThrow(() -> s3FileUploader.uploadFileAsync(fileName, folderName, UploadType.TEMP, mockFile));
+        assertDoesNotThrow(() -> s3FileUploader.uploadFileAsync(1L, fileName, folderName, UploadType.TEMP, mockFile));
 
         successFuture.join();
 
@@ -237,7 +238,9 @@ class S3FileUploaderTest {
         assertThat(capturedPutRequest.contentLength()).isGreaterThanOrEqualTo(content.length());
         assertThat(capturedUploadRequest.requestBody()).isNotNull();
 
-        verify(eventPublisher, never()).publishEvent(any(Event.class));
+        verify(eventPublisher).publishEvent(eventCaptor.capture());
+        Event event = eventCaptor.getValue();
+        assertThat(event.getPayload()).isInstanceOf(FileUploadedEventPayloadWithNotification.class);
 
     }
 
@@ -264,7 +267,7 @@ class S3FileUploaderTest {
         given(s3TransferManager.upload(any(UploadRequest.class))).willReturn(mockUpload);
 
         // When
-        assertDoesNotThrow(() -> s3FileUploader.uploadFileAsync(fileName, folderName, UploadType.TEMP, mockFile));
+        assertDoesNotThrow(() -> s3FileUploader.uploadFileAsync(1L, fileName, folderName, UploadType.TEMP, mockFile));
 
         // Then
         assertThatThrownBy(failureFuture::join)
@@ -292,7 +295,7 @@ class S3FileUploaderTest {
         String expectedObjectKey = "temp/" + folderName + "/" + fileName;
 
         // When & Then:
-        assertThatThrownBy(() -> s3FileUploader.uploadFileAsync(fileName, folderName, UploadType.TEMP, mockFile))
+        assertThatThrownBy(() -> s3FileUploader.uploadFileAsync(1L, fileName, folderName, UploadType.TEMP, mockFile))
                 .isInstanceOf(MosException.class)
                 .hasFieldOrPropertyWithValue("errorCode", UploaderErrorCode.FILE_UPLOAD_EXCEPTION);
 
