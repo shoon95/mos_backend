@@ -16,7 +16,7 @@ public class DataPayloadDto {
     // FILE 관련
     private String fileName;
 
-    public static DataPayloadDto forFileUploaded(EventType type, Long studyId, String studyName, String fileName) {
+    public static DataPayloadDto forFileUpload(EventType type, Long studyId, String studyName, String fileName) {
         DataPayloadDto dataPayloadDto = new DataPayloadDto();
         dataPayloadDto.type = type.toString();
         dataPayloadDto.studyId = studyId.toString();

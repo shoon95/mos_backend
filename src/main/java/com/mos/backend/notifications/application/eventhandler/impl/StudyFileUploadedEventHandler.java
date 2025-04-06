@@ -16,7 +16,7 @@ import java.util.Locale;
 
 @Component
 @RequiredArgsConstructor
-public class StudyFileUploadedNotificationEventHandler implements NotificationEventHandler<FileUploadedEventPayloadWithNotification> {
+public class StudyFileUploadedEventHandler implements NotificationEventHandler<FileUploadedEventPayloadWithNotification> {
 
     private static final String MESSAGE_TITLE_CODE = "notification.file-uploaded.title";
     private static final String MESSAGE_CONTENT_CODE = "notification.file-uploaded.content";
@@ -28,7 +28,7 @@ public class StudyFileUploadedNotificationEventHandler implements NotificationEv
     public List<NotificationDetails> prepareDetails(EventType type, FileUploadedEventPayloadWithNotification payload) {
         List<Long> recipientIdList = getRecipientIdList(payload);
         Study study = entityFacade.getStudy(payload.getStudyId());
-        DataPayloadDto dataPayloadDto = DataPayloadDto.forFileUploaded(type, payload.getStudyId(), study.getTitle(), payload.getOriginalFilename());
+        DataPayloadDto dataPayloadDto = DataPayloadDto.forFileUpload(type, payload.getStudyId(), study.getTitle(), payload.getOriginalFilename());
         return recipientIdList.stream().map(id -> {
             String title = ms.getMessage(MESSAGE_TITLE_CODE, null, Locale.getDefault());
             String content = ms.getMessage(MESSAGE_CONTENT_CODE, new String[]{payload.getOriginalFilename()}, Locale.getDefault());
