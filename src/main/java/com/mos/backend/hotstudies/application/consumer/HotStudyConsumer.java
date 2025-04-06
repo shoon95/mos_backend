@@ -1,4 +1,4 @@
-package com.mos.backend.hotstudies.infrastructure.event.consumer;
+package com.mos.backend.hotstudies.application.consumer;
 
 import com.mos.backend.common.event.Event;
 import com.mos.backend.hotstudies.application.HotStudyService;
