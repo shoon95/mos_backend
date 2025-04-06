@@ -31,4 +31,12 @@ public class StudyChatMessage extends BaseAuditableEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
+
+    public static StudyChatMessage of(User user, StudyChatRoom studyChatRoom, String message) {
+        StudyChatMessage studyChatMessage = new StudyChatMessage();
+        studyChatMessage.user = user;
+        studyChatMessage.studyChatRoom = studyChatRoom;
+        studyChatMessage.message = message;
+        return studyChatMessage;
+    }
 }

@@ -1,4 +1,5 @@
-package com.mos.backend.studychatrooms.entity;
+package com.mos.backend.studychatmessages.entity.exception;
+
 
 import com.mos.backend.common.exception.ErrorCode;
 import lombok.Getter;
@@ -10,9 +11,9 @@ import java.util.Locale;
 
 @RequiredArgsConstructor
 @Getter
-public enum StudyChatRoomErrorCode implements ErrorCode {
-    NOT_FOUND(HttpStatus.NOT_FOUND, "study-chat-room.not-found"),
-    FORBIDDEN(HttpStatus.FORBIDDEN, "study-chat-room.forbidden"),;
+public enum StudyChatMessageErrorCode implements ErrorCode {
+    DESERIALIZATION_FAILED(HttpStatus.BAD_REQUEST, "study-chat-message.deserialization-failed"),
+    ;
 
     private final HttpStatus httpStatus;
     private final String messageKey;

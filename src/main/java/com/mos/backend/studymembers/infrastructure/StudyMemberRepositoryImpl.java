@@ -51,4 +51,9 @@ public class StudyMemberRepositoryImpl implements StudyMemberRepository{
     public boolean existsByStudyAndRoleType(Study study, StudyMemberRoleType roleType) {
         return studyMemberJpaRepository.existsByStudyAndRoleType(study, roleType);
     }
+
+    @Override
+    public boolean existsByUserAndStudy(User user, Study study) {
+        return studyMemberJpaRepository.existsByUserAndStudy(user, study);
+    }
 }
