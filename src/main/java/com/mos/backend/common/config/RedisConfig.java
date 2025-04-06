@@ -30,6 +30,8 @@ public class RedisConfig {
     private int redisPort;
     @Value("${spring.data.redis.private-chat-channel}")
     private String privateChatChannel;
+    @Value("${spring.data.redis.study-chat-channel}")
+    private String studyChatChannel;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
@@ -80,12 +82,19 @@ public class RedisConfig {
         container.setConnectionFactory(redisConnectionFactory());
 
         container.addMessageListener(privateMessageListenerAdapter, new PatternTopic(privateChatChannel));
+        container.addMessageListener(studyMessageListenerAdapter, new PatternTopic(studyChatChannel));
+
         return container;
     }
 
     @Bean
     public MessageListenerAdapter privateMessageListenerAdapter(RedisSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "onPrivateChatMessage");
+    }
+
+    @Bean
+    public MessageListenerAdapter studyMessageListenerAdapter(RedisSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "onStudyChatMessage");
     }
 
 }

@@ -1,6 +1,7 @@
 package com.mos.backend.common.redis;
 
 import com.mos.backend.privatechatmessages.application.dto.PrivateChatMessageDto;
+import com.mos.backend.studychatmessages.application.dto.StudyChatMessageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,9 +15,14 @@ public class RedisPublisher {
 
     @Value("${spring.data.redis.private-chat-channel}")
     private String privateChannel;
+    @Value("${spring.data.redis.study-chat-channel}")
+    private String studyChannel;
 
     public void publishPrivateChatMessage(PrivateChatMessageDto privateChatMessageDto) {
         redisTemplate.convertAndSend(privateChannel, privateChatMessageDto);
     }
 
+    public void publishStudyChatMessage(StudyChatMessageDto studyChatMessageDto) {
+        redisTemplate.convertAndSend(studyChannel, studyChatMessageDto);
+    }
 }
