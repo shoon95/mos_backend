@@ -1,8 +1,8 @@
-package com.mos.backend.studyrecruitmentimage.infrastructure.event.consumer;
+package com.mos.backend.studyrequirements.application.consumer;
 
 import com.mos.backend.common.event.Event;
 import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
-import com.mos.backend.studyrecruitmentimage.application.StudyRecruitmentImageService;
+import com.mos.backend.studyrequirements.application.StudyRequirementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -13,13 +13,13 @@ import static org.springframework.transaction.event.TransactionPhase.BEFORE_COMM
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class StudyRecruitmentImageConsumer {
+public class StudyRequirementConsumer {
 
-    private final StudyRecruitmentImageService studyRecruitmentImageService;
+    private final StudyRequirementService studyRequirementService;
 
     @TransactionalEventListener(phase = BEFORE_COMMIT)
     public void handleStudyCreatedEvent(Event<StudyCreatedEventPayload> event) {
         StudyCreatedEventPayload payload = event.getPayload();
-        studyRecruitmentImageService.permanentUpload(payload.getUserId(), payload.getRequestDto(), payload.getStudyId());
+        studyRequirementService.createOrUpdateOrDelete(payload.getStudyId(), payload.getRequestDto().getRequirements());
     }
 }
