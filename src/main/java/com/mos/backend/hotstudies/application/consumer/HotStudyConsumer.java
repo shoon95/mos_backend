@@ -4,7 +4,7 @@ import com.mos.backend.common.event.Event;
 import com.mos.backend.hotstudies.application.HotStudyService;
 import com.mos.backend.studies.application.event.StudyDeletedEventPayload;
 import com.mos.backend.studies.application.event.StudyViewedEventPayload;
-import com.mos.backend.studyjoins.application.event.StudyJoinEventPayload;
+import com.mos.backend.studyjoins.application.event.StudyJoinEventPayloadWithNotification;
 import com.mos.backend.userstudylikes.application.event.StudyLikeEventPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -25,8 +25,8 @@ public class HotStudyConsumer {
     }
 
     @TransactionalEventListener(phase = BEFORE_COMMIT)
-    public void handleStudyJoinEvent(Event<StudyJoinEventPayload> event) {
-        StudyJoinEventPayload payload = event.getPayload();
+    public void handleStudyJoinEvent(Event<StudyJoinEventPayloadWithNotification> event) {
+        StudyJoinEventPayloadWithNotification payload = event.getPayload();
         hotStudyService.handleEvent(payload.getType(), payload.getStudyId());
     }
 

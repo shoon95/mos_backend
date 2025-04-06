@@ -4,7 +4,7 @@ import com.mos.backend.common.event.Event;
 import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studymaterials.application.UploadType;
-import com.mos.backend.studymaterials.application.event.FileUploadFailedEventPayload;
+import com.mos.backend.studymaterials.application.event.FileUploadFailedEventPayloadWithNotification;
 import com.mos.backend.studymaterials.application.event.FileUploadedEventPayloadWithNotification;
 import com.mos.backend.studymaterials.entity.UploaderErrorCode;
 import com.mos.backend.studymaterials.infrastructure.fileuploader.aws.S3FileUploader;
@@ -277,8 +277,8 @@ class S3FileUploaderTest {
         verify(eventPublisher).publishEvent(eventCaptor.capture());
         Event capturedEvent = eventCaptor.getValue();
         assertThat(capturedEvent.getEventType()).isEqualTo(EventType.FILE_UPLOAD_FAILED);
-        assertThat(capturedEvent.getPayload()).isInstanceOf(FileUploadFailedEventPayload.class);
-        FileUploadFailedEventPayload payload = (FileUploadFailedEventPayload) capturedEvent.getPayload();
+        assertThat(capturedEvent.getPayload()).isInstanceOf(FileUploadFailedEventPayloadWithNotification.class);
+        FileUploadFailedEventPayloadWithNotification payload = (FileUploadFailedEventPayloadWithNotification) capturedEvent.getPayload();
         assertThat(payload.getFilePath()).isEqualTo(expectedObjectKey);
 
     }
@@ -304,7 +304,7 @@ class S3FileUploaderTest {
         verify(eventPublisher).publishEvent(eventCaptor.capture());
         Event capturedEvent = eventCaptor.getValue();
         assertThat(capturedEvent.getEventType()).isEqualTo(EventType.FILE_UPLOAD_FAILED);
-        FileUploadFailedEventPayload payload = (FileUploadFailedEventPayload) capturedEvent.getPayload();
+        FileUploadFailedEventPayloadWithNotification payload = (FileUploadFailedEventPayloadWithNotification) capturedEvent.getPayload();
         assertThat(payload.getFilePath()).isEqualTo(expectedObjectKey);
 
     }
