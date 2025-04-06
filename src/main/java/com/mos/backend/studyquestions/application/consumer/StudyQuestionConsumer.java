@@ -1,8 +1,8 @@
-package com.mos.backend.studycurriculum.infrastructure.event.consumer;
+package com.mos.backend.studyquestions.application.consumer;
 
 import com.mos.backend.common.event.Event;
 import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
-import com.mos.backend.studycurriculum.application.StudyCurriculumService;
+import com.mos.backend.studyquestions.application.StudyQuestionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -13,13 +13,13 @@ import static org.springframework.transaction.event.TransactionPhase.BEFORE_COMM
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class StudyCurriculumConsumer {
+public class StudyQuestionConsumer {
 
-    private final StudyCurriculumService studyCurriculumService;
+    private final StudyQuestionService studyQuestionService;
 
     @TransactionalEventListener(phase = BEFORE_COMMIT)
     public void handleStudyCreatedEvent(Event<StudyCreatedEventPayload> event) {
         StudyCreatedEventPayload payload = event.getPayload();
-        studyCurriculumService.createOrUpdateOrDelete(payload.getStudyId(), payload.getRequestDto().getCurriculums());
+        studyQuestionService.createOrUpdateOrDelete(payload.getStudyId(), payload.getRequestDto().getApplicationQuestions());
     }
 }

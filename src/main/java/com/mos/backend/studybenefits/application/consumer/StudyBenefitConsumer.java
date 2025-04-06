@@ -1,8 +1,8 @@
-package com.mos.backend.studymembers.infrastructure.event.consumer;
+package com.mos.backend.studybenefits.application.consumer;
 
 import com.mos.backend.common.event.Event;
 import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
-import com.mos.backend.studymembers.application.StudyMemberService;
+import com.mos.backend.studybenefits.application.StudyBenefitService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -13,13 +13,13 @@ import static org.springframework.transaction.event.TransactionPhase.BEFORE_COMM
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class StudyMemberConsumer {
+public class StudyBenefitConsumer {
 
-    private final StudyMemberService studyMemberService;
+    private final StudyBenefitService studyBenefitService;
 
     @TransactionalEventListener(phase = BEFORE_COMMIT)
     public void handleStudyCreatedEvent(Event<StudyCreatedEventPayload> event) {
         StudyCreatedEventPayload payload = event.getPayload();
-        studyMemberService.createStudyLeader(payload.getStudyId(), payload.getUserId());
+        studyBenefitService.createOrUpdateOrDelete(payload.getStudyId(), payload.getRequestDto().getBenefits());
     }
 }
