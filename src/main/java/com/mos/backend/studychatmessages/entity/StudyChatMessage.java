@@ -1,8 +1,6 @@
 package com.mos.backend.studychatmessages.entity;
 
 import com.mos.backend.common.entity.BaseAuditableEntity;
-import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
-import com.mos.backend.studychatparticipants.entity.StudyChatParticipant;
 import com.mos.backend.studychatrooms.entity.StudyChatRoom;
 import com.mos.backend.users.entity.User;
 import jakarta.persistence.*;
@@ -31,6 +29,6 @@ public class StudyChatMessage extends BaseAuditableEntity {
     private StudyChatRoom studyChatRoom;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(nullable = false, name = "study_chat_participant_id")
-    private StudyChatParticipant studyChatParticipant;
+    @JoinColumn(nullable = false, name = "user_id")
+    private User user;
 }
