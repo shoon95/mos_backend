@@ -70,15 +70,15 @@ public class FcmSendingService implements SendingService {
                 String failedToken = originalTokens.get(i);
                 if (responseList.get(i).getException() instanceof FirebaseMessagingException fme) {
                     MessagingErrorCode errorCode = fme.getMessagingErrorCode();
-                    if (errorCode == MessagingErrorCode.UNREGISTERED || errorCode == MessagingErrorCode.INVALID_ARGUMENT) {
+                    if (MessagingErrorCode.UNREGISTERED.equals(errorCode) || MessagingErrorCode.INVALID_ARGUMENT.equals(errorCode)) {
                         tokensToDelete.add(failedToken);
                     }
                 }
             }
         }
-
-        tokensToDelete.forEach(token -> {
-            userFcmTokenService.delete(userId, token);
-        });
+        for (String s : tokensToDelete) {
+            System.out.println("s = " + s);
+        }
+        tokensToDelete.forEach(token -> userFcmTokenService.delete(userId, token));
     }
 }

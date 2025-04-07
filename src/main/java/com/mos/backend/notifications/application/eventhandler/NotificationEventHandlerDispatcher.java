@@ -1,6 +1,7 @@
 package com.mos.backend.notifications.application.eventhandler;
 
 import com.mos.backend.common.event.EventType;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@Slf4j
 public class NotificationEventHandlerDispatcher {
     private Map<EventType, NotificationEventHandler> notificationHandlerMap = new EnumMap<>(EventType.class);
 
@@ -20,7 +22,8 @@ public class NotificationEventHandlerDispatcher {
 
     public NotificationEventHandler findNotificationHandler(EventType eventType) {
         if (!support(eventType)) {
-            return null;
+            log.error("적절한 핸들러 반환 실패");
+            throw new IllegalArgumentException("cannot find proper handler");
         } return notificationHandlerMap.get(eventType);
     }
 
