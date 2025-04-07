@@ -31,4 +31,12 @@ public class PrivateChatMessage extends BaseAuditableEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
+
+    public static PrivateChatMessage of(User user, PrivateChatRoom privateChatRoom, String message) {
+        PrivateChatMessage privateChatMessage = new PrivateChatMessage();
+        privateChatMessage.user = user;
+        privateChatMessage.privateChatRoom = privateChatRoom;
+        privateChatMessage.message = message;
+        return privateChatMessage;
+    }
 }
