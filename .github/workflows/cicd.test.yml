@@ -54,7 +54,7 @@ jobs:
         run: |
           
           mkdir -p src/main/resources/firebase
-          echo "${{ secrets.SERVICE_ACOUNT_KEY_PATH_JSON }}" > src/main/resources/firebase/serviceAccountKey.json
+          printf '%s' "${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}" > src/main/resources/firebase/serviceAccountKey.json
 
       # Gradle 테스트 실행 (테스트가 실패하면 워크플로우가 중단됨)
       - name: Run tests
