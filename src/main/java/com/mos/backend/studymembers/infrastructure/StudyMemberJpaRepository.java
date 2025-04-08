@@ -22,4 +22,6 @@ public interface StudyMemberJpaRepository extends JpaRepository<StudyMember, Lon
     boolean existsByStudyAndRoleType(Study study, StudyMemberRoleType roleType);
 
     Optional<StudyMember> findByStudyAndUser(Study study, User user);
+
+    boolean existsByUserAndStudy(User user, Study study);
 }
