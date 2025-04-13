@@ -93,7 +93,7 @@
 > Spring Data JPA에서 Transaction 자동 적용과 범위
 ### [스프링 제네릭 이벤트와 타입 소거: ResolvableType으로 해결](https://shoon95.tistory.com/16)
 > 런타임 시 제네릭 이벤트 타입 소거, ResolvableType으로 구체 타입 확인
-### [Testcontainers 환경에서 커넥션 유실 문제]()
+### [Testcontainers 환경에서 커넥션 유실 문제(작성 중)]()
 > mysql과 hibernate 사이의 커넥션 설정 충돌로 인한 커넥션 유실 문제
 
 
