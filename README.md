@@ -44,6 +44,8 @@
 - 스터디 커리큘럼 CRUD
 - 스터디 규칙 CRUD
 - 스터디 지원 자격 CRUD
+- 파일 로그
+- 알림 로그
 
 > 알림 서비스
 - FCM 기반  Web Push Notification
