@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -87,6 +88,14 @@ public class TokenUtil {
         return requestToken.orElse(null);
     }
 
+    public String extractAccessToken(StompHeaderAccessor accessor) {
+        Optional<String> requestToken = Optional.ofNullable(accessor.getFirstNativeHeader(accessHeader))
+                .filter(token -> token.startsWith(BEARER))
+                .map(token -> token.substring(7));
+
+        return requestToken.orElse(null);
+    }
+
     public String extractRefreshToken(HttpServletRequest request) {
         String cookieName = refreshCookie;
 
@@ -134,5 +143,4 @@ public class TokenUtil {
         tokenCookie.setMaxAge(expiration);
         response.addCookie(tokenCookie);
     }
-
 }

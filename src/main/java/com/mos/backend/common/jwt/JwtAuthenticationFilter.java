@@ -3,7 +3,6 @@ package com.mos.backend.common.jwt;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.mos.backend.common.entity.TokenType;
 import com.mos.backend.common.exception.ErrorCode;
 import com.mos.backend.common.exception.MosException;
 import jakarta.servlet.FilterChain;
@@ -32,6 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String[] whitelist = {
             "/oauth**", // oauth
             "/resources/**", "/favicon.ico", // resource
+            "/ws-stomp**", "/ws-stomp/**", // ws
     };
 
     @Override
@@ -67,3 +67,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
 }
+
+
+

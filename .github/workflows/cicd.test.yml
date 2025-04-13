@@ -2,7 +2,7 @@ name: 🚀 Deploy workflow on test environment
 
 on:
   push:
-    branches: ['release/**', 'release']
+    branches: [ 'release/**', 'release' ]
 
 jobs:
   deploy:
@@ -15,7 +15,6 @@ jobs:
 
       - name: Create .env file
         run: |
-        
           echo "KAKAO_CLIENT_ID=${{secrets.KAKAO_CLIENT_ID}}" >> .env
           echo "KAKAO_REDIRECT_URI=${{secrets.KAKAO_REDIRECT_URI}}" >> .env
           
@@ -42,6 +41,8 @@ jobs:
           
           echo "REDIS_HOST=${{secrets.REDIS_RELEASE_HOST}}" >> .env
           echo "REDIS_PORT=${{secrets.REDIS_PORT}}" >> .env
+          echo "REDIS_PRIVATE_CHAT_CHANNEL=${{secrets.REDIS_PRIVATE_CHAT_CHANNEL}}" >> .env
+          echo "REDIS_STUDY_CHAT_CHANNEL=${{secrets.REDIS_PRIVATE_CHAT_CHANNEL}}" >> .env
           
           echo "AWS_ACCESS_KEY=${{secrets.AWS_ACCESS_KEY_ID}}" >> .env
           echo "AWS_SECRET_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}" >> .env
