@@ -90,7 +90,15 @@
 > 이벤트 기반 아키텍처 도입으로 서비스 간 의존성 분리
 
 > 이벤트 타입 마커 인터페이스를 통한 이벤트 필터링
+### [알림 서비스 구현](https://shoon95.tistory.com/19?category=1231725)
+> FCM을 통한 Web Push Notification
+> handler/dispatcher 구조를 통한 확장성 있는 설계
+### [파일 업로드 구현](https://shoon95.tistory.com/18?category=1231725)
+> S3 Transfer Manager를 통한 동기/비동기 업로드
 
+> 데이터 정합성을 위한 임시 저장 및 영구 저장
+
+> 비동기 처리 실패 시 보상 패턴을 통한 데이터 정합성 관리
 
 <br> <br/>
 ## 🚨 트러블슈팅
