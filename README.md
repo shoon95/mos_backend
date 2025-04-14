@@ -60,7 +60,7 @@
 > 인기글 서비스
 - Redis Sorted Set을 활용해 인기글 순위 제공
 - Event 기반 처리
-- 팩토리 메서드 패턴 적용
+- handler/dispatcher 패턴 적용
 
 > 조회수 처리
 - IP 기반 조회수 어뷰징 방지
