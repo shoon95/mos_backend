@@ -41,6 +41,7 @@ jobs:
           echo "GENERATE_DDL=${{secrets.GENERATE_DDL}}" >> .env
           echo "DATABASE_USERNAME=${{secrets.DATABASE_USERNAME}}" >> .env
           echo "DATABASE_PASSWORD=${{secrets.DATABASE_PASSWORD}}" >> .env
+          echo "DATABASE_DRIVER_CLASS_NAME=${{secrets.DATASOURCE_DRIVER_CLASS_NAME}}" >> .env
           
           echo "DDL_AUTO=${{secrets.DDL_AUTH}}" >> .env
           
