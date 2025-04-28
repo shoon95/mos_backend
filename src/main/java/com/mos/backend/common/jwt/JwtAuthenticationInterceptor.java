@@ -4,6 +4,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
@@ -18,12 +19,8 @@ public class JwtAuthenticationInterceptor implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
-        switch (accessor.getCommand()) {
-            case CONNECT:
-                handleConnectCommand(accessor);
-            case SEND:
-                handleSendCommand(accessor);
-        }
+        if (accessor.getCommand() == StompCommand.CONNECT)
+            handleConnectCommand(accessor);
 
         return message;
     }
@@ -32,23 +29,9 @@ public class JwtAuthenticationInterceptor implements ChannelInterceptor {
         validateToken(accessor);
     }
 
-    private Long validateToken(StompHeaderAccessor accessor) {
+    private void validateToken(StompHeaderAccessor accessor) {
         String accessToken = tokenUtil.extractAccessToken(accessor);
         DecodedJWT decodedJWT = tokenUtil.decodedJWT(accessToken);
-        return getUserId(decodedJWT);
-    }
-
-    private void handleSendCommand(StompHeaderAccessor accessor) {
-        Long userId = validateToken(accessor);
-
-        addUserIdInSession(accessor, userId);
-    }
-
-    private static Long getUserId(DecodedJWT decodedJWT) {
-        return decodedJWT.getClaim("id").asLong();
-    }
-
-    private static void addUserIdInSession(StompHeaderAccessor accessor, Long userId) {
-        accessor.getSessionAttributes().put("userId", userId);
+        decodedJWT.getClaim("id").asLong();
     }
 }
