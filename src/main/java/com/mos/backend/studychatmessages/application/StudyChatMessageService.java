@@ -1,9 +1,12 @@
 package com.mos.backend.studychatmessages.application;
 
+import com.mos.backend.common.dto.InfinityScrollRes;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.common.redis.RedisPublisher;
+import com.mos.backend.common.utils.InfinityScrollUtil;
 import com.mos.backend.studychatmessages.application.dto.StudyChatMessageDto;
+import com.mos.backend.studychatmessages.application.res.StudyChatMessageRes;
 import com.mos.backend.studychatmessages.entity.StudyChatMessage;
 import com.mos.backend.studychatmessages.infrastructure.StudyChatMessageRepository;
 import com.mos.backend.studychatmessages.presentation.req.StudyChatMessagePublishReq;
@@ -14,6 +17,9 @@ import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -40,5 +46,31 @@ public class StudyChatMessageService {
     private StudyChatMessage saveStudyChatMessage(StudyChatMessagePublishReq req, User user, StudyChatRoom studyChatRoom) {
         StudyChatMessage studyChatMessage = StudyChatMessage.of(user, studyChatRoom, req.getMessage());
         return studyChatMessageRepository.save(studyChatMessage);
+    }
+
+    @Transactional(readOnly = true)
+    public InfinityScrollRes<StudyChatMessageRes> getStudyChatMessages(Long userId, Long studyChatRoomId, Long lastStudyChatMessageId, Integer size) {
+        User user = entityFacade.getUser(userId);
+        StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(studyChatRoomId);
+
+        if (!studyMemberRepository.existsByUserAndStudy(user, studyChatRoom.getStudy()))
+            throw new MosException(StudyChatRoomErrorCode.FORBIDDEN);
+
+        List<StudyChatMessage> studyChatMessages = studyChatMessageRepository.findAllByChatRoomIdForInfiniteScroll(
+                studyChatRoom.getId(), lastStudyChatMessageId, size
+        );
+
+        boolean hasNext = InfinityScrollUtil.hasNext(studyChatMessages, size);
+        if (hasNext)
+            studyChatMessages.remove(studyChatMessages.size() - 1);
+
+        Optional<StudyChatMessage> lastElement = InfinityScrollUtil.getLastElement(studyChatMessages);
+        Long lastElementId = lastElement.map(StudyChatMessage::getId).orElse(null);
+
+        List<StudyChatMessageRes> studyChatMessageResList = studyChatMessages.stream()
+                .map(StudyChatMessageRes::of)
+                .toList();
+
+        return InfinityScrollRes.of(studyChatMessageResList, lastElementId, hasNext);
     }
 }
