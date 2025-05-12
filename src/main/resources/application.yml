@@ -1,6 +1,9 @@
 spring:
   application:
     name: backend
+  sql:
+    init:
+      mode: always
 
   messages:
     basename: messages/messages-error, messages/messages-notification
@@ -13,12 +16,13 @@ spring:
     url: ${DATASOURCE_URL}
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: ${DATASOURCE_DRIVER_CLASS_NAME}
   jpa:
     database: mysql
     generate-ddl: ${GENERATE_DDL}
     hibernate:
       ddl-auto: ${DDL_AUTO}
+    defer-datasource-initialization: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
