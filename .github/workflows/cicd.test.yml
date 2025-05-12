@@ -28,9 +28,9 @@ jobs:
           
           echo "JWT_SECRET=${{secrets.JWT_SECRET}}" >> .env
           echo "JWT_ACCESS_EXPIRATION=${{secrets.JWT_ACCESS_EXPIRATION}}" >> .env
-          echo "JWT_ACCESS_HEADER=${{secrets.JWT_ACCESS_HEADER}}" >> .env
+          echo "JWT_ACCESS_COOKIE_NAME=${{secrets.JWT_ACCESS_COOKIE_NAME}}" >> .env
           echo "JWT_REFRESH_EXPIRATION=${{secrets.JWT_REFRESH_EXPIRATION}}" >> .env
-          echo "JWT_REFRESH_COOKIE=${{secrets.JWT_REFRESH_COOKIE}}" >> .env
+          echo "JWT_REFRESH_COOKIE_NAME=${{secrets.JWT_REFRESH_COOKIE_NAME}}" >> .env
           
           echo "DATASOURCE_URL=${{secrets.DATASOURCE_RELEASE_URL}}" >> .env
           echo "GENERATE_DDL=${{secrets.GENERATE_DDL}}" >> .env
