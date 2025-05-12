@@ -134,7 +134,7 @@ public class TokenUtil {
 
     private void addCookie(HttpServletResponse response, TokenType tokenType, String tokenValue, int expiration) {
         String tokenName = tokenType == TokenType.ACCESS_TOKEN ? accessCookieName : refreshCookieName;
-        Cookie tokenCookie = new Cookie(tokenName, tokenValue);
+        Cookie tokenCookie = new Cookie(tokenName, BEARER + tokenValue);
         tokenCookie.setHttpOnly(true);
         tokenCookie.setPath("/");
         tokenCookie.setMaxAge(expiration);
