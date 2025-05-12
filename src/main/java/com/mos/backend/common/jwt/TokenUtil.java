@@ -124,7 +124,7 @@ public class TokenUtil {
         }
     }
 
-    public void setJwtToResponse(HttpServletResponse response, Long memberId) {
+    public void addTokenToCookie(HttpServletResponse response, Long memberId) {
         String accessToken = issueAccessToken(memberId);
         String refreshToken = issueRefreshToken(memberId);
 
