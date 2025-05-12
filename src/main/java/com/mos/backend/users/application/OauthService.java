@@ -28,11 +28,11 @@ public class OauthService {
         OauthParams oauthParam = createOauthParams(req);
 
         OauthMemberInfo oauthMemberInfo = requestOauthInfoService.request(oauthParam);
-        Optional<User> byOauthProviderAndSocialId = userRepositoryImpl.findByOauthProviderAndSocialId(oauthMemberInfo.getOauthProvider(), oauthMemberInfo.getSocialId());
+        Optional<User> optionalUser = userRepositoryImpl.findByOauthProviderAndSocialId(oauthMemberInfo.getOauthProvider(), oauthMemberInfo.getSocialId());
 
-        User user = byOauthProviderAndSocialId.orElseGet(() -> userRepositoryImpl.save(new User(oauthMemberInfo)));
+        User user = optionalUser.orElseGet(() -> userRepositoryImpl.save(new User(oauthMemberInfo)));
 
-        tokenUtil.setJwtToResponse(response, user.getId());
+        tokenUtil.addTokenToCookie(response, user.getId());
     }
 
     private static OauthParams createOauthParams(OauthLoginReq req) {
