@@ -4,6 +4,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
@@ -18,10 +19,8 @@ public class JwtAuthenticationInterceptor implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
-        switch (accessor.getCommand()) {
-            case CONNECT:
-                handleConnectCommand(accessor);
-        }
+        if (accessor.getCommand() == StompCommand.CONNECT)
+            handleConnectCommand(accessor);
 
         return message;
     }

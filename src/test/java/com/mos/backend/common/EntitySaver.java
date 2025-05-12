@@ -1,11 +1,19 @@
 package com.mos.backend.common;
 
+import com.mos.backend.privatechatmessages.entity.PrivateChatMessage;
+import com.mos.backend.privatechatmessages.infrastructure.PrivateChatMessageRepository;
+import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
+import com.mos.backend.privatechatrooms.infrastructure.PrivateChatRoomRepository;
 import com.mos.backend.questionanswers.entity.QuestionAnswer;
 import com.mos.backend.questionanswers.infrastructure.QuestionAnswerRepository;
 import com.mos.backend.studies.entity.Category;
 import com.mos.backend.studies.entity.MeetingType;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.infrastructure.StudyRepository;
+import com.mos.backend.studychatmessages.entity.StudyChatMessage;
+import com.mos.backend.studychatmessages.infrastructure.StudyChatMessageRepository;
+import com.mos.backend.studychatrooms.entity.StudyChatRoom;
+import com.mos.backend.studychatrooms.infrastructure.StudyChatRoomRepository;
 import com.mos.backend.studycurriculum.entity.StudyCurriculum;
 import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
 import com.mos.backend.studyjoins.entity.StudyJoin;
@@ -51,6 +59,14 @@ public class EntitySaver {
     private QuestionAnswerRepository questionAnswerRepository;
     @Autowired
     private StudyQuestionRepository studyQuestionRepository;
+    @Autowired
+    private PrivateChatRoomRepository privateChatRoomRepository;
+    @Autowired
+    private PrivateChatMessageRepository privateChatMessageRepository;
+    @Autowired
+    private StudyChatRoomRepository studyChatRoomRepository;
+    @Autowired
+    private StudyChatMessageRepository studyChatMessageRepository;
 
     public User saveUser() {
         return userRepository.save(
@@ -118,6 +134,28 @@ public class EntitySaver {
     public StudyScheduleCurriculum saveStudyScheduleCurriculum(StudySchedule studySchedule, StudyCurriculum studyCurriculum) {
         return studyScheduleCurriculumRepository.save(
                 StudyScheduleCurriculum.create(studySchedule, studyCurriculum)
+        );
+    }
+
+    public PrivateChatRoom savePrivateChatRoom(User user1, User user2) {
+        return privateChatRoomRepository.save(
+                PrivateChatRoom.createInvisibleChatRoom(user1, user2)
+        );
+    }
+
+    public PrivateChatMessage savePrivateChatMessage(User user, PrivateChatRoom privateChatRoom, String message) {
+        return privateChatMessageRepository.save(
+                PrivateChatMessage.of(user, privateChatRoom, message)
+        );
+    }
+
+    public StudyChatRoom saveStudyChatRoom(Study study) {
+        return studyChatRoomRepository.save(StudyChatRoom.create(study));
+    }
+
+    public StudyChatMessage saveStudyChatMessage(User user, StudyChatRoom studyChatRoom, String message) {
+        return studyChatMessageRepository.save(
+                StudyChatMessage.of(user, studyChatRoom, message)
         );
     }
 }

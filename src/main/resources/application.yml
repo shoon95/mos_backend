@@ -1,6 +1,9 @@
 spring:
   application:
     name: backend
+  sql:
+    init:
+      mode: always
 
   messages:
     basename: messages/messages-error, messages/messages-notification
@@ -13,12 +16,13 @@ spring:
     url: ${DATASOURCE_URL}
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: ${DATASOURCE_DRIVER_CLASS_NAME}
   jpa:
     database: mysql
     generate-ddl: ${GENERATE_DDL}
     hibernate:
       ddl-auto: ${DDL_AUTO}
+    defer-datasource-initialization: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
@@ -34,10 +38,10 @@ jwt:
   secret: ${JWT_SECRET}
   access:
     expiration: ${JWT_ACCESS_EXPIRATION}
-    header: ${JWT_ACCESS_HEADER}
+    cookie-name: ${JWT_ACCESS_COOKIE_NAME}
   refresh:
     expiration: ${JWT_REFRESH_EXPIRATION}
-    cookie: ${JWT_REFRESH_COOKIE}
+    cookie-name: ${JWT_REFRESH_COOKIE_NAME}
 
 oauth:
   kakao:
@@ -45,7 +49,7 @@ oauth:
     user_url: "https://kapi.kakao.com/v2/user/me"
     grant_type: authorization_code
     client_id: ${KAKAO_CLIENT_ID} #kakao client id
-    client_secret: #kakao secret key
+    client_secret: ${KAKAO_CLIENT_SECRET} #kakao secret key
     redirect_uri: ${KAKAO_REDIRECT_URI} #kakao redirect uri
   google:
     token_url: "https://oauth2.googleapis.com/token"
