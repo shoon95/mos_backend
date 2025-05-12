@@ -34,10 +34,10 @@ jwt:
   secret: ${JWT_SECRET}
   access:
     expiration: ${JWT_ACCESS_EXPIRATION}
-    header: ${JWT_ACCESS_HEADER}
+    cookie-name: ${JWT_ACCESS_COOKIE_NAME}
   refresh:
     expiration: ${JWT_REFRESH_EXPIRATION}
-    cookie: ${JWT_REFRESH_COOKIE}
+    cookie-name: ${JWT_REFRESH_COOKIE_NAME}
 
 oauth:
   kakao:
