@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -54,7 +55,20 @@ public class SecurityConfig {
                 .httpBasic(httpBasic -> httpBasic.disable())
 
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll())
+                        .requestMatchers("/resources/**", "/favicon.ico").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/oauth2/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/ws-stomp**", "/ws-stomp/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/studies", "/studies/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/studies/*/benefits").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/studies/*/curriculums", "/studies/*/curriculums/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/studies/*/members").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/studies/*/questions", "/studies/*/questions/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/studies/*/requirements", "/studies/*/requirements/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/studies/*/rules", "/studies/*/rules/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/study-schedules", "/studies/*/schedules").permitAll()
+
+                        .anyRequest().authenticated()
+                )
 
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -3,7 +3,6 @@ package com.mos.backend.common.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mos.backend.common.entity.TokenType;
 import com.mos.backend.common.exception.MosException;
@@ -118,15 +117,11 @@ public class TokenUtil {
                 .orElseThrow(() -> new MosException(UserErrorCode.MISSING_ACCESS_TOKEN));
     }
 
-    public DecodedJWT decodedJWT(String accessToken) {
+    public Optional<DecodedJWT> decodedJWT(String accessToken) {
         try {
-            return JWT.require(Algorithm.HMAC512(secretKey)).build().verify(accessToken);
-        } catch (TokenExpiredException e) {
-            log.debug("AccessToken is expired: ${}", accessToken);
-            throw new MosException(UserErrorCode.EXPIRED_ACCESS_TOKEN);
+            return Optional.of(JWT.require(Algorithm.HMAC512(secretKey)).build().verify(accessToken));
         } catch (JWTVerificationException e) {
-            log.debug("AccessToken is invalid: ${}", accessToken);
-            throw new MosException(UserErrorCode.INVALID_ACCESS_TOKEN);
+            return Optional.empty();
         }
     }
 
