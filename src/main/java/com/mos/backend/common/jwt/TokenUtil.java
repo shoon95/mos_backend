@@ -3,7 +3,6 @@ package com.mos.backend.common.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mos.backend.common.entity.TokenType;
 import com.mos.backend.common.exception.MosException;
@@ -31,12 +30,18 @@ import java.util.Optional;
 public class TokenUtil {
     @Value("${jwt.secret}")
     private String secretKey;
+
     @Value("${jwt.access.expiration}")
     private Long accessTokenExpirationPeriod;
-    @Value("${jwt.refresh.expiration}")
-    private Long refreshTokenExpirationPeriod;
+    @Value("${jwt.access.header-name}")
+    private String accessHeaderName;
     @Value("${jwt.access.cookie-name}")
     private String accessCookieName;
+
+    @Value("${jwt.refresh.expiration}")
+    private Long refreshTokenExpirationPeriod;
+    @Value("${jwt.refresh.header-name}")
+    private String refreshHeaderName;
     @Value("${jwt.refresh.cookie-name}")
     private String refreshCookieName;
 
@@ -82,7 +87,7 @@ public class TokenUtil {
     }
 
     public String extractAccessToken(HttpServletRequest request) {
-        Optional<String> requestToken = Optional.ofNullable(request.getHeader(accessCookieName))
+        Optional<String> requestToken = Optional.ofNullable(request.getHeader(accessHeaderName))
                 .filter(token -> token.startsWith(BEARER))
                 .map(token -> token.substring(7));
 
@@ -90,7 +95,7 @@ public class TokenUtil {
     }
 
     public String extractAccessToken(StompHeaderAccessor accessor) {
-        Optional<String> requestToken = Optional.ofNullable(accessor.getFirstNativeHeader(accessCookieName))
+        Optional<String> requestToken = Optional.ofNullable(accessor.getFirstNativeHeader(accessHeaderName))
                 .filter(token -> token.startsWith(BEARER))
                 .map(token -> token.substring(7));
 
@@ -112,15 +117,11 @@ public class TokenUtil {
                 .orElseThrow(() -> new MosException(UserErrorCode.MISSING_ACCESS_TOKEN));
     }
 
-    public DecodedJWT decodedJWT(String accessToken) {
+    public Optional<DecodedJWT> decodedJWT(String accessToken) {
         try {
-            return JWT.require(Algorithm.HMAC512(secretKey)).build().verify(accessToken);
-        } catch (TokenExpiredException e) {
-            log.debug("AccessToken is expired: ${}", accessToken);
-            throw new MosException(UserErrorCode.EXPIRED_ACCESS_TOKEN);
+            return Optional.of(JWT.require(Algorithm.HMAC512(secretKey)).build().verify(accessToken));
         } catch (JWTVerificationException e) {
-            log.debug("AccessToken is invalid: ${}", accessToken);
-            throw new MosException(UserErrorCode.INVALID_ACCESS_TOKEN);
+            return Optional.empty();
         }
     }
 
@@ -134,7 +135,7 @@ public class TokenUtil {
 
     private void addCookie(HttpServletResponse response, TokenType tokenType, String tokenValue, int expiration) {
         String tokenName = tokenType == TokenType.ACCESS_TOKEN ? accessCookieName : refreshCookieName;
-        Cookie tokenCookie = new Cookie(tokenName, BEARER + tokenValue);
+        Cookie tokenCookie = new Cookie(tokenName, tokenValue);
         tokenCookie.setHttpOnly(true);
         tokenCookie.setPath("/");
         tokenCookie.setMaxAge(expiration);
