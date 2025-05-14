@@ -32,6 +32,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/oauth**", // oauth
             "/resources/**", "/favicon.ico", // resource
             "/ws-stomp**", "/ws-stomp/**", // ws
+            "/studies", "/studies/*", // study
+            "/studies/*/benefits", // study benefit
+            "/studies/*/curriculums", "/studies/*/curriculums/*", // study curriculum
+            "/studies/*/members", // study member
+            "/studies/*/questions", "/studies/*/questions/*", // study question
+            "/studies/*/requirements", "/studies/*/requirements/*", // study requirement
+            "/studies/*/rules", "/studies/*/rules/*", // study rule
+            "/study-schedules", "/studies/*/schedules", // study schedule
     };
 
     @Override

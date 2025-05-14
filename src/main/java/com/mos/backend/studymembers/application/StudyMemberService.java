@@ -61,8 +61,7 @@ public class StudyMemberService {
     }
 
     @Transactional(readOnly = true)
-    public List<StudyMemberRes> getStudyMembers(Long userId, Long studyId) {
-        User user = entityFacade.getUser(userId);
+    public List<StudyMemberRes> getStudyMembers(Long studyId) {
         Study study = entityFacade.getStudy(studyId);
 
         List<StudyMember> studyMembers = studyMemberRepository.findAllByStudyId(study.getId());

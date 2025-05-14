@@ -16,8 +16,8 @@ public class StudyMemberController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/studies/{studyId}/members")
-    public List<StudyMemberRes> getStudyMembers(@AuthenticationPrincipal Long userId, @PathVariable Long studyId) {
-        return studyMemberService.getStudyMembers(userId, studyId);
+    public List<StudyMemberRes> getStudyMembers(@PathVariable Long studyId) {
+        return studyMemberService.getStudyMembers(studyId);
     }
 
     @ResponseStatus(HttpStatus.OK)
