@@ -31,12 +31,18 @@ import java.util.Optional;
 public class TokenUtil {
     @Value("${jwt.secret}")
     private String secretKey;
+
     @Value("${jwt.access.expiration}")
     private Long accessTokenExpirationPeriod;
-    @Value("${jwt.refresh.expiration}")
-    private Long refreshTokenExpirationPeriod;
+    @Value("${jwt.access.header-name}")
+    private String accessHeaderName;
     @Value("${jwt.access.cookie-name}")
     private String accessCookieName;
+
+    @Value("${jwt.refresh.expiration}")
+    private Long refreshTokenExpirationPeriod;
+    @Value("${jwt.refresh.header-name}")
+    private String refreshHeaderName;
     @Value("${jwt.refresh.cookie-name}")
     private String refreshCookieName;
 
@@ -82,7 +88,7 @@ public class TokenUtil {
     }
 
     public String extractAccessToken(HttpServletRequest request) {
-        Optional<String> requestToken = Optional.ofNullable(request.getHeader(accessCookieName))
+        Optional<String> requestToken = Optional.ofNullable(request.getHeader(accessHeaderName))
                 .filter(token -> token.startsWith(BEARER))
                 .map(token -> token.substring(7));
 
@@ -90,7 +96,7 @@ public class TokenUtil {
     }
 
     public String extractAccessToken(StompHeaderAccessor accessor) {
-        Optional<String> requestToken = Optional.ofNullable(accessor.getFirstNativeHeader(accessCookieName))
+        Optional<String> requestToken = Optional.ofNullable(accessor.getFirstNativeHeader(accessHeaderName))
                 .filter(token -> token.startsWith(BEARER))
                 .map(token -> token.substring(7));
 
@@ -134,7 +140,7 @@ public class TokenUtil {
 
     private void addCookie(HttpServletResponse response, TokenType tokenType, String tokenValue, int expiration) {
         String tokenName = tokenType == TokenType.ACCESS_TOKEN ? accessCookieName : refreshCookieName;
-        Cookie tokenCookie = new Cookie(tokenName, BEARER + tokenValue);
+        Cookie tokenCookie = new Cookie(tokenName, tokenValue);
         tokenCookie.setHttpOnly(true);
         tokenCookie.setPath("/");
         tokenCookie.setMaxAge(expiration);
