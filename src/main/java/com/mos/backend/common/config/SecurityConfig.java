@@ -2,8 +2,10 @@ package com.mos.backend.common.config;
 
 import com.mos.backend.common.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,6 +25,9 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Value("#{'${spring.cors.allowed-origins}'.replaceAll(' ', '').split(',')}")
+    private List<String> allowedOrigins;
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -50,7 +55,20 @@ public class SecurityConfig {
                 .httpBasic(httpBasic -> httpBasic.disable())
 
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll())
+                        .requestMatchers("/resources/**", "/favicon.ico").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/oauth2/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/ws-stomp**", "/ws-stomp/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/studies", "/studies/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/studies/*/benefits").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/studies/*/curriculums", "/studies/*/curriculums/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/studies/*/members").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/studies/*/questions", "/studies/*/questions/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/studies/*/requirements", "/studies/*/requirements/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/studies/*/rules", "/studies/*/rules/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/study-schedules", "/studies/*/schedules").permitAll()
+
+                        .anyRequest().authenticated()
+                )
 
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -63,9 +81,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of(
-                "http://localhost:5173"
-        ));
+        corsConfiguration.setAllowedOrigins(allowedOrigins);
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setExposedHeaders(List.of("Authorization"));
         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
