@@ -15,6 +15,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 
@@ -135,10 +137,16 @@ public class TokenUtil {
 
     private void addCookie(HttpServletResponse response, TokenType tokenType, String tokenValue, int expiration) {
         String tokenName = tokenType == TokenType.ACCESS_TOKEN ? accessCookieName : refreshCookieName;
-        Cookie tokenCookie = new Cookie(tokenName, tokenValue);
-        tokenCookie.setHttpOnly(true);
-        tokenCookie.setPath("/");
-        tokenCookie.setMaxAge(expiration);
-        response.addCookie(tokenCookie);
+
+        ResponseCookie cookie = ResponseCookie.from(tokenName, tokenValue)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/")
+                .maxAge(expiration)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
+
 }
