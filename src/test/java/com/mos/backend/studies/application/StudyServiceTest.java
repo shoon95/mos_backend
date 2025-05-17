@@ -5,6 +5,7 @@ import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.hotstudies.application.HotStudyService;
 import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
+import com.mos.backend.studies.application.responsedto.StudyCategoriesResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyResponseDto;
 import com.mos.backend.studies.entity.Category;
 import com.mos.backend.studies.entity.MeetingType;
@@ -20,6 +21,7 @@ import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreat
 import com.mos.backend.studyrequirements.presentation.requestdto.StudyRequirementCreateRequestDto;
 import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -227,5 +229,25 @@ class StudyServiceTest {
         // then
         verify(viewCountService).handleViewCount(eq(studyId), anyString());
         assertThat(mosException.getErrorCode()).isEqualTo(StudyErrorCode.STUDY_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("스터디 카테고리 조회 시 카테고리 목록을 제공한다")
+    void getStudyCategories_success() {
+        // given
+        Category[] categories = Category.values();
+        List<String> descriptions = Arrays.stream(categories).map(Category::getDescription).toList();
+
+        // when
+        StudyCategoriesResponseDto categoriesResponseDto = studyService.getStudyCategories();
+        List<String> response = categoriesResponseDto.getCategories();
+
+        // then
+        Assertions.assertThat(response).hasSize(categories.length);
+        response.forEach(s -> {
+            Assertions.assertThat(descriptions).contains(s);
+        });
+
+
     }
 }
