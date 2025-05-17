@@ -13,6 +13,7 @@ import com.mos.backend.studies.application.event.StudyDeletedEventPayload;
 import com.mos.backend.studies.application.event.StudyViewedEventPayload;
 import com.mos.backend.studies.application.responsedto.StudiesResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyCardListResponseDto;
+import com.mos.backend.studies.application.responsedto.StudyCategoriesResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyResponseDto;
 import com.mos.backend.studies.entity.Category;
 import com.mos.backend.studies.entity.MeetingType;
@@ -31,6 +32,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -126,10 +128,21 @@ public class StudyService {
         study.changeImageToPermanent(userId, studyId);
     }
 
+    /**
+     * 인기 스터디 목록 조회
+     */
     public StudiesResponseDto getHotStudy(Long studyId) {
         Study study = entityFacade.getStudy(studyId);
         int currentStudyMembers = studyMemberService.countCurrentStudyMember(studyId);
         return StudiesResponseDto.from(study, Long.valueOf(currentStudyMembers));
+    }
+
+    /**
+     * 스터디 카테고리 조회
+     */
+    public StudyCategoriesResponseDto getStudyCategories() {
+        List<String> list = Arrays.stream(Category.values()).map(Category::getDescription).toList();
+        return new StudyCategoriesResponseDto(list);
     }
 
     private Study findStudyById(long studyId) {
