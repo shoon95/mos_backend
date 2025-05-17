@@ -3,6 +3,7 @@ package com.mos.backend.studies.presentation.controller.api;
 import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.application.responsedto.StudiesResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyCardListResponseDto;
+import com.mos.backend.studies.application.responsedto.StudyCategoriesResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyResponseDto;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -80,5 +81,14 @@ public class StudyController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("studyId") Long  studyId, @AuthenticationPrincipal Long userId) {
         studyService.delete(userId, studyId);
+    }
+
+    /**
+     * 스터디 카테고리 목록 조회
+     */
+    @GetMapping("/categories")
+    @ResponseStatus(HttpStatus.OK)
+    public StudyCategoriesResponseDto getStudyCategories() {
+        return studyService.getStudyCategories();
     }
 }
