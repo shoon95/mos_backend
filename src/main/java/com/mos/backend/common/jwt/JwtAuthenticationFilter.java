@@ -9,11 +9,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -30,7 +33,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (decodedJWT.isPresent()) {
                 Long id = decodedJWT.get().getClaim("id").asLong();
-                Authentication authentication = new UsernamePasswordAuthenticationToken(id, null);
+                List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+                Authentication authentication = new UsernamePasswordAuthenticationToken(id, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 
