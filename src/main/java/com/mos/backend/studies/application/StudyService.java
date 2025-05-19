@@ -11,10 +11,7 @@ import com.mos.backend.hotstudies.infrastructure.HotStudyRepository;
 import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
 import com.mos.backend.studies.application.event.StudyDeletedEventPayload;
 import com.mos.backend.studies.application.event.StudyViewedEventPayload;
-import com.mos.backend.studies.application.responsedto.StudiesResponseDto;
-import com.mos.backend.studies.application.responsedto.StudyCardListResponseDto;
-import com.mos.backend.studies.application.responsedto.StudyCategoriesResponseDto;
-import com.mos.backend.studies.application.responsedto.StudyResponseDto;
+import com.mos.backend.studies.application.responsedto.*;
 import com.mos.backend.studies.entity.Category;
 import com.mos.backend.studies.entity.MeetingType;
 import com.mos.backend.studies.entity.Study;
@@ -55,14 +52,14 @@ public class StudyService {
      */
 
     @Transactional
-    public Long create(Long userId, StudyCreateRequestDto requestDto) {
+    public StudyCreateResponseDto create(Long userId, StudyCreateRequestDto requestDto) {
         validateStudyCreateRequest(requestDto);
 
         Study study = convertToEntity(requestDto);
         Study savedStudy = studyRepository.save(study);
 
         eventPublisher.publishEvent(new Event<>(EventType.STUDY_CREATED, new StudyCreatedEventPayload(userId, requestDto, savedStudy.getId())));
-        return savedStudy.getId();
+        return new StudyCreateResponseDto(savedStudy.getId());
     }
 
     /**
