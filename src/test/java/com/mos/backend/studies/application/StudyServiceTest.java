@@ -6,6 +6,7 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.hotstudies.application.HotStudyService;
 import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
 import com.mos.backend.studies.application.responsedto.StudyCategoriesResponseDto;
+import com.mos.backend.studies.application.responsedto.StudyCreateResponseDto;
 import com.mos.backend.studies.application.responsedto.StudyResponseDto;
 import com.mos.backend.studies.entity.Category;
 import com.mos.backend.studies.entity.MeetingType;
@@ -124,7 +125,8 @@ class StudyServiceTest {
             when(studyRepository.save(any(Study.class))).thenReturn(mockStudy);
 
             // When
-            Long studyId = studyService.create(testUserId, validRequestDto);
+            StudyCreateResponseDto studyCreateResponseDto = studyService.create(testUserId, validRequestDto);
+            long studyId = studyCreateResponseDto.getStudyId();
 
             // Then
             assertNotNull(studyId);

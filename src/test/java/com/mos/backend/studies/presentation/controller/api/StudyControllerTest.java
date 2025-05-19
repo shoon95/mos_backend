@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mos.backend.common.jwt.TokenUtil;
 import com.mos.backend.securityuser.WithMockCustomUser;
 import com.mos.backend.studies.application.StudyService;
+import com.mos.backend.studies.application.responsedto.StudyCreateResponseDto;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
 import com.mos.backend.studybenefits.presentation.requestdto.StudyBenefitRequestDto;
 import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCreateRequestDto;
@@ -30,8 +31,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -103,8 +103,9 @@ class StudyControllerTest {
     void createStudy_Success_Documentation() throws Exception {
         // Given
         Long expectedStudyId = 1L;
+        StudyCreateResponseDto studyCreateResponseDto = new StudyCreateResponseDto(expectedStudyId);
         when(studyService.create(any(Long.class), any(StudyCreateRequestDto.class)))
-                .thenReturn(expectedStudyId);
+                .thenReturn(studyCreateResponseDto);
 
         // When & Then
         mockMvc.perform(post("/studies")
@@ -155,6 +156,9 @@ class StudyControllerTest {
                                 fieldWithPath("applicationQuestions[].required").type(JsonFieldType.BOOLEAN).description("필수 질문 여부"),
                                 fieldWithPath("applicationQuestions[].type").type(JsonFieldType.STRING).description("질문 유형"),
                                 fieldWithPath("applicationQuestions[].options").type(JsonFieldType.ARRAY).description("질문 옵션")
+                        ),
+                        responseFields(
+                                fieldWithPath("studyId").type(JsonFieldType.NUMBER).description("스터디 ID")
                         )
                 ));
     }
