@@ -12,19 +12,14 @@ import java.time.Duration;
 public class RedisTokenUtil {
     private final RedisTemplate<String, Long> refreshTokenTemplate;
 
-    public void setRefreshToken(String key, Long value) {
-        ValueOperations<String, Long> valueOperations = refreshTokenTemplate.opsForValue();
-        valueOperations.set(key, value);
-    }
-
     public void setRefreshTokenWithExpire(String key, Long value, Duration duration) {
         ValueOperations<String, Long> valueOperations = refreshTokenTemplate.opsForValue();
         valueOperations.set(key, value, duration);
     }
 
-    public Long getMemberId(String key) {
+    public Long getUserId(String refreshToken) {
         ValueOperations<String, Long> valueOperations = refreshTokenTemplate.opsForValue();
-        return valueOperations.get(key);
+        return valueOperations.getAndDelete(refreshToken);
     }
 
 }

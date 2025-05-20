@@ -3,12 +3,10 @@ package com.mos.backend.common.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mos.backend.common.entity.TokenType;
-import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.redis.RedisTokenUtil;
-import com.mos.backend.users.entity.exception.UserErrorCode;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
@@ -21,7 +19,6 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
 
@@ -65,7 +62,7 @@ public class TokenUtil {
         String refreshToken = JWT.create()
                 .withSubject(REFRESH_TOKEN_SUBJECT)
                 .withClaim("id", memberId)
-                .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenExpirationPeriod))
+                .withExpiresAt(new Date(System.currentTimeMillis() + refreshTokenExpirationPeriod))
                 .sign(Algorithm.HMAC512(secretKey));
         saveRefreshToken(memberId, refreshToken);
         return refreshToken;
@@ -73,19 +70,6 @@ public class TokenUtil {
 
     private void saveRefreshToken(Long memberId, String refreshToken) {
         redisTokenUtil.setRefreshTokenWithExpire(refreshToken, memberId, Duration.ofDays(refreshTokenExpirationPeriod));
-    }
-
-    public String reissueAccessToken(String refreshToken) {
-        DecodedJWT decodedJWT;
-        try {
-            decodedJWT = JWT.require(Algorithm.HMAC512(secretKey)).build().verify(refreshToken);
-        } catch (JWTVerificationException e) {
-            throw new JWTVerificationException(e.getMessage());
-        }
-
-        Long memberId = decodedJWT.getClaim("id").asLong();
-
-        return issueAccessToken(memberId);
     }
 
     public String extractAccessToken(HttpServletRequest request) {
@@ -105,26 +89,37 @@ public class TokenUtil {
     }
 
     public String extractRefreshToken(HttpServletRequest request) {
-        String cookieName = refreshCookieName;
+        Optional<String> requestToken = Optional.ofNullable(request.getHeader(refreshHeaderName))
+                .filter(token -> token.startsWith(BEARER))
+                .map(token -> token.substring(7));
 
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies == null)
-            throw new MosException(UserErrorCode.MISSING_ACCESS_TOKEN);
-
-        return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals(cookieName))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElseThrow(() -> new MosException(UserErrorCode.MISSING_ACCESS_TOKEN));
+        return requestToken.orElse(null);
     }
 
-    public Optional<DecodedJWT> decodedJWT(String accessToken) {
+    public Optional<Long> verifyAccessToken(String accessToken) {
         try {
-            return Optional.of(JWT.require(Algorithm.HMAC512(secretKey)).build().verify(accessToken));
+            DecodedJWT decodedJWT = verify(accessToken);
+            Long userId = decodedJWT.getClaim("id").asLong();
+            return Optional.of(userId);
+        } catch (TokenExpiredException e) {
+            throw e;
         } catch (JWTVerificationException e) {
             return Optional.empty();
         }
+    }
+
+    public Optional<Long> verifyRefreshToken(String refreshToken) {
+        try {
+            verify(refreshToken);
+            Long userId = redisTokenUtil.getUserId(refreshToken);
+            return Optional.ofNullable(userId);
+        } catch (JWTVerificationException e) {
+            return Optional.empty();
+        }
+    }
+
+    private DecodedJWT verify(String token) {
+        return JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token);
     }
 
     public void addTokenToCookie(HttpServletResponse response, Long memberId) {
@@ -148,5 +143,4 @@ public class TokenUtil {
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
-
 }
