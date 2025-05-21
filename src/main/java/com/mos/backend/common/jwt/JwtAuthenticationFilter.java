@@ -1,6 +1,6 @@
 package com.mos.backend.common.jwt;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,18 +27,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-            String token = tokenUtil.extractAccessToken(request);
+        String accessToken = tokenUtil.extractAccessToken(request);
+        try {
+            Optional<Long> optionalUserId = tokenUtil.verifyAccessToken(accessToken);
+            optionalUserId.ifPresent(userId -> setAuthentication(userId));
+        } catch (TokenExpiredException e) {
+            String refreshToken = tokenUtil.extractRefreshToken(request);
+            Optional<Long> optionalUserId = tokenUtil.verifyRefreshToken(refreshToken);
+            optionalUserId.ifPresent(userId -> {
+                tokenUtil.addTokenToCookie(response, userId);
+                setAuthentication(userId);
+            });
+        }
 
-            Optional<DecodedJWT> decodedJWT = tokenUtil.decodedJWT(token);
+        filterChain.doFilter(request, response);
+    }
 
-            if (decodedJWT.isPresent()) {
-                Long id = decodedJWT.get().getClaim("id").asLong();
-                List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
-                Authentication authentication = new UsernamePasswordAuthenticationToken(id, null, authorities);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-
-            filterChain.doFilter(request, response);
+    private void setAuthentication(Long userId) {
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
 
