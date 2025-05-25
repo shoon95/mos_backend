@@ -56,10 +56,24 @@ public class StudyJoinService {
             StudyQuestion studyQuestion = entityFacade.getStudyQuestion(studyJoinReq.getStudyQuestionId());
 
             validateSameStudy(studyQuestion, study);
+            validateQuestion(studyJoinReq, studyQuestion);
 
             saveQuestionAnswers(newStudyJoin, studyQuestion, studyJoinReq.getAnswer());
         }
         eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOINED, new StudyJoinEventPayloadWithNotification(userId, HotStudyEventType.JOIN, studyId)));
+    }
+
+    private static void validateQuestion(StudyJoinReq studyJoinReq, StudyQuestion studyQuestion) {
+        if (studyQuestion.getOptions() != null) {
+            List<String> options = studyQuestion.getOptions().toList();
+            if (!options.contains(studyJoinReq.getAnswer()))
+                throw new MosException(StudyQuestionErrorCode.INVALID_ANSWER_OPTION);
+        }
+
+        if (studyQuestion.isRequired()) {
+            if (studyJoinReq.getAnswer().isBlank())
+                throw new MosException(StudyQuestionErrorCode.MISSING_REQUIRED_QUESTIONS);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -141,7 +155,7 @@ public class StudyJoinService {
     private static void validateRequiredQuestions(List<StudyJoinReq> studyJoinReqs, List<StudyQuestion> requiredQuestions) {
         Set<Long> requiredQuestionIds = requiredQuestions.stream().map(StudyQuestion::getId).collect(Collectors.toSet());
         Set<Long> requestQuestionIds = studyJoinReqs.stream().map(StudyJoinReq::getStudyQuestionId).collect(Collectors.toSet());
-        if (!requiredQuestionIds.equals(requestQuestionIds))
+        if (!requestQuestionIds.containsAll(requiredQuestionIds))
             throw new MosException(StudyQuestionErrorCode.MISSING_REQUIRED_QUESTIONS);
     }
 
