@@ -18,6 +18,8 @@ import com.mos.backend.studyjoins.presentation.controller.req.StudyJoinReq;
 import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
+import com.mos.backend.studyquestions.application.StudyQuestionService;
+import com.mos.backend.studyquestions.entity.QuestionType;
 import com.mos.backend.studyquestions.entity.StudyQuestion;
 import com.mos.backend.studyquestions.entity.StudyQuestionErrorCode;
 import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
@@ -60,6 +62,9 @@ public class StudyJoinServiceTest {
     private EntityFacade entityFacade;
     @Mock
     private ApplicationEventPublisher eventPublisher;
+    @Mock
+    private StudyQuestionService studyQuestionService;
+
     @InjectMocks
     private StudyJoinService studyJoinService;
 
@@ -88,7 +93,7 @@ public class StudyJoinServiceTest {
             when(requiredStudyQuestion.getId()).thenReturn(1L);
             when(studyJoinRepository.save(any(StudyJoin.class))).thenReturn(newStudyJoin);
             when(entityFacade.getStudyQuestion(1L)).thenReturn(studyQuestion);
-            when(studyQuestion.isSameStudy(study)).thenReturn(true);
+            when(studyQuestion.getType()).thenReturn(QuestionType.SHORT_ANSWER);
 
             // When
             studyJoinService.joinStudy(userId, studyId, studyJoinReqs);
@@ -138,7 +143,7 @@ public class StudyJoinServiceTest {
             });
 
             // Then
-            assertEquals(StudyQuestionErrorCode.MISSING_REQUIRED_QUESTIONS, exception.getErrorCode());
+            assertEquals(StudyJoinErrorCode.MISSING_REQUIRED_QUESTIONS, exception.getErrorCode());
             verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(studyQuestionRepository).findByStudyIdAndRequiredTrue(studyId);
@@ -170,7 +175,7 @@ public class StudyJoinServiceTest {
             when(requiredStudyQuestion.getId()).thenReturn(1L);
             when(studyJoinRepository.save(any(StudyJoin.class))).thenReturn(newStudyJoin);
             when(entityFacade.getStudyQuestion(1L)).thenReturn(studyQuestion);
-            when(studyQuestion.isSameStudy(study)).thenReturn(false);
+            doThrow(new MosException(StudyQuestionErrorCode.STUDY_QUESTION_MISMATCH)).when(studyQuestionService).validateSameStudy(studyQuestion, study);
 
             MosException exception = assertThrows(MosException.class, () -> {
                 studyJoinService.joinStudy(userId, studyId, studyJoinReqs);
