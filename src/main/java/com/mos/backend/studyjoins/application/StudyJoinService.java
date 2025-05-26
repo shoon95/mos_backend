@@ -18,8 +18,9 @@ import com.mos.backend.studyjoins.entity.exception.StudyJoinErrorCode;
 import com.mos.backend.studyjoins.infrastructure.StudyJoinRepository;
 import com.mos.backend.studyjoins.presentation.controller.req.StudyJoinReq;
 import com.mos.backend.studymembers.application.StudyMemberService;
+import com.mos.backend.studyquestions.application.StudyQuestionService;
+import com.mos.backend.studyquestions.entity.QuestionType;
 import com.mos.backend.studyquestions.entity.StudyQuestion;
-import com.mos.backend.studyquestions.entity.StudyQuestionErrorCode;
 import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
 import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ public class StudyJoinService {
     private final QuestionAnswerRepository questionAnswerRepository;
     private final EntityFacade entityFacade;
     private final ApplicationEventPublisher eventPublisher;
+    private final StudyQuestionService studyQuestionService;
 
     @Transactional
     public void joinStudy(Long userId, Long studyId, List<StudyJoinReq> studyJoinReqs) {
@@ -60,19 +62,22 @@ public class StudyJoinService {
 
             saveQuestionAnswers(newStudyJoin, studyQuestion, studyJoinReq.getAnswer());
         }
-        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOINED, new StudyJoinEventPayloadWithNotification(userId, HotStudyEventType.JOIN, studyId)));
+//        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOINED, new StudyJoinEventPayloadWithNotification(userId, HotStudyEventType.JOIN, studyId)));
     }
 
     private static void validateQuestion(StudyJoinReq studyJoinReq, StudyQuestion studyQuestion) {
-        if (studyQuestion.getOptions() != null) {
-            List<String> options = studyQuestion.getOptions().toList();
-            if (!options.contains(studyJoinReq.getAnswer()))
-                throw new MosException(StudyQuestionErrorCode.INVALID_ANSWER_OPTION);
+        // 필수 질문 답변 검증
+        if (studyQuestion.isRequired()) {
+            if (studyJoinReq.getAnswer() == null || studyJoinReq.getAnswer().isBlank())
+                throw new MosException(StudyJoinErrorCode.MISSING_REQUIRED_QUESTIONS);
         }
 
-        if (studyQuestion.isRequired()) {
-            if (studyJoinReq.getAnswer().isBlank())
-                throw new MosException(StudyQuestionErrorCode.MISSING_REQUIRED_QUESTIONS);
+        // 답변 옵션 검증 (객관식만)
+        if (studyQuestion.getType().equals(QuestionType.MULTIPLE_CHOICE) && studyJoinReq.getAnswer() != null && !studyJoinReq.getAnswer().isBlank()) {
+            List<String> questionOptionList = studyQuestion.getOptions().toList();
+            if (!questionOptionList.contains(studyJoinReq.getAnswer())) {
+                throw new MosException(StudyJoinErrorCode.INVALID_ANSWER_OPTION);
+            }
         }
     }
 
@@ -142,9 +147,8 @@ public class StudyJoinService {
         questionAnswerRepository.save(questionAnswer);
     }
 
-    private static void validateSameStudy(StudyQuestion studyQuestion, Study study) {
-        if (!studyQuestion.isSameStudy(study))
-            throw new MosException(StudyQuestionErrorCode.STUDY_QUESTION_MISMATCH);
+    private void validateSameStudy(StudyQuestion studyQuestion, Study study) {
+        studyQuestionService.validateSameStudy(studyQuestion, study);
     }
 
     private StudyJoin saveStudyJoin(User user, Study study) {
@@ -156,7 +160,7 @@ public class StudyJoinService {
         Set<Long> requiredQuestionIds = requiredQuestions.stream().map(StudyQuestion::getId).collect(Collectors.toSet());
         Set<Long> requestQuestionIds = studyJoinReqs.stream().map(StudyJoinReq::getStudyQuestionId).collect(Collectors.toSet());
         if (!requestQuestionIds.containsAll(requiredQuestionIds))
-            throw new MosException(StudyQuestionErrorCode.MISSING_REQUIRED_QUESTIONS);
+            throw new MosException(StudyJoinErrorCode.MISSING_REQUIRED_QUESTIONS);
     }
 
     private static void validatePendingStatus(StudyJoin studyJoin) {
