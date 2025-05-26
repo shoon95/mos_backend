@@ -127,4 +127,9 @@ public class StudyQuestionService {
     private StudyQuestion findByIdAndStudy(long questionId, Study study) {
         return studyQuestionRepository.findByIdAndStudy(questionId, study).orElseThrow(() -> new MosException(StudyQuestionErrorCode.STUDY_QUESTION_NOT_FOUND));
     }
+
+    public void validateSameStudy(StudyQuestion studyQuestion, Study study) {
+        if (!studyQuestion.isSameStudy(study))
+            throw new MosException(StudyQuestionErrorCode.STUDY_QUESTION_MISMATCH);
+    }
 }
