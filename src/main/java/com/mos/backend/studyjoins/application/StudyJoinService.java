@@ -135,9 +135,12 @@ public class StudyJoinService {
     public List<MyStudyJoinRes> getMyStudyJoins(Long userId, String status) {
         User user = entityFacade.getUser(userId);
 
-        StudyJoinStatus studyJoinStatus = StudyJoinStatus.fromDescription(status);
+        StudyJoinStatus studyJoinStatus = null;
+        if (status != null && !status.isBlank()) {
+            studyJoinStatus = StudyJoinStatus.fromDescription(status);
+        }
 
-        List<StudyJoin> studyJoins = studyJoinRepository.findAllByStatusWithStudy(studyJoinStatus);
+        List<StudyJoin> studyJoins = studyJoinRepository.findAllByUserIdAndStatus(userId, studyJoinStatus);
 
         return studyJoins.stream().map(MyStudyJoinRes::from).toList();
     }

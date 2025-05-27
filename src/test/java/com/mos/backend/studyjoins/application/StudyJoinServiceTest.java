@@ -255,7 +255,7 @@ public class StudyJoinServiceTest {
             when(entityFacade.getUser(userId)).thenReturn(user);
             when(mockStudyJoin1.getStudy()).thenReturn(mockStudy1);
             when(mockStudyJoin2.getStudy()).thenReturn(mockStudy2);
-            when(studyJoinRepository.findAllByStatusWithStudy(status)).thenReturn(mockStudyJoins);
+            when(studyJoinRepository.findAllByUserIdAndStatus(userId, status)).thenReturn(mockStudyJoins);
             when(mockStudy1.getCategory()).thenReturn(mock(Category.class));
             when(mockStudy2.getCategory()).thenReturn(mock(Category.class));
             when(mockStudyJoin1.getStatus()).thenReturn(status);
@@ -266,7 +266,7 @@ public class StudyJoinServiceTest {
 
             // Then
             verify(entityFacade).getUser(userId);
-            verify(studyJoinRepository).findAllByStatusWithStudy(status);
+            verify(studyJoinRepository).findAllByUserIdAndStatus(userId, status);
             assertThat(myStudyJoinResList).hasSize(mockStudyJoins.size());
         }
     }

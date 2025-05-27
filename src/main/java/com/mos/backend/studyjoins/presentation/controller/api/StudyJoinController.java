@@ -27,7 +27,7 @@ public class StudyJoinController {
 
     @GetMapping("/study-joins")
     @ResponseStatus(HttpStatus.OK)
-    public List<MyStudyJoinRes> getMyStudyJoins(@AuthenticationPrincipal Long userId, @RequestParam String studyJoinStatus) {
+    public List<MyStudyJoinRes> getMyStudyJoins(@AuthenticationPrincipal Long userId, @RequestParam(required = false) String studyJoinStatus) {
         return studyJoinService.getMyStudyJoins(userId, studyJoinStatus);
     }
 
