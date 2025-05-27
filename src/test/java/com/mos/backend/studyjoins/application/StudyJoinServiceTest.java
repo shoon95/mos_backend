@@ -104,7 +104,6 @@ public class StudyJoinServiceTest {
             verify(studyQuestionRepository).findByStudyIdAndRequiredTrue(studyId);
             verify(studyJoinRepository).save(any(StudyJoin.class));
             verify(entityFacade).getStudyQuestion(1L);
-            verify(questionAnswerRepository).save(any(QuestionAnswer.class));
         }
     }
 

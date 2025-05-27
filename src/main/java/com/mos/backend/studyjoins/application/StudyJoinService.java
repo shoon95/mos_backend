@@ -5,9 +5,9 @@ import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.hotstudies.entity.HotStudyEventType;
-import com.mos.backend.questionanswers.entity.QuestionAnswer;
 import com.mos.backend.questionanswers.infrastructure.QuestionAnswerRepository;
 import com.mos.backend.studies.entity.Study;
+import com.mos.backend.studyjoins.application.event.StudyJoinCreatedEventPayload;
 import com.mos.backend.studyjoins.application.event.StudyJoinEventPayloadWithNotification;
 import com.mos.backend.studyjoins.application.res.MyStudyJoinRes;
 import com.mos.backend.studyjoins.application.res.QuestionAnswerRes;
@@ -60,7 +60,12 @@ public class StudyJoinService {
             validateSameStudy(studyQuestion, study);
             validateQuestion(studyJoinReq, studyQuestion);
 
-            saveQuestionAnswers(newStudyJoin, studyQuestion, studyJoinReq.getAnswer());
+            eventPublisher.publishEvent(
+                    new Event<>(
+                            EventType.STUDY_JOINED,
+                            new StudyJoinCreatedEventPayload(newStudyJoin.getId(), studyQuestion.getId(), studyJoinReq.getAnswer())
+                    )
+            );
         }
 //        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOINED, new StudyJoinEventPayloadWithNotification(userId, HotStudyEventType.JOIN, studyId)));
     }
@@ -143,11 +148,6 @@ public class StudyJoinService {
         List<StudyJoin> studyJoins = studyJoinRepository.findAllByUserIdAndStatus(userId, studyJoinStatus);
 
         return studyJoins.stream().map(MyStudyJoinRes::from).toList();
-    }
-
-    private void saveQuestionAnswers(StudyJoin newStudyJoin, StudyQuestion studyQuestion, String answer) {
-        QuestionAnswer questionAnswer = new QuestionAnswer(newStudyJoin, studyQuestion, answer);
-        questionAnswerRepository.save(questionAnswer);
     }
 
     private void validateSameStudy(StudyQuestion studyQuestion, Study study) {
