@@ -11,7 +11,9 @@ public interface StudyJoinRepository {
 
     Optional<StudyJoin> findById(Long studyApplicationId);
 
-    List<StudyJoin> findAllByStatusWithStudy(StudyJoinStatus status);
+    List<StudyJoin> findAllByUserIdAndStatus(Long userId, StudyJoinStatus status);
 
     List<StudyJoin> findAllByStudyId(Long studyId);
+
+    boolean existsByUserIdAndStudyId(Long userId, Long studyId);
 }
