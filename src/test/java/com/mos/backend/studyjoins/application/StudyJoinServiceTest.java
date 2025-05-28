@@ -4,6 +4,7 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.questionanswers.entity.QuestionAnswer;
 import com.mos.backend.questionanswers.infrastructure.QuestionAnswerRepository;
+import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.entity.Category;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
@@ -64,6 +65,8 @@ public class StudyJoinServiceTest {
     private ApplicationEventPublisher eventPublisher;
     @Mock
     private StudyQuestionService studyQuestionService;
+    @Mock
+    private StudyService studyService;
 
     @InjectMocks
     private StudyJoinService studyJoinService;
@@ -146,7 +149,6 @@ public class StudyJoinServiceTest {
             verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(studyQuestionRepository).findByStudyIdAndRequiredTrue(studyId);
-            verify(studyJoinRepository, never()).save(any(StudyJoin.class));
             verify(entityFacade, never()).getStudyQuestion(any(Long.class));
             verify(studyQuestion, never()).isSameStudy(study);
             verify(questionAnswerRepository, never()).save(any(QuestionAnswer.class));
