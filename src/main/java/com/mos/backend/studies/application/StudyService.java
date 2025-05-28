@@ -12,10 +12,7 @@ import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
 import com.mos.backend.studies.application.event.StudyDeletedEventPayload;
 import com.mos.backend.studies.application.event.StudyViewedEventPayload;
 import com.mos.backend.studies.application.responsedto.*;
-import com.mos.backend.studies.entity.Category;
-import com.mos.backend.studies.entity.MeetingType;
-import com.mos.backend.studies.entity.Study;
-import com.mos.backend.studies.entity.StudyTag;
+import com.mos.backend.studies.entity.*;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
@@ -29,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -166,5 +164,16 @@ public class StudyService {
         if (requestDto.getRecruitmentStartDate().isAfter(requestDto.getRecruitmentEndDate())) {
             throw new MosException(StudyErrorCode.INVALID_RECRUITMENT_DATES);
         }
+    }
+
+    public void validateRecruitmentPeriod(Study study) {
+        LocalDate now = LocalDate.now();
+        if (!(study.getRecruitmentStartDate().isBefore(now) && study.getRecruitmentEndDate().isAfter(now)))
+            throw new MosException(StudyErrorCode.NOT_IN_RECRUITMENT_PERIOD);
+    }
+
+    public void validateRecruitmentStatus(Study study) {
+        if (study.getRecruitmentStatus().equals(RecruitmentStatus.CLOSED))
+            throw new MosException(StudyErrorCode.RECRUITMENT_CLOSED);
     }
 }

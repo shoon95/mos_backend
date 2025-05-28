@@ -21,13 +21,13 @@ public class StudyJoinController {
     @ResponseStatus(HttpStatus.OK)
     public void joinStudy(@AuthenticationPrincipal Long userId,
                           @PathVariable Long studyId,
-                          @RequestBody List<StudyJoinReq> studyJoinReqs) {
+                          @RequestBody(required = false) List<StudyJoinReq> studyJoinReqs) {
         studyJoinService.joinStudy(userId, studyId, studyJoinReqs);
     }
 
     @GetMapping("/study-joins")
     @ResponseStatus(HttpStatus.OK)
-    public List<MyStudyJoinRes> getMyStudyJoins(@AuthenticationPrincipal Long userId, @RequestParam String studyJoinStatus) {
+    public List<MyStudyJoinRes> getMyStudyJoins(@AuthenticationPrincipal Long userId, @RequestParam(required = false) String studyJoinStatus) {
         return studyJoinService.getMyStudyJoins(userId, studyJoinStatus);
     }
 
