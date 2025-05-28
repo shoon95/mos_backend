@@ -2,11 +2,15 @@ package com.mos.backend.studyjoins.application.res;
 
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studyjoins.entity.StudyJoin;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MyStudyJoinRes {
     private Long studyId;
     private String title;
@@ -14,9 +18,20 @@ public class MyStudyJoinRes {
 
     private Long studyJoinId;
     private String studyJoinStatus;
+    private LocalDateTime createdAt;
 
     public static MyStudyJoinRes from(StudyJoin studyJoin) {
         Study study = studyJoin.getStudy();
-        return new MyStudyJoinRes(study.getId(), study.getTitle(), study.getCategory().getDescription(), studyJoin.getId(), studyJoin.getStatus().getDescription());
+
+        MyStudyJoinRes myStudyJoinRes = new MyStudyJoinRes();
+        myStudyJoinRes.studyId = study.getId();
+        myStudyJoinRes.title = study.getTitle();
+        myStudyJoinRes.category = study.getCategory().getDescription();
+
+        myStudyJoinRes.studyJoinId = studyJoin.getId();
+        myStudyJoinRes.studyJoinStatus = studyJoin.getStatus().name();
+        myStudyJoinRes.createdAt = studyJoin.getCreatedAt();
+
+        return myStudyJoinRes;
     }
 }
