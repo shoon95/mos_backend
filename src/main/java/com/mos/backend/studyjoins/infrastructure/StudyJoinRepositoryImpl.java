@@ -33,4 +33,9 @@ public class StudyJoinRepositoryImpl implements StudyJoinRepository {
     public List<StudyJoin> findAllByStudyId(Long studyId) {
         return studyJoinJpaRepository.findAllByStudyId(studyId);
     }
+
+    @Override
+    public boolean existsByUserIdAndStudyId(Long userId, Long studyId) {
+        return studyJoinJpaRepository.existsByUserIdAndStudyId(userId, studyId);
+    }
 }

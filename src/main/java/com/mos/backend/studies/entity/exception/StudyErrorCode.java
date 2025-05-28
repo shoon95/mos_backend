@@ -16,7 +16,11 @@ public enum StudyErrorCode implements ErrorCode {
     INVALID_RECRUITMENT_STATUS(HttpStatus.BAD_REQUEST, "study.invalid-recruitment-status"),
     INVALID_PROGRESS_STATUS(HttpStatus.BAD_REQUEST, "study.invalid-progress-status"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "study.internal-server-error"),
-    UNRELATED_STUDY(HttpStatus.BAD_REQUEST, "study.unrelated-study"),;
+    UNRELATED_STUDY(HttpStatus.BAD_REQUEST, "study.unrelated-study"),
+    NOT_IN_RECRUITMENT_PERIOD(HttpStatus.BAD_REQUEST, "study.not-in-recruitment-period"),
+    RECRUITMENT_CLOSED(HttpStatus.BAD_REQUEST, "study.recruitment-closed"),;
+
+
     private final HttpStatus httpStatus;
     private final String messageKey;
 

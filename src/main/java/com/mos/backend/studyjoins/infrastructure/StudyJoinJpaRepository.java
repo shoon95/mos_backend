@@ -15,4 +15,6 @@ public interface StudyJoinJpaRepository extends JpaRepository<StudyJoin, Long> {
                 WHERE sj.study.id = :studyId
             """)
     List<StudyJoin> findAllByStudyId(@Param("studyId") Long studyId);
+
+    boolean existsByUserIdAndStudyId(Long userId, Long studyId);
 }

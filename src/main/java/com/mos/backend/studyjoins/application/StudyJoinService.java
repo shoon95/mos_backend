@@ -6,6 +6,7 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.hotstudies.entity.HotStudyEventType;
 import com.mos.backend.questionanswers.infrastructure.QuestionAnswerRepository;
+import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studyjoins.application.event.StudyJoinCreatedEventPayload;
 import com.mos.backend.studyjoins.application.event.StudyJoinEventPayloadWithNotification;
@@ -28,6 +29,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,31 +45,48 @@ public class StudyJoinService {
     private final EntityFacade entityFacade;
     private final ApplicationEventPublisher eventPublisher;
     private final StudyQuestionService studyQuestionService;
+    private final StudyService studyService;
 
     @Transactional
     public void joinStudy(Long userId, Long studyId, List<StudyJoinReq> studyJoinReqs) {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
 
-        List<StudyQuestion> requiredQuestions = studyQuestionRepository.findByStudyIdAndRequiredTrue(study.getId());
-        validateRequiredQuestions(studyJoinReqs, requiredQuestions);
+        validateJoinableStudy(user, study);
 
         StudyJoin newStudyJoin = saveStudyJoin(user, study);
 
-        for (StudyJoinReq studyJoinReq : studyJoinReqs) {
-            StudyQuestion studyQuestion = entityFacade.getStudyQuestion(studyJoinReq.getStudyQuestionId());
+        List<StudyQuestion> requiredQuestions = studyQuestionRepository.findByStudyIdAndRequiredTrue(study.getId());
+        validateRequiredQuestions(studyJoinReqs, requiredQuestions);
 
-            validateSameStudy(studyQuestion, study);
-            validateQuestion(studyJoinReq, studyQuestion);
+        if (studyJoinReqs != null && studyJoinReqs.size() > 0) {
+            for (StudyJoinReq studyJoinReq : studyJoinReqs) {
+                StudyQuestion studyQuestion = entityFacade.getStudyQuestion(studyJoinReq.getStudyQuestionId());
 
-            eventPublisher.publishEvent(
-                    new Event<>(
-                            EventType.STUDY_JOINED,
-                            new StudyJoinCreatedEventPayload(newStudyJoin.getId(), studyQuestion.getId(), studyJoinReq.getAnswer())
-                    )
-            );
+                validateSameStudy(studyQuestion, study);
+                validateQuestion(studyJoinReq, studyQuestion);
+
+                eventPublisher.publishEvent(
+                        new Event<>(
+                                EventType.STUDY_JOINED,
+                                new StudyJoinCreatedEventPayload(newStudyJoin.getId(), studyQuestion.getId(), studyJoinReq.getAnswer())
+                        )
+                );
+            }
         }
 //        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOINED, new StudyJoinEventPayloadWithNotification(userId, HotStudyEventType.JOIN, studyId)));
+    }
+
+    private void validateJoinableStudy(User user, Study study) {
+        studyService.validateRecruitmentPeriod(study);
+        studyService.validateRecruitmentStatus(study);
+
+        validateStudyJoinConflict(user, study);
+    }
+
+    private void validateStudyJoinConflict(User user, Study study) {
+        if (studyJoinRepository.existsByUserIdAndStudyId(user.getId(), study.getId()))
+            throw new MosException(StudyJoinErrorCode.CONFLICT);
     }
 
     private static void validateQuestion(StudyJoinReq studyJoinReq, StudyQuestion studyQuestion) {
@@ -161,7 +180,7 @@ public class StudyJoinService {
 
     private static void validateRequiredQuestions(List<StudyJoinReq> studyJoinReqs, List<StudyQuestion> requiredQuestions) {
         Set<Long> requiredQuestionIds = requiredQuestions.stream().map(StudyQuestion::getId).collect(Collectors.toSet());
-        Set<Long> requestQuestionIds = studyJoinReqs.stream().map(StudyJoinReq::getStudyQuestionId).collect(Collectors.toSet());
+        Set<Long> requestQuestionIds = studyJoinReqs == null ? Collections.EMPTY_SET : studyJoinReqs.stream().map(StudyJoinReq::getStudyQuestionId).collect(Collectors.toSet());
         if (!requestQuestionIds.containsAll(requiredQuestionIds))
             throw new MosException(StudyJoinErrorCode.MISSING_REQUIRED_QUESTIONS);
     }

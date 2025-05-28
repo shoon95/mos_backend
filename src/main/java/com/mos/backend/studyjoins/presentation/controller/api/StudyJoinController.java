@@ -21,7 +21,7 @@ public class StudyJoinController {
     @ResponseStatus(HttpStatus.OK)
     public void joinStudy(@AuthenticationPrincipal Long userId,
                           @PathVariable Long studyId,
-                          @RequestBody List<StudyJoinReq> studyJoinReqs) {
+                          @RequestBody(required = false) List<StudyJoinReq> studyJoinReqs) {
         studyJoinService.joinStudy(userId, studyId, studyJoinReqs);
     }
 
