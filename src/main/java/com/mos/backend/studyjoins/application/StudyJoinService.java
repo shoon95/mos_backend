@@ -60,21 +60,25 @@ public class StudyJoinService {
         validateRequiredQuestions(studyJoinReqs, requiredQuestions);
 
         if (studyJoinReqs != null && studyJoinReqs.size() > 0) {
-            for (StudyJoinReq studyJoinReq : studyJoinReqs) {
-                StudyQuestion studyQuestion = entityFacade.getStudyQuestion(studyJoinReq.getStudyQuestionId());
-
-                validateSameStudy(studyQuestion, study);
-                validateQuestion(studyJoinReq, studyQuestion);
-
-                eventPublisher.publishEvent(
-                        new Event<>(
-                                EventType.STUDY_JOINED,
-                                new StudyJoinCreatedEventPayload(newStudyJoin.getId(), studyQuestion.getId(), studyJoinReq.getAnswer())
-                        )
-                );
-            }
+            saveQuestionAnswers(studyJoinReqs, study, newStudyJoin);
         }
 //        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOINED, new StudyJoinEventPayloadWithNotification(userId, HotStudyEventType.JOIN, studyId)));
+    }
+
+    private void saveQuestionAnswers(List<StudyJoinReq> studyJoinReqs, Study study, StudyJoin newStudyJoin) {
+        for (StudyJoinReq studyJoinReq : studyJoinReqs) {
+            StudyQuestion studyQuestion = entityFacade.getStudyQuestion(studyJoinReq.getStudyQuestionId());
+
+            validateSameStudy(studyQuestion, study);
+            validateQuestion(studyJoinReq, studyQuestion);
+
+            eventPublisher.publishEvent(
+                    new Event<>(
+                            EventType.STUDY_JOINED,
+                            new StudyJoinCreatedEventPayload(newStudyJoin.getId(), studyQuestion.getId(), studyJoinReq.getAnswer())
+                    )
+            );
+        }
     }
 
     private void validateJoinableStudy(User user, Study study) {
