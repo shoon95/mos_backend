@@ -17,6 +17,10 @@ import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
 import com.mos.backend.studymembers.application.StudyMemberService;
+import com.mos.backend.users.application.responsedto.UserStudiesResponseDto;
+import com.mos.backend.users.entity.User;
+import com.mos.backend.users.entity.UserRole;
+import com.mos.backend.users.entity.exception.UserErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -138,6 +142,19 @@ public class StudyService {
     public StudyCategoriesResponseDto getStudyCategories() {
         List<String> list = Arrays.stream(Category.values()).map(Category::getDescription).toList();
         return new StudyCategoriesResponseDto(list);
+    }
+
+    /**
+     * 유저의 참여 중인 스터디 목록 조회
+     */
+    public List<UserStudiesResponseDto> readUserStudies(Long userId, String progressStatus, String participationStatus, Long currentUserId) {
+        User user = entityFacade.getUser(userId);
+        User currentUser = entityFacade.getUser(currentUserId);
+
+        if (UserRole.USER.equals(currentUser.getRole()) && !user.equals(currentUser)) {
+            throw new MosException(UserErrorCode.USER_STUDY_ACCESS_FORBIDDEN);
+        }
+        return studyRepository.readUserStudies(user, progressStatus, participationStatus);
     }
 
     private Study findStudyById(long studyId) {

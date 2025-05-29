@@ -3,6 +3,7 @@ package com.mos.backend.studies.application;
 import com.mos.backend.common.event.Event;
 import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.exception.MosException;
+import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.hotstudies.application.HotStudyService;
 import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
 import com.mos.backend.studies.application.responsedto.StudyCategoriesResponseDto;
@@ -21,6 +22,9 @@ import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
 import com.mos.backend.studyrequirements.presentation.requestdto.StudyRequirementCreateRequestDto;
 import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
+import com.mos.backend.users.entity.User;
+import com.mos.backend.users.entity.UserRole;
+import com.mos.backend.users.entity.exception.UserErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,6 +68,9 @@ class StudyServiceTest {
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private EntityFacade  entityFacade;
 
     @InjectMocks
     private StudyService studyService;
@@ -249,7 +256,53 @@ class StudyServiceTest {
         response.forEach(s -> {
             Assertions.assertThat(descriptions).contains(s);
         });
+    }
 
+    @Nested
+    @DisplayName("유저가 참여 중인 스터디 목록 조회 테스트")
+    class readUserStudiesTest {
 
+        @Test
+        @DisplayName("일반 유저가 다른 사람의 참여 목록을 조회하면 에러를 발생시킨다.")
+        void RoleUser_ReadUserStudiesWithAnotherUserId_fail() {
+            // given
+            Long userId = 1L;
+            Long currentUserId = 2L;
+            String progressStatus = "진행 중";
+            String pariticpationStatus = "참여 중";
+
+            User user = mock(User.class);
+            User currentUser = mock(User.class);
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(entityFacade.getUser(currentUserId)).thenReturn(currentUser);
+            when(currentUser.getRole()).thenReturn(UserRole.USER);
+
+            // when
+            MosException mosException = assertThrows(MosException.class, () -> studyService.readUserStudies(userId, progressStatus, pariticpationStatus, currentUserId));
+
+            // then
+            assertThat(mosException.getErrorCode()).isEqualTo(UserErrorCode.USER_STUDY_ACCESS_FORBIDDEN);
+        }
+
+        @Test
+        @DisplayName("일반 유저가 자신의 스터디 참여 목록을 조회 시 정상적으로 반환한다.")
+        void RoleUser_ReadUserStudies_Success() {
+
+            // given
+            Long userId = 1L;
+            Long currentUserId = 1L;
+            String progressStatus = "진행 중";
+            String pariticpationStatus = "참여 중";
+
+            User user = mock(User.class);
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(entityFacade.getUser(currentUserId)).thenReturn(user);
+
+            // when
+            studyService.readUserStudies(userId, progressStatus, pariticpationStatus, currentUserId);
+
+            // then
+            verify(studyRepository).readUserStudies(user, progressStatus, pariticpationStatus);
+        }
     }
 }
