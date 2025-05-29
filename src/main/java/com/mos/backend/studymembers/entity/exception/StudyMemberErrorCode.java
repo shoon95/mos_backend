@@ -14,7 +14,8 @@ public enum StudyMemberErrorCode implements ErrorCode {
     STUDY_LEADER_ALREADY_EXIST(HttpStatus.CONFLICT, "study-member.leader-already-exist"),
     STUDY_LEADER_WITHDRAW_FORBIDDEN(HttpStatus.FORBIDDEN, "study-member.leader-withdraw-forbidden"),
     INVALID_STUDY_MEMBER_ROLE_TYPE(HttpStatus.BAD_REQUEST, "study-member.invalid-role-type"),
-    ONLY_LEADER_CAN_DELEGATE(HttpStatus.FORBIDDEN, "study-member.only-leader-can-delegate");
+    ONLY_LEADER_CAN_DELEGATE(HttpStatus.FORBIDDEN, "study-member.only-leader-can-delegate"),
+    INVALID_PARTICIPATION_STATUS(HttpStatus.BAD_REQUEST, "study-member.invalid-participation-status");
 
 
     private final HttpStatus httpStatus;
