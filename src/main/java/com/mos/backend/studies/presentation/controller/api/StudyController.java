@@ -1,9 +1,7 @@
 package com.mos.backend.studies.presentation.controller.api;
 
 import com.mos.backend.studies.application.StudyService;
-import com.mos.backend.studies.application.responsedto.StudiesResponseDto;
-import com.mos.backend.studies.application.responsedto.StudyCardListResponseDto;
-import com.mos.backend.studies.application.responsedto.StudyResponseDto;
+import com.mos.backend.studies.application.responsedto.*;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -30,9 +28,9 @@ public class StudyController {
      * 스터디 생성
      */
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody @Valid StudyCreateRequestDto requestDto, @AuthenticationPrincipal Long userId) {
-        Long studyId = studyService.create(userId, requestDto);
-        return ResponseEntity.created(URI.create(BASE_URL + studyId)).build();
+    @ResponseStatus(HttpStatus.CREATED)
+    public StudyCreateResponseDto create(@RequestBody @Valid StudyCreateRequestDto requestDto, @AuthenticationPrincipal Long userId) {
+        return studyService.create(userId, requestDto);
     }
 
     /**
@@ -80,5 +78,14 @@ public class StudyController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("studyId") Long  studyId, @AuthenticationPrincipal Long userId) {
         studyService.delete(userId, studyId);
+    }
+
+    /**
+     * 스터디 카테고리 목록 조회
+     */
+    @GetMapping("/categories")
+    @ResponseStatus(HttpStatus.OK)
+    public StudyCategoriesResponseDto getStudyCategories() {
+        return studyService.getStudyCategories();
     }
 }

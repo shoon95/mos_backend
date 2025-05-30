@@ -1,70 +1,52 @@
 package com.mos.backend.common.jwt;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.mos.backend.common.exception.ErrorCode;
-import com.mos.backend.common.exception.MosException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final TokenUtil tokenUtil;
-    private final MessageSource messageSource;
-
-    public static final String[] whitelist = {
-            "/oauth**", // oauth
-            "/resources/**", "/favicon.ico", // resource
-            "/ws-stomp**", "/ws-stomp/**", // ws
-    };
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        return PatternMatchUtils.simpleMatch(whitelist, request.getRequestURI());
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String accessToken = tokenUtil.extractAccessToken(request);
         try {
-            String token = tokenUtil.extractAccessToken(request);
-
-            DecodedJWT decodedJWT = tokenUtil.decodedJWT(token);
-            Long id = decodedJWT.getClaim("id").asLong();
-            Authentication authentication = new UsernamePasswordAuthenticationToken(id, null);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            filterChain.doFilter(request, response);
-
-        } catch (MosException e) {
-            handleException(response, e.getErrorCode());
+            Optional<Long> optionalUserId = tokenUtil.verifyAccessToken(accessToken);
+            optionalUserId.ifPresent(userId -> setAuthentication(userId));
+        } catch (TokenExpiredException e) {
+            String refreshToken = tokenUtil.extractRefreshToken(request);
+            Optional<Long> optionalUserId = tokenUtil.verifyRefreshToken(refreshToken);
+            optionalUserId.ifPresent(userId -> {
+                tokenUtil.addTokenToCookie(response, userId);
+                setAuthentication(userId);
+            });
         }
+
+        filterChain.doFilter(request, response);
     }
 
-    private void handleException(HttpServletResponse response, ErrorCode errorCode) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        response.setStatus(errorCode.getStatus().value());
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        ObjectNode errorResponse = objectMapper.createObjectNode();
-        errorResponse.put("message", errorCode.getMessage(messageSource));
-        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+    private void setAuthentication(Long userId) {
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
 

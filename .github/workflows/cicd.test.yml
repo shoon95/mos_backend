@@ -15,7 +15,10 @@ jobs:
 
       - name: Create .env file
         run: |
+          echo "CORS_ALLOWED_ORIGINS=${{secrets.CORS_ALLOWED_ORIGINS}}" >> .env
+          
           echo "KAKAO_CLIENT_ID=${{secrets.KAKAO_CLIENT_ID}}" >> .env
+          echo "KAKAO_CLIENT_SECRET=${{secrets.KAKAO_CLIENT_SECRET}}" >> .env
           echo "KAKAO_REDIRECT_URI=${{secrets.KAKAO_REDIRECT_URI}}" >> .env
           
           echo "GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}}" >> .env
@@ -28,14 +31,17 @@ jobs:
           
           echo "JWT_SECRET=${{secrets.JWT_SECRET}}" >> .env
           echo "JWT_ACCESS_EXPIRATION=${{secrets.JWT_ACCESS_EXPIRATION}}" >> .env
-          echo "JWT_ACCESS_HEADER=${{secrets.JWT_ACCESS_HEADER}}" >> .env
+          echo "JWT_ACCESS_HEADER_NAME=${{secrets.JWT_ACCESS_HEADER_NAME}}" >> .env
+          echo "JWT_ACCESS_COOKIE_NAME=${{secrets.JWT_ACCESS_COOKIE_NAME}}" >> .env
           echo "JWT_REFRESH_EXPIRATION=${{secrets.JWT_REFRESH_EXPIRATION}}" >> .env
-          echo "JWT_REFRESH_COOKIE=${{secrets.JWT_REFRESH_COOKIE}}" >> .env
+          echo "JWT_REFRESH_HEADER_NAME=${{secrets.JWT_REFRESH_HEADER_NAME}}" >> .env
+          echo "JWT_REFRESH_COOKIE_NAME=${{secrets.JWT_REFRESH_COOKIE_NAME}}" >> .env
           
           echo "DATASOURCE_URL=${{secrets.DATASOURCE_RELEASE_URL}}" >> .env
           echo "GENERATE_DDL=${{secrets.GENERATE_DDL}}" >> .env
           echo "DATABASE_USERNAME=${{secrets.DATABASE_USERNAME}}" >> .env
           echo "DATABASE_PASSWORD=${{secrets.DATABASE_PASSWORD}}" >> .env
+          echo "DATABASE_DRIVER_CLASS_NAME=${{secrets.DATASOURCE_DRIVER_CLASS_NAME}}" >> .env
           
           echo "DDL_AUTO=${{secrets.DDL_AUTH}}" >> .env
           

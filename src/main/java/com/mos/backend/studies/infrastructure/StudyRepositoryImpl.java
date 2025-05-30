@@ -2,11 +2,14 @@ package com.mos.backend.studies.infrastructure;
 
 import com.mos.backend.studies.application.responsedto.StudiesResponseDto;
 import com.mos.backend.studies.entity.Study;
+import com.mos.backend.users.application.responsedto.UserStudiesResponseDto;
+import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -45,5 +48,10 @@ public class StudyRepositoryImpl implements StudyRepository{
     @Override
     public void delete(Study study) {
         studyJpaRepository.delete(study);
+    }
+
+    @Override
+    public List<UserStudiesResponseDto> readUserStudies(User user, String progressStatusCond, String participationStatusCond) {
+        return studyQueryDSLRepository.readUserStudies(user, progressStatusCond, participationStatusCond);
     }
 }

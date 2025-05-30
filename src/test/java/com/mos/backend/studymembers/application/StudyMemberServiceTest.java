@@ -247,7 +247,6 @@ class StudyMemberServiceTest {
             Attendance attendance = mock(Attendance.class);
             List<Attendance> attendances = List.of(attendance);
 
-            when(entityFacade.getUser(userId)).thenReturn(user);
             when(entityFacade.getStudy(studyId)).thenReturn(study);
             when(study.getId()).thenReturn(studyId);
             when(studyMember.getId()).thenReturn(studyMemberId);
@@ -259,10 +258,9 @@ class StudyMemberServiceTest {
             when(studyMember.getRoleType()).thenReturn(StudyMemberRoleType.LEADER);
 
             // When
-            studyMemberService.getStudyMembers(userId, studyId);
+            studyMemberService.getStudyMembers(studyId);
 
             // Then
-            verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(studyMemberRepository).findAllByStudyId(studyId);
             verify(attendanceRepository).findAllByStudyMemberId(studyMemberId);

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.common.jwt.TokenUtil;
 import com.mos.backend.securityuser.WithMockCustomUser;
+import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.entity.Category;
 import com.mos.backend.users.application.UserService;
 import com.mos.backend.users.application.responsedto.UserDetailRes;
@@ -41,6 +42,8 @@ class UserControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
+    @MockitoBean
+    private StudyService studyService;
     @MockitoBean
     private TokenUtil tokenUtil;
     @MockitoBean

@@ -36,7 +36,7 @@ class StudyJoinRepositoryTest extends AbstractTestContainer {
     @Test
     @DisplayName("특정 상태의 신청 목록 조회 쿼리 테스트")
     @DirtiesContext
-    void findAllByStatusWithStudyTest() {
+    void findAllByUserIdAndStatusTest() {
         // Given
         User user1 = saveUser();
         User user2 = saveUser();
@@ -51,7 +51,7 @@ class StudyJoinRepositoryTest extends AbstractTestContainer {
         StudyJoin studyJoin3 = saveStudyJoin(user1, study1, StudyJoinStatus.APPROVED);
 
         // When
-        List<StudyJoin> studyJoins = studyJoinRepository.findAllByStatusWithStudy(StudyJoinStatus.PENDING);
+        List<StudyJoin> studyJoins = studyJoinRepository.findAllByUserIdAndStatus(user1.getId(), StudyJoinStatus.PENDING);
 
         // Then
         assertThat(studyJoins).hasSize(2);

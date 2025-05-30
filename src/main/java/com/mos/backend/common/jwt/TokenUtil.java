@@ -5,21 +5,20 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.mos.backend.common.exception.MosException;
+import com.mos.backend.common.entity.TokenType;
 import com.mos.backend.common.redis.RedisTokenUtil;
-import com.mos.backend.users.entity.exception.UserErrorCode;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
 
@@ -30,14 +29,20 @@ import java.util.Optional;
 public class TokenUtil {
     @Value("${jwt.secret}")
     private String secretKey;
+
     @Value("${jwt.access.expiration}")
     private Long accessTokenExpirationPeriod;
+    @Value("${jwt.access.header-name}")
+    private String accessHeaderName;
+    @Value("${jwt.access.cookie-name}")
+    private String accessCookieName;
+
     @Value("${jwt.refresh.expiration}")
     private Long refreshTokenExpirationPeriod;
-    @Value("${jwt.access.header}")
-    private String accessHeader;
-    @Value("${jwt.refresh.cookie}")
-    private String refreshCookie;
+    @Value("${jwt.refresh.header-name}")
+    private String refreshHeaderName;
+    @Value("${jwt.refresh.cookie-name}")
+    private String refreshCookieName;
 
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
@@ -57,7 +62,7 @@ public class TokenUtil {
         String refreshToken = JWT.create()
                 .withSubject(REFRESH_TOKEN_SUBJECT)
                 .withClaim("id", memberId)
-                .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenExpirationPeriod))
+                .withExpiresAt(new Date(System.currentTimeMillis() + refreshTokenExpirationPeriod))
                 .sign(Algorithm.HMAC512(secretKey));
         saveRefreshToken(memberId, refreshToken);
         return refreshToken;
@@ -67,21 +72,8 @@ public class TokenUtil {
         redisTokenUtil.setRefreshTokenWithExpire(refreshToken, memberId, Duration.ofDays(refreshTokenExpirationPeriod));
     }
 
-    public String reissueAccessToken(String refreshToken) {
-        DecodedJWT decodedJWT;
-        try {
-            decodedJWT = JWT.require(Algorithm.HMAC512(secretKey)).build().verify(refreshToken);
-        } catch (JWTVerificationException e) {
-            throw new JWTVerificationException(e.getMessage());
-        }
-
-        Long memberId = decodedJWT.getClaim("id").asLong();
-
-        return issueAccessToken(memberId);
-    }
-
     public String extractAccessToken(HttpServletRequest request) {
-        Optional<String> requestToken = Optional.ofNullable(request.getHeader(accessHeader))
+        Optional<String> requestToken = Optional.ofNullable(request.getHeader(accessHeaderName))
                 .filter(token -> token.startsWith(BEARER))
                 .map(token -> token.substring(7));
 
@@ -89,7 +81,7 @@ public class TokenUtil {
     }
 
     public String extractAccessToken(StompHeaderAccessor accessor) {
-        Optional<String> requestToken = Optional.ofNullable(accessor.getFirstNativeHeader(accessHeader))
+        Optional<String> requestToken = Optional.ofNullable(accessor.getFirstNativeHeader(accessHeaderName))
                 .filter(token -> token.startsWith(BEARER))
                 .map(token -> token.substring(7));
 
@@ -97,50 +89,58 @@ public class TokenUtil {
     }
 
     public String extractRefreshToken(HttpServletRequest request) {
-        String cookieName = refreshCookie;
+        Optional<String> requestToken = Optional.ofNullable(request.getHeader(refreshHeaderName))
+                .filter(token -> token.startsWith(BEARER))
+                .map(token -> token.substring(7));
 
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies == null)
-            throw new MosException(UserErrorCode.MISSING_ACCESS_TOKEN);
-
-        return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals(cookieName))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElseThrow(() -> new MosException(UserErrorCode.MISSING_ACCESS_TOKEN));
+        return requestToken.orElse(null);
     }
 
-    public DecodedJWT decodedJWT(String accessToken) {
+    public Optional<Long> verifyAccessToken(String accessToken) {
         try {
-            return JWT.require(Algorithm.HMAC512(secretKey)).build().verify(accessToken);
+            DecodedJWT decodedJWT = verify(accessToken);
+            Long userId = decodedJWT.getClaim("id").asLong();
+            return Optional.of(userId);
         } catch (TokenExpiredException e) {
-            log.debug("AccessToken is expired: ${}", accessToken);
-            throw new MosException(UserErrorCode.EXPIRED_ACCESS_TOKEN);
+            throw e;
         } catch (JWTVerificationException e) {
-            log.debug("AccessToken is invalid: ${}", accessToken);
-            throw new MosException(UserErrorCode.INVALID_ACCESS_TOKEN);
+            return Optional.empty();
         }
     }
 
-    public void setJwtToResponse(HttpServletResponse response, Long memberId) {
+    public Optional<Long> verifyRefreshToken(String refreshToken) {
+        try {
+            verify(refreshToken);
+            Long userId = redisTokenUtil.getUserId(refreshToken);
+            return Optional.ofNullable(userId);
+        } catch (JWTVerificationException e) {
+            return Optional.empty();
+        }
+    }
+
+    private DecodedJWT verify(String token) {
+        return JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token);
+    }
+
+    public void addTokenToCookie(HttpServletResponse response, Long memberId) {
         String accessToken = issueAccessToken(memberId);
         String refreshToken = issueRefreshToken(memberId);
 
-        addAccessTokenToHeader(response, accessToken);
-        addRefreshTokenToCookie(response, refreshToken, refreshTokenExpirationPeriod.intValue());
+        addCookie(response, TokenType.ACCESS_TOKEN, accessToken, accessTokenExpirationPeriod.intValue());
+        addCookie(response, TokenType.REFRESH_TOKEN, refreshToken, refreshTokenExpirationPeriod.intValue());
     }
 
-    private void addAccessTokenToHeader(HttpServletResponse response, String accessToken) {
-        response.setHeader(accessHeader, BEARER + accessToken);
-    }
+    private void addCookie(HttpServletResponse response, TokenType tokenType, String tokenValue, int expiration) {
+        String tokenName = tokenType == TokenType.ACCESS_TOKEN ? accessCookieName : refreshCookieName;
 
+        ResponseCookie cookie = ResponseCookie.from(tokenName, tokenValue)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/")
+                .maxAge(expiration)
+                .build();
 
-    private void addRefreshTokenToCookie(HttpServletResponse response, String tokenValue, int expiration) {
-        Cookie tokenCookie = new Cookie(refreshCookie, tokenValue);
-        tokenCookie.setHttpOnly(true);
-        tokenCookie.setPath("/");
-        tokenCookie.setMaxAge(expiration);
-        response.addCookie(tokenCookie);
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 }

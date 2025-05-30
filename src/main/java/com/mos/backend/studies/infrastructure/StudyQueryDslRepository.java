@@ -4,6 +4,9 @@ import com.mos.backend.common.utils.QueryDslSortUtil;
 import com.mos.backend.studies.application.responsedto.StudiesResponseDto;
 import com.mos.backend.studies.entity.*;
 import com.mos.backend.studymembers.entity.ParticipationStatus;
+import com.mos.backend.studymembers.entity.QStudyMember;
+import com.mos.backend.users.application.responsedto.UserStudiesResponseDto;
+import com.mos.backend.users.entity.User;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -37,7 +40,7 @@ public class StudyQueryDslRepository {
                         categoryEq(categoryCond),
                         meetingTypeEq(meetingTypeCond),
                         recruitmentStatusEq(recruitmentStatusCond),
-                        progressStatusCond(progressStatusCond)
+                        progressStatusEq(progressStatusCond)
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -74,9 +77,41 @@ public class StudyQueryDslRepository {
                         categoryEq(categoryCond),
                         meetingTypeEq(meetingTypeCond),
                         recruitmentStatusEq(recruitmentStatusCond),
-                        progressStatusCond(progressStatusCond)
+                        progressStatusEq(progressStatusCond)
                 );
         return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchCount);
+    }
+
+    public List<UserStudiesResponseDto> readUserStudies(User user, String progressStatusCond, String participationStatusCond) {
+        return jpaQueryFactory
+                .select(Projections.constructor(UserStudiesResponseDto.class,
+                        study.id,
+                        study.title,
+                        study.category,
+                        study.meetingType,
+                        study.progressStatus,
+                        QStudyMember.studyMember.status,
+                        JPAExpressions
+                                .select(studyMember.count())
+                                .from(studyMember)
+                                .where(studyMember.study.eq(study)
+                                        .and(studyMember.status.in(ParticipationStatus.ACTIVATED, ParticipationStatus.COMPLETED))
+                                ),
+                        study.maxStudyMemberCount,
+                        study.schedule,
+                        study.tags,
+                        QStudyMember.studyMember.roleType
+                ))
+
+                .from(QStudyMember.studyMember)
+                .join(QStudyMember.studyMember.study, study)
+                .where(
+                        QStudyMember.studyMember.user.eq(user),
+                        participationStatusEq(participationStatusCond),
+                        progressStatusEq(progressStatusCond)
+                )
+                .orderBy(studyMember.createdAt.desc())
+                .fetch();
     }
 
 
@@ -92,8 +127,12 @@ public class StudyQueryDslRepository {
         return !isNullOrEmpty(recruitmentStatusCond) ? study.recruitmentStatus.eq(RecruitmentStatus.fromDescription(recruitmentStatusCond)) : null;
     }
 
-    private BooleanExpression progressStatusCond(String progressStatusCond) {
+    private BooleanExpression progressStatusEq(String progressStatusCond) {
         return !isNullOrEmpty(progressStatusCond) ? study.progressStatus.eq(ProgressStatus.fromDescription(progressStatusCond)) : null;
+    }
+
+    private BooleanExpression participationStatusEq(String participationStatusCond) {
+        return !isNullOrEmpty(participationStatusCond) ? studyMember.status.eq(ParticipationStatus.fromDescription(participationStatusCond)) : null;
     }
 
     private static OrderSpecifier[] getOrderSpecifiers(Pageable pageable) {

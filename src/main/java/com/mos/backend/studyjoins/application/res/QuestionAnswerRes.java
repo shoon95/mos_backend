@@ -1,11 +1,13 @@
 package com.mos.backend.studyjoins.application.res;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mos.backend.studyquestions.entity.QuestionOption;
 import com.mos.backend.studyquestions.entity.QuestionType;
 import lombok.Getter;
 
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 public class QuestionAnswerRes {
     private Long studyQuestionId;
@@ -22,7 +24,7 @@ public class QuestionAnswerRes {
         this.question = question;
         this.questionNum = questionNum;
         this.questionType = questionType.getDescription();
-        this.questionOptions = questionOption.toList();
+        this.questionOptions = questionOption == null ? null : questionOption.toList();
         this.questionAnswerId = questionAnswerId;
         this.answer = answer;
     }

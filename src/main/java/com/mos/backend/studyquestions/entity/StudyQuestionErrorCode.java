@@ -16,8 +16,8 @@ public enum StudyQuestionErrorCode implements ErrorCode {
     STUDY_QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "study-question.not-found"),
     INVALID_SHORT_ANSWER(HttpStatus.BAD_REQUEST, "study-question.invalid-short-answer"),
     INVALID_QUESTION_NUM(HttpStatus.BAD_REQUEST, "study-question.invalid-question-num"),
-    STUDY_QUESTION_MISMATCH(HttpStatus.BAD_REQUEST, "study-question.mismatch"),
-    MISSING_REQUIRED_QUESTIONS(HttpStatus.BAD_REQUEST, "study-question.missing-required-questions");
+    STUDY_QUESTION_MISMATCH(HttpStatus.BAD_REQUEST, "study-question.mismatch");
+
 
     private final HttpStatus httpStatus;
     private final String messageKey;

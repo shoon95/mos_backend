@@ -11,17 +11,16 @@ import com.mos.backend.hotstudies.infrastructure.HotStudyRepository;
 import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
 import com.mos.backend.studies.application.event.StudyDeletedEventPayload;
 import com.mos.backend.studies.application.event.StudyViewedEventPayload;
-import com.mos.backend.studies.application.responsedto.StudiesResponseDto;
-import com.mos.backend.studies.application.responsedto.StudyCardListResponseDto;
-import com.mos.backend.studies.application.responsedto.StudyResponseDto;
-import com.mos.backend.studies.entity.Category;
-import com.mos.backend.studies.entity.MeetingType;
-import com.mos.backend.studies.entity.Study;
-import com.mos.backend.studies.entity.StudyTag;
+import com.mos.backend.studies.application.responsedto.*;
+import com.mos.backend.studies.entity.*;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
 import com.mos.backend.studymembers.application.StudyMemberService;
+import com.mos.backend.users.application.responsedto.UserStudiesResponseDto;
+import com.mos.backend.users.entity.User;
+import com.mos.backend.users.entity.UserRole;
+import com.mos.backend.users.entity.exception.UserErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +30,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -53,14 +54,14 @@ public class StudyService {
      */
 
     @Transactional
-    public Long create(Long userId, StudyCreateRequestDto requestDto) {
+    public StudyCreateResponseDto create(Long userId, StudyCreateRequestDto requestDto) {
         validateStudyCreateRequest(requestDto);
 
         Study study = convertToEntity(requestDto);
         Study savedStudy = studyRepository.save(study);
 
         eventPublisher.publishEvent(new Event<>(EventType.STUDY_CREATED, new StudyCreatedEventPayload(userId, requestDto, savedStudy.getId())));
-        return savedStudy.getId();
+        return new StudyCreateResponseDto(savedStudy.getId());
     }
 
     /**
@@ -126,10 +127,34 @@ public class StudyService {
         study.changeImageToPermanent(userId, studyId);
     }
 
+    /**
+     * 인기 스터디 목록 조회
+     */
     public StudiesResponseDto getHotStudy(Long studyId) {
         Study study = entityFacade.getStudy(studyId);
         int currentStudyMembers = studyMemberService.countCurrentStudyMember(studyId);
         return StudiesResponseDto.from(study, Long.valueOf(currentStudyMembers));
+    }
+
+    /**
+     * 스터디 카테고리 조회
+     */
+    public StudyCategoriesResponseDto getStudyCategories() {
+        List<String> list = Arrays.stream(Category.values()).map(Category::getDescription).toList();
+        return new StudyCategoriesResponseDto(list);
+    }
+
+    /**
+     * 유저의 참여 중인 스터디 목록 조회
+     */
+    public List<UserStudiesResponseDto> readUserStudies(Long userId, String progressStatus, String participationStatus, Long currentUserId) {
+        User user = entityFacade.getUser(userId);
+        User currentUser = entityFacade.getUser(currentUserId);
+
+        if (UserRole.USER.equals(currentUser.getRole()) && !user.equals(currentUser)) {
+            throw new MosException(UserErrorCode.USER_STUDY_ACCESS_FORBIDDEN);
+        }
+        return studyRepository.readUserStudies(user, progressStatus, participationStatus);
     }
 
     private Study findStudyById(long studyId) {
@@ -156,5 +181,16 @@ public class StudyService {
         if (requestDto.getRecruitmentStartDate().isAfter(requestDto.getRecruitmentEndDate())) {
             throw new MosException(StudyErrorCode.INVALID_RECRUITMENT_DATES);
         }
+    }
+
+    public void validateRecruitmentPeriod(Study study) {
+        LocalDate now = LocalDate.now();
+        if (!(study.getRecruitmentStartDate().isBefore(now) && study.getRecruitmentEndDate().isAfter(now)))
+            throw new MosException(StudyErrorCode.NOT_IN_RECRUITMENT_PERIOD);
+    }
+
+    public void validateRecruitmentStatus(Study study) {
+        if (study.getRecruitmentStatus().equals(RecruitmentStatus.CLOSED))
+            throw new MosException(StudyErrorCode.RECRUITMENT_CLOSED);
     }
 }
