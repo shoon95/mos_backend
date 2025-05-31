@@ -1,16 +1,19 @@
 package com.mos.backend.studyschedules.application;
 
+import com.amazonaws.util.CollectionUtils;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studycurriculum.entity.StudyCurriculum;
 import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
+import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studyschedulecurriculums.entity.StudyScheduleCurriculum;
 import com.mos.backend.studyschedulecurriculums.infrastructure.StudyScheduleCurriculumRepository;
 import com.mos.backend.studyschedules.application.res.StudyCurriculumRes;
 import com.mos.backend.studyschedules.application.res.StudyScheduleRes;
 import com.mos.backend.studyschedules.entity.StudySchedule;
+import com.mos.backend.studyschedules.entity.exception.StudyScheduleErrorCode;
 import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
 import com.mos.backend.studyschedules.presentation.req.StudyScheduleCreateReq;
 import com.mos.backend.studyschedules.presentation.req.StudyScheduleUpdateReq;
@@ -19,7 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -27,6 +32,7 @@ public class StudyScheduleService {
     private final StudyScheduleRepository studyScheduleRepository;
     private final StudyCurriculumRepository studyCurriculumRepository;
     private final StudyScheduleCurriculumRepository studyScheduleCurriculumRepository;
+    private final StudyMemberService studyMemberService;
     private final EntityFacade entityFacade;
 
     @Transactional
@@ -34,9 +40,19 @@ public class StudyScheduleService {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
 
+        studyMemberService.validateStudyMember(user, study);
+        validateEndDateTime(req.getStartDateTime(), req.getEndDateTime());
+
         StudySchedule studySchedule = saveStudySchedule(req, study);
 
-        saveScheduleCurriculums(req, study, studySchedule);
+        if (!CollectionUtils.isNullOrEmpty(req.getCurriculumIds()))
+            saveScheduleCurriculums(req, study, studySchedule);
+    }
+
+    private static void validateEndDateTime(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        if (!Objects.isNull(endDateTime))
+            if (!endDateTime.isAfter(startDateTime))
+                throw new MosException(StudyScheduleErrorCode.INVALID_END_DATE_TIME);
     }
 
     @Transactional(readOnly = true)
@@ -82,6 +98,8 @@ public class StudyScheduleService {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
         StudySchedule studySchedule = entityFacade.getStudySchedule(studyScheduleId);
+
+        studyMemberService.validateStudyMember(user, study);
 
         validateRelationalStudy(study, studySchedule.getStudy().getId());
 

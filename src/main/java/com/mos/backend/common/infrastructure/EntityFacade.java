@@ -20,6 +20,7 @@ import com.mos.backend.studychatrooms.entity.StudyChatRoom;
 import com.mos.backend.studychatrooms.entity.StudyChatRoomErrorCode;
 import com.mos.backend.studychatrooms.infrastructure.StudyChatRoomRepository;
 import com.mos.backend.studycurriculum.entity.StudyCurriculum;
+import com.mos.backend.studycurriculum.entity.exception.StudyCurriculumErrorCode;
 import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
 import com.mos.backend.studyjoins.entity.StudyJoin;
 import com.mos.backend.studyjoins.entity.exception.StudyJoinErrorCode;
@@ -96,7 +97,7 @@ public class EntityFacade {
 
     public StudyCurriculum getStudyCurriculum(Long studyCurriculumId) {
         return studyCurriculumRepository.findById(studyCurriculumId)
-                .orElseThrow(() -> new MosException(StudyQuestionErrorCode.STUDY_QUESTION_NOT_FOUND));
+                .orElseThrow(() -> new MosException(StudyCurriculumErrorCode.STUDY_CURRICULUM_NOT_FOUND));
     }
 
     public StudySchedule getStudySchedule(Long studyScheduleId) {
