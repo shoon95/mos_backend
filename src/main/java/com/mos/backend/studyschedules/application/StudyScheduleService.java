@@ -6,6 +6,8 @@ import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studycurriculum.entity.StudyCurriculum;
 import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
+import com.mos.backend.studyschedulecurriculums.entity.StudyScheduleCurriculum;
+import com.mos.backend.studyschedulecurriculums.infrastructure.StudyScheduleCurriculumRepository;
 import com.mos.backend.studyschedules.application.res.StudyCurriculumRes;
 import com.mos.backend.studyschedules.application.res.StudyScheduleRes;
 import com.mos.backend.studyschedules.entity.StudySchedule;
@@ -24,6 +26,7 @@ import java.util.List;
 public class StudyScheduleService {
     private final StudyScheduleRepository studyScheduleRepository;
     private final StudyCurriculumRepository studyCurriculumRepository;
+    private final StudyScheduleCurriculumRepository studyScheduleCurriculumRepository;
     private final EntityFacade entityFacade;
 
     @Transactional
@@ -31,9 +34,9 @@ public class StudyScheduleService {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
 
-        saveScheduleCurriculums(req, study);
+        StudySchedule studySchedule = saveStudySchedule(req, study);
 
-        saveStudySchedule(req, study);
+        saveScheduleCurriculums(req, study, studySchedule);
     }
 
     @Transactional(readOnly = true)
@@ -85,20 +88,23 @@ public class StudyScheduleService {
         studyScheduleRepository.delete(studySchedule);
     }
 
-    private void saveScheduleCurriculums(StudyScheduleCreateReq req, Study study) {
+    private void saveScheduleCurriculums(StudyScheduleCreateReq req, Study study, StudySchedule studySchedule) {
         req.getCurriculumIds().forEach((curriculumId) -> {
             StudyCurriculum studyCurriculum = entityFacade.getStudyCurriculum(curriculumId);
+
             validateRelationalStudy(study, studyCurriculum.getStudy().getId());
-            studyCurriculumRepository.save(studyCurriculum);
+
+            StudyScheduleCurriculum studyScheduleCurriculum = StudyScheduleCurriculum.create(studySchedule, studyCurriculum);
+            studyScheduleCurriculumRepository.save(studyScheduleCurriculum);
         });
     }
 
-    private void saveStudySchedule(StudyScheduleCreateReq req, Study study) {
+    private StudySchedule saveStudySchedule(StudyScheduleCreateReq req, Study study) {
         StudySchedule studySchedule = StudySchedule.create(
                 study, req.getTitle(), req.getDescription(), req.getStartDateTime(), req.getEndDateTime()
         );
 
-        studyScheduleRepository.save(studySchedule);
+        return studyScheduleRepository.save(studySchedule);
     }
 
     public void validateRelationalStudy(Study study, Long studyId) {
