@@ -88,7 +88,7 @@ public class StudyScheduleService {
         Study study = entityFacade.getStudy(studyId);
         StudySchedule studySchedule = entityFacade.getStudySchedule(studyScheduleId);
 
-        validateRelationalStudy(study, studySchedule.getStudy().getId());
+        validateRelation(study, studySchedule.getStudy().getId());
 
         studySchedule.update(req.getTitle(), req.getDescription(), req.getStartDateTime(), req.getEndDateTime());
     }
@@ -101,7 +101,7 @@ public class StudyScheduleService {
 
         studyMemberService.validateStudyMember(user, study);
 
-        validateRelationalStudy(study, studySchedule.getStudy().getId());
+        validateRelation(study, studySchedule.getStudy().getId());
 
         studyScheduleRepository.delete(studySchedule);
     }
@@ -110,7 +110,7 @@ public class StudyScheduleService {
         req.getCurriculumIds().forEach((curriculumId) -> {
             StudyCurriculum studyCurriculum = entityFacade.getStudyCurriculum(curriculumId);
 
-            validateRelationalStudy(study, studyCurriculum.getStudy().getId());
+            validateRelation(study, studyCurriculum.getStudy().getId());
 
             StudyScheduleCurriculum studyScheduleCurriculum = StudyScheduleCurriculum.create(studySchedule, studyCurriculum);
             studyScheduleCurriculumRepository.save(studyScheduleCurriculum);
@@ -125,7 +125,7 @@ public class StudyScheduleService {
         return studyScheduleRepository.save(studySchedule);
     }
 
-    public void validateRelationalStudy(Study study, Long studyId) {
+    public void validateRelation(Study study, Long studyId) {
         if (!study.isRelated(studyId))
             throw new MosException(StudyErrorCode.UNRELATED_STUDY);
     }
