@@ -8,8 +8,8 @@ import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studycurriculum.entity.StudyCurriculum;
 import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
 import com.mos.backend.studymembers.application.StudyMemberService;
+import com.mos.backend.studyschedulecurriculums.application.StudyScheduleCurriculumService;
 import com.mos.backend.studyschedulecurriculums.entity.StudyScheduleCurriculum;
-import com.mos.backend.studyschedulecurriculums.infrastructure.StudyScheduleCurriculumRepository;
 import com.mos.backend.studyschedules.application.res.StudyCurriculumRes;
 import com.mos.backend.studyschedules.application.res.StudyScheduleRes;
 import com.mos.backend.studyschedules.entity.StudySchedule;
@@ -31,7 +31,7 @@ import java.util.Objects;
 public class StudyScheduleService {
     private final StudyScheduleRepository studyScheduleRepository;
     private final StudyCurriculumRepository studyCurriculumRepository;
-    private final StudyScheduleCurriculumRepository studyScheduleCurriculumRepository;
+    private final StudyScheduleCurriculumService studyScheduleCurriculumService;
     private final StudyMemberService studyMemberService;
     private final EntityFacade entityFacade;
 
@@ -47,7 +47,7 @@ public class StudyScheduleService {
 
         List<Long> curriculumIds = req.getCurriculumIds();
         if (!CollectionUtils.isNullOrEmpty(curriculumIds))
-            saveScheduleCurriculums(curriculumIds, study, studySchedule);
+            studyScheduleCurriculumService.saveAll(study.getId(), studySchedule.getId(), curriculumIds);
     }
 
     private static void validateEndDateTime(LocalDateTime startDateTime, LocalDateTime endDateTime) {
@@ -93,10 +93,12 @@ public class StudyScheduleService {
         studyMemberService.validateStudyMember(user, study);
         validateEndDateTime(req.getStartDateTime(), req.getEndDateTime());
 
+        studyScheduleCurriculumService.deleteAll(study.getId(), studySchedule.getId());
+
         List<Long> curriculumIds = req.getCurriculumIds();
-        if (!CollectionUtils.isNullOrEmpty(curriculumIds))
-            //todo 기존 커리큘럼 삭제
-            saveScheduleCurriculums(curriculumIds, study, studySchedule);
+        if (!CollectionUtils.isNullOrEmpty(curriculumIds)) {
+            studyScheduleCurriculumService.saveAll(study.getId(), studySchedule.getId(), curriculumIds);
+        }
 
         studySchedule.update(req.getTitle(), req.getDescription(), req.getStartDateTime(), req.getEndDateTime());
     }
@@ -112,17 +114,6 @@ public class StudyScheduleService {
         validateRelation(study, studySchedule.getStudy().getId());
 
         studyScheduleRepository.delete(studySchedule);
-    }
-
-    private void saveScheduleCurriculums(List<Long> curriculumIds, Study study, StudySchedule studySchedule) {
-        curriculumIds.forEach((curriculumId) -> {
-            StudyCurriculum studyCurriculum = entityFacade.getStudyCurriculum(curriculumId);
-
-            validateRelation(study, studyCurriculum.getStudy().getId());
-
-            StudyScheduleCurriculum studyScheduleCurriculum = StudyScheduleCurriculum.create(studySchedule, studyCurriculum);
-            studyScheduleCurriculumRepository.save(studyScheduleCurriculum);
-        });
     }
 
     private StudySchedule saveStudySchedule(StudyScheduleCreateReq req, Study study) {

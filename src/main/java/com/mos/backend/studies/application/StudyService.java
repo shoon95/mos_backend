@@ -193,4 +193,10 @@ public class StudyService {
         if (study.getRecruitmentStatus().equals(RecruitmentStatus.CLOSED))
             throw new MosException(StudyErrorCode.RECRUITMENT_CLOSED);
     }
+
+    public void validateRelation(Study study, Long studyId) {
+        if (!study.isRelated(studyId)) {
+            throw new MosException(StudyErrorCode.UNRELATED_STUDY);
+        }
+    }
 }
