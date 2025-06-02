@@ -23,8 +23,8 @@ public class UserController {
     private final StudyService studyService;
 
     @PatchMapping
-    public ResponseEntity<Void> update(@AuthenticationPrincipal Long userId, @Valid @RequestBody UserUpdateReq req) {
-        userService.update(userId, req);
+    public ResponseEntity<Void> updateProfileInfo(@AuthenticationPrincipal Long userId, @Valid @RequestBody UserUpdateReq req) {
+        userService.updateProfileInfo(userId, req);
         return ResponseEntity.ok().build();
     }
 

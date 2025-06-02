@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class UserService {
     private final EntityFacade entityFacade;
 
-    public void update(Long userId, UserUpdateReq req) {
+    public void updateProfileInfo(Long userId, UserUpdateReq req) {
         User user = entityFacade.getUser(userId);
 
         String categories = req.getCategories().stream()

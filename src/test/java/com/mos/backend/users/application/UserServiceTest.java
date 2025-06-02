@@ -71,7 +71,7 @@ class UserServiceTest {
             when(entityFacade.getUser(userId)).thenReturn(user);
 
             // When
-            userService.update(1L, validReq);
+            userService.updateProfileInfo(1L, validReq);
 
             // Then
             String categories = updatedCategories.stream().map(Category::getDescription).collect(Collectors.joining(","));
@@ -92,7 +92,7 @@ class UserServiceTest {
             when(entityFacade.getUser(any(Long.class))).thenThrow(new MosException(UserErrorCode.USER_NOT_FOUND));
 
             // When
-            MosException e = assertThrows(MosException.class, () -> userService.update(userId, any(UserUpdateReq.class)));
+            MosException e = assertThrows(MosException.class, () -> userService.updateProfileInfo(userId, any(UserUpdateReq.class)));
 
             // Then
             assertThat(e.getErrorCode()).isEqualTo(UserErrorCode.USER_NOT_FOUND);
