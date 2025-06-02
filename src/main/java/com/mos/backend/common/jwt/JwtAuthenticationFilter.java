@@ -1,6 +1,6 @@
 package com.mos.backend.common.jwt;
 
-import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +17,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Component
@@ -27,20 +26,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String accessToken = tokenUtil.extractAccessToken(request);
         try {
-            Optional<Long> optionalUserId = tokenUtil.verifyAccessToken(accessToken);
-            optionalUserId.ifPresent(userId -> setAuthentication(userId));
-        } catch (TokenExpiredException e) {
-            String refreshToken = tokenUtil.extractRefreshToken(request);
-            Optional<Long> optionalUserId = tokenUtil.verifyRefreshToken(refreshToken);
-            optionalUserId.ifPresent(userId -> {
-                tokenUtil.addTokenToCookie(response, userId);
-                setAuthentication(userId);
-            });
+            verifyAccessToken(request);
+        } catch (JWTVerificationException e1) {
+            try {
+                verifyRefreshToken(request, response);
+            } catch (JWTVerificationException e2) {
+                filterChain.doFilter(request, response);
+                return;
+            }
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void verifyAccessToken(HttpServletRequest request) {
+        String accessToken = tokenUtil.extractAccessToken(request);
+        Long userId = tokenUtil.verifyAccessToken(accessToken);
+        setAuthentication(userId);
+    }
+
+    private void verifyRefreshToken(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = tokenUtil.extractRefreshToken(request);
+        Long userId = tokenUtil.verifyRefreshToken(refreshToken);
+        tokenUtil.addTokenToCookie(response, userId);
+        setAuthentication(userId);
     }
 
     private void setAuthentication(Long userId) {

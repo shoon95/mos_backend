@@ -1,9 +1,7 @@
 package com.mos.backend.common.argumentresolvers.chat;
 
 import com.mos.backend.common.annotation.Sender;
-import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.jwt.TokenUtil;
-import com.mos.backend.users.entity.exception.UserErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.messaging.Message;
@@ -25,8 +23,6 @@ public class SenderArgumentResolver implements HandlerMethodArgumentResolver {
     public Object resolveArgument(MethodParameter parameter, Message<?> message) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         String accessToken = tokenUtil.extractAccessToken(accessor);
-        Long userId = tokenUtil.verifyAccessToken(accessToken)
-                .orElseThrow(() -> new MosException(UserErrorCode.USER_UNAUTHORIZED));
-        return userId;
+        return tokenUtil.verifyAccessToken(accessToken);
     }
 }
