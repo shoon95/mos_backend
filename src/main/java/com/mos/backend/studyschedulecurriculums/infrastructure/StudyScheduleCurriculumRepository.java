@@ -4,4 +4,6 @@ import com.mos.backend.studyschedulecurriculums.entity.StudyScheduleCurriculum;
 
 public interface StudyScheduleCurriculumRepository {
     StudyScheduleCurriculum save(StudyScheduleCurriculum studyScheduleCurriculum);
+
+    void deleteAllByStudyScheduleId(Long studyScheduleId);
 }
