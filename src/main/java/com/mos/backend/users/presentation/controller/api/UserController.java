@@ -1,8 +1,7 @@
 package com.mos.backend.users.presentation.controller.api;
 
 import com.mos.backend.studies.application.StudyService;
-import com.mos.backend.studies.entity.ProgressStatus;
-import com.mos.backend.studymembers.entity.ParticipationStatus;
+import com.mos.backend.studymaterials.application.UploadType;
 import com.mos.backend.users.application.UserService;
 import com.mos.backend.users.application.responsedto.UserDetailRes;
 import com.mos.backend.users.application.responsedto.UserStudiesResponseDto;
@@ -12,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,6 +26,11 @@ public class UserController {
     public ResponseEntity<Void> updateProfileInfo(@AuthenticationPrincipal Long userId, @Valid @RequestBody UserUpdateReq req) {
         userService.updateProfileInfo(userId, req);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/images")
+    public void updateProfileImage(@AuthenticationPrincipal Long userId, @RequestPart("file") MultipartFile file, @RequestParam("type") UploadType type) {
+        userService.updateProfileImage(userId, file, type);
     }
 
     @GetMapping

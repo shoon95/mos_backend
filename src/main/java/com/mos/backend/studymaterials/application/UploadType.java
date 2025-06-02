@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum UploadType {
+    USER("user"),
     STUDY("study"),
     TEMP("temp"),
     ;
