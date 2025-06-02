@@ -3,13 +3,11 @@ package com.mos.backend.studyschedules.application;
 import com.amazonaws.util.CollectionUtils;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
+import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.entity.Study;
-import com.mos.backend.studies.entity.exception.StudyErrorCode;
-import com.mos.backend.studycurriculum.entity.StudyCurriculum;
 import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
 import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studyschedulecurriculums.application.StudyScheduleCurriculumService;
-import com.mos.backend.studyschedulecurriculums.entity.StudyScheduleCurriculum;
 import com.mos.backend.studyschedules.application.res.StudyCurriculumRes;
 import com.mos.backend.studyschedules.application.res.StudyScheduleRes;
 import com.mos.backend.studyschedules.entity.StudySchedule;
@@ -33,6 +31,7 @@ public class StudyScheduleService {
     private final StudyCurriculumRepository studyCurriculumRepository;
     private final StudyScheduleCurriculumService studyScheduleCurriculumService;
     private final StudyMemberService studyMemberService;
+    private final StudyService studyService;
     private final EntityFacade entityFacade;
 
     @Transactional
@@ -40,7 +39,7 @@ public class StudyScheduleService {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
 
-        studyMemberService.validateStudyMember(user, study);
+        studyService.validateRelation(study, study.getId());
         validateEndDateTime(req.getStartDateTime(), req.getEndDateTime());
 
         StudySchedule studySchedule = saveStudySchedule(req, study);
@@ -89,7 +88,7 @@ public class StudyScheduleService {
         Study study = entityFacade.getStudy(studyId);
         StudySchedule studySchedule = entityFacade.getStudySchedule(studyScheduleId);
 
-        validateRelation(study, studySchedule.getStudy().getId());
+        studyService.validateRelation(study, studySchedule.getStudy().getId());
         studyMemberService.validateStudyMember(user, study);
         validateEndDateTime(req.getStartDateTime(), req.getEndDateTime());
 
@@ -111,7 +110,7 @@ public class StudyScheduleService {
 
         studyMemberService.validateStudyMember(user, study);
 
-        validateRelation(study, studySchedule.getStudy().getId());
+        studyService.validateRelation(study, studySchedule.getStudy().getId());
 
         studyScheduleRepository.delete(studySchedule);
     }
@@ -124,8 +123,4 @@ public class StudyScheduleService {
         return studyScheduleRepository.save(studySchedule);
     }
 
-    public void validateRelation(Study study, Long studyId) {
-        if (!study.isRelated(studyId))
-            throw new MosException(StudyErrorCode.UNRELATED_STUDY);
-    }
 }
