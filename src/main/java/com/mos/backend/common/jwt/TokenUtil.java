@@ -3,15 +3,16 @@ package com.mos.backend.common.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mos.backend.common.entity.TokenType;
 import com.mos.backend.common.redis.RedisTokenUtil;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -19,8 +20,11 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
+
+import static ch.qos.logback.core.util.OptionHelper.isNullOrEmpty;
 
 @Slf4j
 @Getter
@@ -73,11 +77,16 @@ public class TokenUtil {
     }
 
     public String extractAccessToken(HttpServletRequest request) {
-        Optional<String> requestToken = Optional.ofNullable(request.getHeader(accessHeaderName))
-                .filter(token -> token.startsWith(BEARER))
-                .map(token -> token.substring(7));
+        Cookie[] cookies = request.getCookies();
 
-        return requestToken.orElse(null);
+        if (isNullOrEmpty(cookies))
+            return Strings.EMPTY;
+
+        Optional<Cookie> optionalCookie = Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(accessCookieName))
+                .findFirst();
+
+        return optionalCookie.map(Cookie::getValue).orElse(Strings.EMPTY);
     }
 
     public String extractAccessToken(StompHeaderAccessor accessor) {
@@ -89,39 +98,31 @@ public class TokenUtil {
     }
 
     public String extractRefreshToken(HttpServletRequest request) {
-        Optional<String> requestToken = Optional.ofNullable(request.getHeader(refreshHeaderName))
-                .filter(token -> token.startsWith(BEARER))
-                .map(token -> token.substring(7));
+        Cookie[] cookies = request.getCookies();
 
-        return requestToken.orElse(null);
+        if (isNullOrEmpty(cookies))
+            return Strings.EMPTY;
+
+        Optional<Cookie> optionalCookie = Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(refreshCookieName))
+                .findFirst();
+
+        return optionalCookie.map(Cookie::getValue).orElse(Strings.EMPTY);
     }
 
-    public Optional<Long> verifyAccessToken(String accessToken) {
-        try {
-            DecodedJWT decodedJWT = verify(accessToken);
-            Long userId = decodedJWT.getClaim("id").asLong();
-            return Optional.of(userId);
-        } catch (TokenExpiredException e) {
-            throw e;
-        } catch (JWTVerificationException e) {
-            return Optional.empty();
-        }
+    public Long verifyAccessToken(String accessToken) throws JWTVerificationException {
+        DecodedJWT decodedJWT = verify(accessToken);
+        return decodedJWT.getClaim("id").asLong();
     }
 
-    public Optional<Long> verifyRefreshToken(String refreshToken) {
-        try {
-            verify(refreshToken);
-            Long userId = redisTokenUtil.getUserId(refreshToken);
-            return Optional.ofNullable(userId);
-        } catch (JWTVerificationException e) {
-            return Optional.empty();
-        }
+    public Long verifyRefreshToken(String refreshToken) throws JWTVerificationException {
+        verify(refreshToken);
+        return redisTokenUtil.getUserId(refreshToken);
     }
 
     private DecodedJWT verify(String token) {
         return JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token);
     }
-
     public void addTokenToCookie(HttpServletResponse response, Long memberId) {
         String accessToken = issueAccessToken(memberId);
         String refreshToken = issueRefreshToken(memberId);
@@ -138,7 +139,7 @@ public class TokenUtil {
                 .secure(true)
                 .sameSite("None")
                 .path("/")
-                .maxAge(expiration)
+                .maxAge(Duration.ofMillis(expiration))
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
