@@ -6,6 +6,8 @@ import com.mos.backend.users.application.UserService;
 import com.mos.backend.users.application.responsedto.UserDetailRes;
 import com.mos.backend.users.application.responsedto.UserStudiesResponseDto;
 import com.mos.backend.users.presentation.requestdto.UserUpdateReq;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +38,11 @@ public class UserController {
     @GetMapping
     public ResponseEntity<UserDetailRes> getDetail(@AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(userService.getDetail(userId));
+    }
+
+    @GetMapping("/tokens")
+    public void reissueTokens(HttpServletRequest request, HttpServletResponse response) {
+        userService.reissueTokens(request, response);
     }
 
     @GetMapping("/{userId}/studies")

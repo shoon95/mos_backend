@@ -2,6 +2,7 @@ package com.mos.backend.users.application;
 
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
+import com.mos.backend.common.jwt.TokenUtil;
 import com.mos.backend.studies.entity.Category;
 import com.mos.backend.users.application.responsedto.UserDetailRes;
 import com.mos.backend.users.entity.User;
@@ -34,7 +35,8 @@ class UserServiceTest {
 
     @Mock
     private EntityFacade entityFacade;
-
+    @Mock
+    private TokenUtil tokenUtil;
     @Mock
     private UserRepositoryImpl userRepository;
 

@@ -1,5 +1,6 @@
 package com.mos.backend.common.exception;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,14 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(status)
+                .body(message);
+    }
+
+    @ExceptionHandler(JWTVerificationException.class)
+    public ResponseEntity<String> handleJWTVerificationException(JWTVerificationException e) {
+        String message = "토큰이 유효하지 않습니다.";
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
                 .body(message);
     }
 }
