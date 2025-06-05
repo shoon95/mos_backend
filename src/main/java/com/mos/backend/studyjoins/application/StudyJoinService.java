@@ -156,7 +156,7 @@ public class StudyJoinService {
         validatePendingStatus(studyJoin);
 
         studyJoin.cancel();
-        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOIN_CANCELED, new StudyJoinEventPayloadWithNotification(userId, HotStudyEventType.JOIN_CANCEL, studyId)));
+//        eventPublisher.publishEvent(new Event<>(EventType.STUDY_JOIN_CANCELED, new StudyJoinEventPayloadWithNotification(userId, HotStudyEventType.JOIN_CANCEL, studyId)));
     }
 
     @Transactional(readOnly = true)
