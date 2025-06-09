@@ -41,6 +41,7 @@ import com.mos.backend.users.entity.User;
 import com.mos.backend.users.entity.exception.UserErrorCode;
 import com.mos.backend.users.infrastructure.respository.UserRepository;
 import com.mos.backend.userschedules.entity.UserSchedule;
+import com.mos.backend.userschedules.entity.UserScheduleErrorCode;
 import com.mos.backend.userschedules.infrastructure.UserScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -92,7 +93,7 @@ public class EntityFacade {
 
     public UserSchedule getUserSchedule(Long userScheduleId) {
         return userScheduleRepository.findById(userScheduleId)
-                .orElseThrow(() -> new MosException(UserErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new MosException(UserScheduleErrorCode.NOT_FOUND));
     }
 
     public StudyCurriculum getStudyCurriculum(Long studyCurriculumId) {
