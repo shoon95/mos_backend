@@ -10,6 +10,7 @@ import java.util.Arrays;
 @Getter
 @RequiredArgsConstructor
 public enum RecruitmentStatus {
+    SCHEDULED("모집 예정"),
     OPEN("모집 중"),
     CLOSED("모집 완료");
 
