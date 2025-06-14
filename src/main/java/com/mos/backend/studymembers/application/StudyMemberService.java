@@ -58,7 +58,7 @@ public class StudyMemberService {
         if (studyMemberCnt >= study.getMaxStudyMemberCount())
             throw new MosException(StudyMemberErrorCode.STUDY_MEMBER_FULL);
 
-        studyMemberRepository.save(StudyMember.createStudyLeader(study, user));
+        studyMemberRepository.save(StudyMember.createStudyMember(study, user));
     }
 
     @Transactional(readOnly = true)
