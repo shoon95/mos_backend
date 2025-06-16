@@ -49,8 +49,7 @@ public class UserController {
     public List<UserStudiesResponseDto> readUserStudies(
             @PathVariable Long userId,
             @RequestParam(required = false) String progressStatus,
-            @RequestParam(required = false) String participationStatus,
-            @AuthenticationPrincipal Long currentUserId) {
-        return studyService.readUserStudies(userId, progressStatus, participationStatus, currentUserId);
+            @RequestParam(required = false) String participationStatus) {
+        return studyService.readUserStudies(userId, progressStatus, participationStatus);
     }
 }
