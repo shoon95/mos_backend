@@ -9,6 +9,7 @@ import com.mos.backend.studybenefits.entity.exception.StudyBenefitErrorCode;
 import com.mos.backend.studybenefits.infrastructure.StudyBenefitRepository;
 import com.mos.backend.studybenefits.presentation.requestdto.StudyBenefitRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,7 @@ public class StudyBenefitService {
      * StudyBenefit 생성 | 수정 | 삭제
      */
     @Transactional
+    @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
     public List<StudyBenefitResponseDto> createOrUpdateOrDelete(Long studyId, List<StudyBenefitRequestDto> benefitRequestDtoList) {
         validateRequest(benefitRequestDtoList);
 

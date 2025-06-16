@@ -1,5 +1,6 @@
 package com.mos.backend.studymaterials.application;
 
+import com.mos.backend.common.auth.StudySecurity;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
@@ -13,6 +14,7 @@ import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,12 +33,14 @@ public class StudyMaterialService {
     private final StudyMemberService studyMemberService;
     private final Uploader uploader;
     private final EntityFacade entityFacade;
+    private final StudySecurity studySecurity;
 
     /**
      * StudyMaterial 생성
      */
 
     @Transactional
+    @PreAuthorize("@studySecurity.isMemberOrAdmin(#studyId)")
     public ReadStudyMaterialResponseDto create(Long studyId, Long userId, UploadType type, MultipartFile file) {
         Study study = entityFacade.getStudy(studyId);
         User user = entityFacade.getUser(userId);
@@ -61,6 +65,7 @@ public class StudyMaterialService {
      */
 
     @Transactional
+    @PreAuthorize("@studySecurity.isLeaderOrUploaderOrAdmin(#studyMaterialId)")
     public void delete(Long studyId, Long studyMaterialId) {
         Study study = entityFacade.getStudy(studyId);
         StudyMaterial studyMaterial = entityFacade.getStudyMaterial(studyMaterialId);
@@ -82,7 +87,7 @@ public class StudyMaterialService {
     /**
      * StudyMaterial 단 건 조회
      */
-
+    @PreAuthorize("@studySecurity.isMemberOrAdmin(#studyId)")
     public ReadStudyMaterialResponseDto read(Long studyId, Long studyMaterialId) {
         Study study = entityFacade.getStudy(studyId);
         StudyMaterial studyMaterial = entityFacade.getStudyMaterial(studyMaterialId);
@@ -93,7 +98,7 @@ public class StudyMaterialService {
     /**
      * StudyMaterial 다 건 조회
      */
-
+    @PreAuthorize("@studySecurity.isMemberOrAdmin(#studyId)")
     public ReadAllStudyMaterialResponseDto readAll(Long studyId) {
         Study study = entityFacade.getStudy(studyId);
         List<ReadStudyMaterialResponseDto> readStudyMaterialResponseDtoList = studyMaterialRepository.findByStudy(study).stream().map(ReadStudyMaterialResponseDto::from).toList();
