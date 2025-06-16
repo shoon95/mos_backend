@@ -116,6 +116,11 @@ public class EntityFacade {
                 .orElseThrow(() -> new MosException(StudyMemberErrorCode.STUDY_MEMBER_NOT_FOUND));
     }
 
+    public StudyMember getStudyMember(Long userId, Long studyId) {
+        return studyMemberRepository.findByUserIdAndStudyId(userId, studyId)
+                .orElseThrow(() -> new MosException(StudyMemberErrorCode.STUDY_MEMBER_NOT_FOUND));
+    }
+
     public StudyMaterial getStudyMaterial(Long studyMaterialId) {
         return studyMaterialRepository.findById(studyMaterialId).orElseThrow(() -> new MosException(StudyMaterialErrorCode.STUDY_MATERIAL_NOT_FOUND));
     }

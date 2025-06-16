@@ -9,6 +9,7 @@ import com.mos.backend.studyrules.entity.exception.StudyRuleErrorCode;
 import com.mos.backend.studyrules.infrastructure.StudyRuleRepository;
 import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ public class StudyRuleService {
      */
 
     @Transactional
+    @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
     public List<StudyRuleResponseDto> createOrUpdateOrDelete(Long studyId, List<StudyRuleCreateRequestDto> requestDtoList) {
         validateRequest(requestDtoList);
         Study study = entityFacade.getStudy(studyId);
