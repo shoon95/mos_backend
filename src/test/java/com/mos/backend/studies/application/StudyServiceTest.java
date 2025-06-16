@@ -23,8 +23,6 @@ import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreat
 import com.mos.backend.studyrequirements.presentation.requestdto.StudyRequirementCreateRequestDto;
 import com.mos.backend.studyrules.presentation.requestdto.StudyRuleCreateRequestDto;
 import com.mos.backend.users.entity.User;
-import com.mos.backend.users.entity.UserRole;
-import com.mos.backend.users.entity.exception.UserErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -262,27 +260,6 @@ class StudyServiceTest {
     @DisplayName("유저가 참여 중인 스터디 목록 조회 테스트")
     class readUserStudiesTest {
 
-        @Test
-        @DisplayName("일반 유저가 다른 사람의 참여 목록을 조회하면 에러를 발생시킨다.")
-        void RoleUser_ReadUserStudiesWithAnotherUserId_fail() {
-            // given
-            Long userId = 1L;
-            Long currentUserId = 2L;
-            String progressStatus = "진행 중";
-            String pariticpationStatus = "참여 중";
-
-            User user = mock(User.class);
-            User currentUser = mock(User.class);
-            when(entityFacade.getUser(userId)).thenReturn(user);
-            when(entityFacade.getUser(currentUserId)).thenReturn(currentUser);
-            when(currentUser.getRole()).thenReturn(UserRole.USER);
-
-            // when
-            MosException mosException = assertThrows(MosException.class, () -> studyService.readUserStudies(userId, progressStatus, pariticpationStatus, currentUserId));
-
-            // then
-            assertThat(mosException.getErrorCode()).isEqualTo(UserErrorCode.USER_STUDY_ACCESS_FORBIDDEN);
-        }
 
         @Test
         @DisplayName("일반 유저가 자신의 스터디 참여 목록을 조회 시 정상적으로 반환한다.")
@@ -299,7 +276,7 @@ class StudyServiceTest {
             when(entityFacade.getUser(currentUserId)).thenReturn(user);
 
             // when
-            studyService.readUserStudies(userId, progressStatus, pariticpationStatus, currentUserId);
+            studyService.readUserStudies(userId, progressStatus, pariticpationStatus);
 
             // then
             verify(studyRepository).readUserStudies(user, progressStatus, pariticpationStatus);
