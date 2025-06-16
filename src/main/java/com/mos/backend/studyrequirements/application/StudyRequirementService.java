@@ -9,6 +9,7 @@ import com.mos.backend.studyrequirements.entity.exception.StudyRequirementErrorC
 import com.mos.backend.studyrequirements.infrastructure.StudyRequirementRepository;
 import com.mos.backend.studyrequirements.presentation.requestdto.StudyRequirementCreateRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,7 @@ public class StudyRequirementService {
      * StudyRequirement 생성 | 수정 | 삭제
      */
     @Transactional
+    @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
     public List<StudyRequirementResponseDto> createOrUpdateOrDelete(Long studyId, List<StudyRequirementCreateRequestDto> requestDtoList) {
         validateRequest(requestDtoList);
         Study study = entityFacade.getStudy(studyId);

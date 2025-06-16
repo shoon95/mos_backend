@@ -26,6 +26,7 @@ import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
 import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,6 +111,7 @@ public class StudyJoinService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
     public List<StudyJoinRes> getStudyJoins(Long userId, Long studyId) {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
@@ -125,6 +127,7 @@ public class StudyJoinService {
     }
 
     @Transactional
+    @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
     public void approveStudyJoin(Long userId, Long studyId, Long studyJoinId) {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
@@ -136,6 +139,7 @@ public class StudyJoinService {
     }
 
     @Transactional
+    @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
     public void rejectStudyJoin(Long userId, Long studyId, Long studyJoinId) {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
@@ -147,6 +151,7 @@ public class StudyJoinService {
     }
 
     @Transactional
+    @PreAuthorize("@studySecurity.isApplicantOrAdmin(#studyJoinId)")
     public void cancelStudyJoin(Long userId, Long studyId, Long studyJoinId) {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
@@ -160,6 +165,7 @@ public class StudyJoinService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("@studySecurity.isOwnerOrAdmin(#userId)")
     public List<MyStudyJoinRes> getMyStudyJoins(Long userId, String status) {
         User user = entityFacade.getUser(userId);
 

@@ -9,6 +9,7 @@ import com.mos.backend.studycurriculum.entity.exception.StudyCurriculumErrorCode
 import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
 import com.mos.backend.studycurriculum.presentation.requestdto.StudyCurriculumCreateRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ public class StudyCurriculumService {
      */
 
     @Transactional
+    @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
     public List<StudyCurriculumResponseDto> createOrUpdateOrDelete(Long studyId, List<StudyCurriculumCreateRequestDto> requestDtoList) {
         validateRequest(requestDtoList);
         Study study = entityFacade.getStudy(studyId);

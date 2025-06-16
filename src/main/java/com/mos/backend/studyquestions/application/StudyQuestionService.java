@@ -9,6 +9,7 @@ import com.mos.backend.studyquestions.entity.StudyQuestionErrorCode;
 import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
 import com.mos.backend.studyquestions.presentation.requestdto.StudyQuestionCreateRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ public class StudyQuestionService {
      */
 
     @Transactional
+    @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
     public List<StudyQuestionResponseDto> createOrUpdateOrDelete(Long studyId, List<StudyQuestionCreateRequestDto> requestDtoList) {
 
         validateRequest(requestDtoList);
