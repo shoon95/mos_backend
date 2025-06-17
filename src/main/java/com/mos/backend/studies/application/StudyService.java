@@ -127,10 +127,11 @@ public class StudyService {
 
     @Transactional
     @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
-    public StudySubNoticeResponseDto updateSubNotice(Long studyId, String content) {
+    public StudyResponseDto updateSubNotice(Long studyId, String content) {
         Study study = entityFacade.getStudy(studyId);
         study.updateSubNotice(content);
-        return new StudySubNoticeResponseDto(study.getNotice());
+        int studyMemberCount = studyMemberService.countCurrentStudyMember(studyId);
+        return StudyResponseDto.from(study, studyMemberCount);
     }
 
 

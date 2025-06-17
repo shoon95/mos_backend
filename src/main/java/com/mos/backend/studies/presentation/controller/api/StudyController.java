@@ -95,7 +95,7 @@ public class StudyController {
      */
     @PostMapping("/{studyId}/sub-notice")
     @ResponseStatus(HttpStatus.OK)
-    public StudySubNoticeResponseDto updateSubNotice(@PathVariable Long studyId, @RequestBody StudySubNoticeRequestDto requestDto) {
+    public StudyResponseDto updateSubNotice(@PathVariable Long studyId, @RequestBody StudySubNoticeRequestDto requestDto) {
         return studyService.updateSubNotice(studyId, requestDto.getSubNotice());
     }
 }
