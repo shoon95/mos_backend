@@ -31,7 +31,6 @@ public class StudySecurity {
         Long currentUserId = Long.valueOf(authentication.getName());
 
         User user = entityFacade.getUser(currentUserId);
-        Study study = entityFacade.getStudy(studyId);
 
         if (user.isAdmin()) {
             return true;
