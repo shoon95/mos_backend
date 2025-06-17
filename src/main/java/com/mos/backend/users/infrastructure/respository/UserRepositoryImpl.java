@@ -5,7 +5,9 @@ import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,5 +28,10 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<User> findById(Long userId) {
         return userJpaRepository.findById(userId);
+    }
+
+    @Override
+    public List<User> findAllById(Set<Long> userIds) {
+        return userJpaRepository.findAllById(userIds);
     }
 }
