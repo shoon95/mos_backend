@@ -7,6 +7,7 @@ import com.mos.backend.studymaterials.application.UploadType;
 import com.mos.backend.studymaterials.application.fileuploader.Uploader;
 import com.mos.backend.users.application.responsedto.UserDetailRes;
 import com.mos.backend.users.entity.User;
+import com.mos.backend.users.infrastructure.respository.UserRepository;
 import com.mos.backend.users.presentation.requestdto.UserUpdateReq;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.amazonaws.util.StringUtils.isNullOrEmpty;
@@ -24,6 +27,7 @@ import static com.amazonaws.util.StringUtils.isNullOrEmpty;
 @Service
 public class UserService {
     private final EntityFacade entityFacade;
+    private final UserRepository userRepository;
     private final TokenUtil tokenUtil;
     private final Uploader uploader;
 
@@ -60,5 +64,9 @@ public class UserService {
         Long userId = tokenUtil.verifyRefreshToken(refreshToken);
 
         tokenUtil.addTokenToCookie(response, userId);
+    }
+
+    public List<User> findAllById(Set<Long> userIds) {
+        return userRepository.findAllById(userIds);
     }
 }
