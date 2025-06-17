@@ -169,7 +169,7 @@ public class StudyService {
     /**
      * 유저의 참여 중인 스터디 목록 조회
      */
-    @PreAuthorize("@studySecurity.isOwnerOrAdmin(#userId)")
+    @PreAuthorize("@userSecurity.isOwnerOrAdmin(#userId)")
     public List<UserStudiesResponseDto> readUserStudies(Long userId, String progressStatus, String participationStatus) {
         User user = entityFacade.getUser(userId);
         return studyRepository.readUserStudies(user, progressStatus, participationStatus);

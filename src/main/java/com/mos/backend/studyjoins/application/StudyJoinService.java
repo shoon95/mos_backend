@@ -165,7 +165,7 @@ public class StudyJoinService {
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("@studySecurity.isOwnerOrAdmin(#userId)")
+    @PreAuthorize("@userSecurity.isOwnerOrAdmin(#userId)")
     public List<MyStudyJoinRes> getMyStudyJoins(Long userId, String status) {
         User user = entityFacade.getUser(userId);
 
