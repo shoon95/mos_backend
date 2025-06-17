@@ -37,6 +37,9 @@ public class User extends BaseTimeEntity {
 
     private String categories;
 
+    @Lob
+    private String imagePath;
+
     public User(OauthMemberInfo oauthMemberInfo) {
         this.role = UserRole.USER;
         this.socialId = oauthMemberInfo.getSocialId();
@@ -52,5 +55,12 @@ public class User extends BaseTimeEntity {
 
     public boolean isOwner(Long userId) {
         return this.id.equals(userId);
+    }
+    public boolean isAdmin() {
+        return UserRole.ADMIN.equals(this.role);
+    }
+
+    public void updateImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }

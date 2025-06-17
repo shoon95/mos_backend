@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -25,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Value("#{'${spring.cors.allowed-origins}'.replaceAll(' ', '').split(',')}")
@@ -67,6 +69,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/studies/*/requirements", "/studies/*/requirements/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/studies/*/rules", "/studies/*/rules/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/study-schedules", "/studies/*/schedules").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/tokens").permitAll()
 
                         .anyRequest().authenticated()
                 )

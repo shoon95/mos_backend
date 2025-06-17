@@ -13,4 +13,9 @@ public class StudyScheduleCurriculumRepositoryImpl implements StudyScheduleCurri
     public StudyScheduleCurriculum save(StudyScheduleCurriculum studyScheduleCurriculum) {
         return studyScheduleCurriculumJpaRepository.save(studyScheduleCurriculum);
     }
+
+    @Override
+    public void deleteAllByStudyScheduleId(Long studyScheduleId) {
+        studyScheduleCurriculumJpaRepository.deleteAllByStudyScheduleId(studyScheduleId);
+    }
 }

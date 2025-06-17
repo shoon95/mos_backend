@@ -19,14 +19,13 @@ import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
 import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.users.application.responsedto.UserStudiesResponseDto;
 import com.mos.backend.users.entity.User;
-import com.mos.backend.users.entity.UserRole;
-import com.mos.backend.users.entity.exception.UserErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,7 +91,7 @@ public class StudyService {
     }
 
     /**
-     * 인기 스터디 조회
+     * 인기 스터디 목록 조회
      * @return
      */
     @Transactional
@@ -115,25 +114,18 @@ public class StudyService {
      */
 
     @Transactional
+    @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
     public void delete(Long userId, Long studyId) {
         Study study = entityFacade.getStudy(studyId);
         studyRepository.delete(study);
         eventPublisher.publishEvent(new Event<>(EventType.STUDY_DELETED, new StudyDeletedEventPayload(HotStudyEventType.DELETE, userId, studyId)));
     }
 
+
     @Transactional
     public void changeImageToPermanent(Long userId, Long studyId) {
         Study study = entityFacade.getStudy(studyId);
         study.changeImageToPermanent(userId, studyId);
-    }
-
-    /**
-     * 인기 스터디 목록 조회
-     */
-    public StudiesResponseDto getHotStudy(Long studyId) {
-        Study study = entityFacade.getStudy(studyId);
-        int currentStudyMembers = studyMemberService.countCurrentStudyMember(studyId);
-        return StudiesResponseDto.from(study, Long.valueOf(currentStudyMembers));
     }
 
     /**
@@ -147,14 +139,19 @@ public class StudyService {
     /**
      * 유저의 참여 중인 스터디 목록 조회
      */
-    public List<UserStudiesResponseDto> readUserStudies(Long userId, String progressStatus, String participationStatus, Long currentUserId) {
+    @PreAuthorize("@studySecurity.isOwnerOrAdmin(#userId)")
+    public List<UserStudiesResponseDto> readUserStudies(Long userId, String progressStatus, String participationStatus) {
         User user = entityFacade.getUser(userId);
-        User currentUser = entityFacade.getUser(currentUserId);
-
-        if (UserRole.USER.equals(currentUser.getRole()) && !user.equals(currentUser)) {
-            throw new MosException(UserErrorCode.USER_STUDY_ACCESS_FORBIDDEN);
-        }
         return studyRepository.readUserStudies(user, progressStatus, participationStatus);
+    }
+
+    /**
+     * 인기 스터디 dto 값 채우기
+     */
+    private StudiesResponseDto getHotStudy(Long studyId) {
+        Study study = entityFacade.getStudy(studyId);
+        int currentStudyMembers = studyMemberService.countCurrentStudyMember(studyId);
+        return StudiesResponseDto.from(study, Long.valueOf(currentStudyMembers));
     }
 
     private Study findStudyById(long studyId) {
@@ -192,5 +189,11 @@ public class StudyService {
     public void validateRecruitmentStatus(Study study) {
         if (study.getRecruitmentStatus().equals(RecruitmentStatus.CLOSED))
             throw new MosException(StudyErrorCode.RECRUITMENT_CLOSED);
+    }
+
+    public void validateRelation(Study study, Long studyId) {
+        if (!study.isRelated(studyId)) {
+            throw new MosException(StudyErrorCode.UNRELATED_STUDY);
+        }
     }
 }

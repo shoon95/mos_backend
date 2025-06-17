@@ -1,7 +1,5 @@
 package com.mos.backend.common.jwt;
 
-import com.mos.backend.common.exception.MosException;
-import com.mos.backend.users.entity.exception.UserErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -32,7 +30,6 @@ public class JwtAuthenticationInterceptor implements ChannelInterceptor {
 
     private void validateToken(StompHeaderAccessor accessor) {
         String accessToken = tokenUtil.extractAccessToken(accessor);
-        tokenUtil.verifyAccessToken(accessToken)
-                .orElseThrow(() -> new MosException(UserErrorCode.USER_UNAUTHORIZED));
+        tokenUtil.verifyAccessToken(accessToken);
     }
 }

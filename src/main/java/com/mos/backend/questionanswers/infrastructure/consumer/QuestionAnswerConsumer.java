@@ -18,7 +18,7 @@ public class QuestionAnswerConsumer {
     private final QuestionAnswerService questionAnswerService;
 
     @TransactionalEventListener(phase = BEFORE_COMMIT)
-    public void handleStudyCreatedEvent(Event<StudyJoinCreatedEventPayload> event) {
+    public void handleStudyJoinCreatedEvent(Event<StudyJoinCreatedEventPayload> event) {
         StudyJoinCreatedEventPayload payload = event.getPayload();
         questionAnswerService.create(payload.getStudyJoinId(), payload.getStudyQuestionId(), payload.getAnswer());
     }

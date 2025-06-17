@@ -78,8 +78,8 @@ class UserControllerTest {
     @DisplayName("유저 정보 조회 성공 문서화")
     void getUserDetail_Success_Documentation() throws Exception {
         // Given
-        UserDetailRes expectedRes = new UserDetailRes("nickname", "introduction", "BOOK");
-        when(userService.getDetail(any(Long.class))).thenReturn(expectedRes);
+        UserDetailRes userDetailRes = new UserDetailRes("nickname", "introduction", "category1,category2", "imagePath");
+        when(userService.getDetail(any(Long.class))).thenReturn(userDetailRes);
 
         // When & Then
         mockMvc.perform(get("/users"))
@@ -90,7 +90,8 @@ class UserControllerTest {
                         responseFields(
                                 fieldWithPath("nickname").description("유저 닉네임"),
                                 fieldWithPath("introduction").description("유저 소개"),
-                                fieldWithPath("categories").description("유저가 관심 있는 카테고리 목록 (콤마로 구분)")
+                                fieldWithPath("categories").description("유저가 관심 있는 카테고리 목록 (콤마로 구분)"),
+                                fieldWithPath("imagePath").description("유저의 프로필 이미지 경로")
                         )
                 ));
     }
