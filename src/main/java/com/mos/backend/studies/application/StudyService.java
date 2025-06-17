@@ -121,6 +121,18 @@ public class StudyService {
         eventPublisher.publishEvent(new Event<>(EventType.STUDY_DELETED, new StudyDeletedEventPayload(HotStudyEventType.DELETE, userId, studyId)));
     }
 
+    /**
+     * study sub notice 수정
+     */
+
+    @Transactional
+    @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
+    public StudySubNoticeResponseDto updateSubNotice(Long studyId, String content) {
+        Study study = entityFacade.getStudy(studyId);
+        study.updateSubNotice(content);
+        return new StudySubNoticeResponseDto(study.getNotice());
+    }
+
 
     @Transactional
     public void changeImageToPermanent(Long userId, Long studyId) {
