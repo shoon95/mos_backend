@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class StudyJpaRepositoryImpl implements StudyNoticeRepository{
+public class StudyNoticeRepositoryImpl implements StudyNoticeRepository{
 
     private final StudyNoticeJpaRepository studyNoticeJpaRepository;
 
@@ -20,8 +20,8 @@ public class StudyJpaRepositoryImpl implements StudyNoticeRepository{
     }
 
     @Override
-    public List<StudyNotice> findAllByStudyIdWithUser(Long studyId) {
-        return studyNoticeJpaRepository.findAllByStudyIdWithUser(studyId);
+    public List<StudyNotice> findAllByStudyId(Long studyId) {
+        return studyNoticeJpaRepository.findAllByStudyId(studyId);
     }
 
     @Override
@@ -30,8 +30,8 @@ public class StudyJpaRepositoryImpl implements StudyNoticeRepository{
     }
 
     @Override
-    public Optional<StudyNotice> findByIdWithUser(Long studyNoticeId) {
-        return studyNoticeJpaRepository.findByIdWithUser(studyNoticeId);
+    public Optional<StudyNotice> findById(Long studyNoticeId) {
+        return studyNoticeJpaRepository.findById(studyNoticeId);
     }
 
     @Override

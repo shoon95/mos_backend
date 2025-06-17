@@ -45,7 +45,7 @@ public class StudyNoticeService {
 
         StudyNotice studyNotice = StudyNotice.create(study, currentUser, title, content, pinned, important);
         StudyNotice savedStudyNotice = studyNoticeRepository.save(studyNotice);
-        return StudyNoticeResponseDto.of(savedStudyNotice, currentUser, currentUser, studyNotice.getStudy().getId());
+        return StudyNoticeResponseDto.of(savedStudyNotice, currentUser, currentUser);
     }
 
     /**
@@ -65,7 +65,7 @@ public class StudyNoticeService {
 
         User creator = studyNotice.getUser();
         User modifier = entityFacade.getUser(studyNotice.getUpdatedBy());
-        return StudyNoticeResponseDto.of(studyNotice, creator, modifier, studyNotice.getStudy().getId());
+        return StudyNoticeResponseDto.of(studyNotice, creator, modifier);
     }
 
     /**
@@ -87,7 +87,7 @@ public class StudyNoticeService {
         StudyNotice studyNotice = findByIdWithUser(studyNoticeId);
         User creator = studyNotice.getUser();
         User modifier = entityFacade.getUser(studyNotice.getUpdatedBy());
-        return StudyNoticeResponseDto.of(studyNotice, creator, modifier, studyNotice.getStudy().getId());
+        return StudyNoticeResponseDto.of(studyNotice, creator, modifier);
     }
 
     /**
@@ -95,7 +95,7 @@ public class StudyNoticeService {
      */
     @PreAuthorize("@studySecurity.isMemberOrAdmin(#studyId)")
     public List<StudyNoticeResponseDto> readAll(long studyId) {
-        List<StudyNotice> studyNoticeList = studyNoticeRepository.findAllByStudyIdWithUser(studyId);
+        List<StudyNotice> studyNoticeList = studyNoticeRepository.findAllByStudyId(studyId);
 
         // 유저 조회 쿼리 최적화를 위해 중복 제거 후 한 번에 조회
         Set<Long> modifierIdSet = studyNoticeList.stream()
@@ -108,13 +108,13 @@ public class StudyNoticeService {
         return studyNoticeList.stream().map(sn -> {
             User creator = sn.getUser();
             User modifier = modifierMap.get(sn.getUpdatedBy());
-            return StudyNoticeResponseDto.of(sn, creator, modifier, sn.getStudy().getId());
+            return StudyNoticeResponseDto.of(sn, creator, modifier);
         }).toList();
     }
 
 
     private StudyNotice findByIdWithUser(long studyNoticeId) {
-        return studyNoticeRepository.findByIdWithUser(studyNoticeId)
+        return studyNoticeRepository.findById(studyNoticeId)
                 .orElseThrow(() -> new MosException(StudyNoticeErrorCode.STUDY_NOTICE_NOT_EXISTS));
     }
 }

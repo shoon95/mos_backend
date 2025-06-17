@@ -9,11 +9,11 @@ public interface StudyNoticeRepository {
 
     StudyNotice save(StudyNotice studyNotice);
 
-    List<StudyNotice> findAllByStudyIdWithUser(Long studyId);
+    List<StudyNotice> findAllByStudyId(Long studyId);
 
     Optional<StudyNotice> findByStudyIdAndImportantIsTrue(Long studyId);
 
-    Optional<StudyNotice> findByIdWithUser(Long studyNoticeId);
+    Optional<StudyNotice> findById(Long studyNoticeId);
 
     void deleteById(Long studyNoticeId);
 }

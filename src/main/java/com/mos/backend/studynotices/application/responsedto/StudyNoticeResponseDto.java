@@ -23,7 +23,7 @@ public class StudyNoticeResponseDto {
     private String modifierNickname;
     private long studyId;
 
-    public static StudyNoticeResponseDto of (StudyNotice studyNotice, User creator, User modifier, long studyId) {
+    public static StudyNoticeResponseDto of (StudyNotice studyNotice, User creator, User modifier) {
         StudyNoticeResponseDto studyNoticeResponseDto = new StudyNoticeResponseDto();
         studyNoticeResponseDto.studyNoticeId = studyNotice.getId();
         studyNoticeResponseDto.title = studyNotice.getTitle();
@@ -40,7 +40,7 @@ public class StudyNoticeResponseDto {
         } else {
             studyNoticeResponseDto.modifierNickname = modifier.getNickname();
         }
-        studyNoticeResponseDto.studyId = studyId;
+        studyNoticeResponseDto.studyId = studyNotice.getStudy().getId();
         return studyNoticeResponseDto;
     }
 }
