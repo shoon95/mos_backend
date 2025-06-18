@@ -3,6 +3,7 @@ package com.mos.backend.studies.presentation.controller.api;
 import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.application.responsedto.*;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
+import com.mos.backend.studies.presentation.requestdto.StudySubNoticeRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -87,5 +88,14 @@ public class StudyController {
     @ResponseStatus(HttpStatus.OK)
     public StudyCategoriesResponseDto getStudyCategories() {
         return studyService.getStudyCategories();
+    }
+
+    /**
+     * 스터디 subNotice 수정
+     */
+    @PostMapping("/{studyId}/sub-notice")
+    @ResponseStatus(HttpStatus.OK)
+    public StudyResponseDto updateSubNotice(@PathVariable Long studyId, @RequestBody StudySubNoticeRequestDto requestDto) {
+        return studyService.updateSubNotice(studyId, requestDto.getSubNotice());
     }
 }

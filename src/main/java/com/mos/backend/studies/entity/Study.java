@@ -82,6 +82,10 @@ public class Study extends BaseAuditableEntity {
         content = content.replace(getOldChar(userId), getNewChar(studyId));
     }
 
+    public void updateSubNotice(String subNotice) {
+        this.notice = subNotice;
+    }
+
     private String getOldChar(Long userId) {
         return UploadType.TEMP.getFolderPath() + "/" + userId;
     }
