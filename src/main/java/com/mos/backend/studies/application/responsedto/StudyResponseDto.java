@@ -12,6 +12,7 @@ import java.util.List;
 public class StudyResponseDto {
     private Long id;
     private String title;
+    private String subNotice;
     private String content;
     private int currentStudyMemberCount;
     private int maxStudyMemberCount;
@@ -29,6 +30,7 @@ public class StudyResponseDto {
         StudyResponseDto studyResponseDto = new StudyResponseDto();
         studyResponseDto.id = study.getId();
         studyResponseDto.title = study.getTitle();
+        studyResponseDto.subNotice = study.getNotice();
         studyResponseDto.content = study.getContent();
         studyResponseDto.currentStudyMemberCount = currentStudyMemberCount;
         studyResponseDto.maxStudyMemberCount = study.getMaxStudyMemberCount();
