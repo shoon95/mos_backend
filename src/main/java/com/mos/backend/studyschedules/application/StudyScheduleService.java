@@ -3,10 +3,8 @@ package com.mos.backend.studyschedules.application;
 import com.amazonaws.util.CollectionUtils;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
-import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
-import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studyschedulecurriculums.application.StudyScheduleCurriculumService;
 import com.mos.backend.studyschedules.application.res.StudyCurriculumRes;
 import com.mos.backend.studyschedules.application.res.StudyScheduleRes;
@@ -17,6 +15,7 @@ import com.mos.backend.studyschedules.presentation.req.StudyScheduleCreateReq;
 import com.mos.backend.studyschedules.presentation.req.StudyScheduleUpdateReq;
 import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,16 +29,13 @@ public class StudyScheduleService {
     private final StudyScheduleRepository studyScheduleRepository;
     private final StudyCurriculumRepository studyCurriculumRepository;
     private final StudyScheduleCurriculumService studyScheduleCurriculumService;
-    private final StudyMemberService studyMemberService;
-    private final StudyService studyService;
     private final EntityFacade entityFacade;
 
+    @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
     @Transactional
-    public void createStudySchedule(Long userId, Long studyId, StudyScheduleCreateReq req) {
-        User user = entityFacade.getUser(userId);
+    public void createStudySchedule(Long studyId, StudyScheduleCreateReq req) {
         Study study = entityFacade.getStudy(studyId);
 
-        studyService.validateRelation(study, study.getId());
         validateEndDateTime(req.getStartDateTime(), req.getEndDateTime());
 
         StudySchedule studySchedule = saveStudySchedule(req, study);
@@ -55,6 +51,7 @@ public class StudyScheduleService {
                 throw new MosException(StudyScheduleErrorCode.INVALID_END_DATE_TIME);
     }
 
+    @PreAuthorize("@userSecurity.isOwnerOrAdmin(#userId)")
     @Transactional(readOnly = true)
     public List<StudyScheduleRes> getMyStudySchedules(Long userId) {
         User user = entityFacade.getUser(userId);
@@ -63,9 +60,9 @@ public class StudyScheduleService {
         return convertToRes(studySchedules);
     }
 
+    @PreAuthorize("@studySecurity.isMemberOrAdmin(#studyId)")
     @Transactional(readOnly = true)
-    public List<StudyScheduleRes> getStudySchedules(Long userId, Long studyId) {
-        User user = entityFacade.getUser(userId);
+    public List<StudyScheduleRes> getStudySchedules(Long studyId) {
         Study study = entityFacade.getStudy(studyId);
 
         List<StudySchedule> studySchedules = studyScheduleRepository.findByStudyId(study.getId());
@@ -82,14 +79,12 @@ public class StudyScheduleService {
     }
 
 
+    @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
     @Transactional
-    public void updateStudySchedule(Long userId, Long studyId, Long studyScheduleId, StudyScheduleUpdateReq req) {
-        User user = entityFacade.getUser(userId);
+    public void updateStudySchedule(Long studyId, Long studyScheduleId, StudyScheduleUpdateReq req) {
         Study study = entityFacade.getStudy(studyId);
         StudySchedule studySchedule = entityFacade.getStudySchedule(studyScheduleId);
 
-        studyService.validateRelation(study, studySchedule.getStudy().getId());
-        studyMemberService.validateStudyMember(user, study);
         validateEndDateTime(req.getStartDateTime(), req.getEndDateTime());
 
         studyScheduleCurriculumService.deleteAll(study.getId(), studySchedule.getId());
@@ -102,15 +97,10 @@ public class StudyScheduleService {
         studySchedule.update(req.getTitle(), req.getDescription(), req.getStartDateTime(), req.getEndDateTime());
     }
 
+    @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
     @Transactional
-    public void deleteStudySchedule(Long userId, Long studyId, Long studyScheduleId) {
-        User user = entityFacade.getUser(userId);
-        Study study = entityFacade.getStudy(studyId);
+    public void deleteStudySchedule(Long studyId, Long studyScheduleId) {
         StudySchedule studySchedule = entityFacade.getStudySchedule(studyScheduleId);
-
-        studyMemberService.validateStudyMember(user, study);
-
-        studyService.validateRelation(study, studySchedule.getStudy().getId());
 
         studyScheduleRepository.delete(studySchedule);
     }

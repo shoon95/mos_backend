@@ -112,8 +112,7 @@ public class StudyJoinService {
 
     @Transactional(readOnly = true)
     @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
-    public List<StudyJoinRes> getStudyJoins(Long userId, Long studyId) {
-        User user = entityFacade.getUser(userId);
+    public List<StudyJoinRes> getStudyJoins(Long studyId) {
         Study study = entityFacade.getStudy(studyId);
 
         List<StudyJoin> studyJoins = studyJoinRepository.findAllByStudyId(study.getId());
@@ -128,8 +127,7 @@ public class StudyJoinService {
 
     @Transactional
     @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
-    public void approveStudyJoin(Long userId, Long studyId, Long studyJoinId) {
-        User user = entityFacade.getUser(userId);
+    public void approveStudyJoin(Long studyId, Long studyJoinId) {
         Study study = entityFacade.getStudy(studyId);
         StudyJoin studyJoin = entityFacade.getStudyJoin(studyJoinId);
 
@@ -140,8 +138,7 @@ public class StudyJoinService {
 
     @Transactional
     @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
-    public void rejectStudyJoin(Long userId, Long studyId, Long studyJoinId) {
-        User user = entityFacade.getUser(userId);
+    public void rejectStudyJoin(Long studyId, Long studyJoinId) {
         Study study = entityFacade.getStudy(studyId);
         StudyJoin studyJoin = entityFacade.getStudyJoin(studyJoinId);
 
@@ -152,8 +149,7 @@ public class StudyJoinService {
 
     @Transactional
     @PreAuthorize("@studySecurity.isApplicantOrAdmin(#studyJoinId)")
-    public void cancelStudyJoin(Long userId, Long studyId, Long studyJoinId) {
-        User user = entityFacade.getUser(userId);
+    public void cancelStudyJoin(Long studyId, Long studyJoinId) {
         Study study = entityFacade.getStudy(studyId);
         StudyJoin studyJoin = entityFacade.getStudyJoin(studyJoinId);
 
@@ -165,7 +161,7 @@ public class StudyJoinService {
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("@studySecurity.isOwnerOrAdmin(#userId)")
+    @PreAuthorize("@userSecurity.isOwnerOrAdmin(#userId)")
     public List<MyStudyJoinRes> getMyStudyJoins(Long userId, String status) {
         User user = entityFacade.getUser(userId);
 

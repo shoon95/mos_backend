@@ -4,12 +4,10 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.entity.Study;
-import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studycurriculum.entity.StudyCurriculum;
 import com.mos.backend.studycurriculum.infrastructure.StudyCurriculumRepository;
 import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.studyschedulecurriculums.application.StudyScheduleCurriculumService;
-import com.mos.backend.studyschedulecurriculums.entity.StudyScheduleCurriculum;
 import com.mos.backend.studyschedulecurriculums.infrastructure.StudyScheduleCurriculumRepository;
 import com.mos.backend.studyschedules.entity.StudySchedule;
 import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
@@ -65,15 +63,13 @@ class StudyScheduleServiceTest {
             StudyScheduleCreateReq req = mock(StudyScheduleCreateReq.class);
             StudySchedule mockStudySchedule = mock(StudySchedule.class);
 
-            when(entityFacade.getUser(userId)).thenReturn(mockUser);
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
             when(studyScheduleRepository.save(any())).thenReturn(mockStudySchedule);
 
             // When
-            studyScheduleService.createStudySchedule(userId, studyId, req);
+            studyScheduleService.createStudySchedule(studyId, req);
 
             // Then
-            verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(studyScheduleRepository).save(any(StudySchedule.class));
         }
@@ -86,20 +82,17 @@ class StudyScheduleServiceTest {
         @DisplayName("일정 종료 시간이 시작 시간보다 이전인 경우 MosException 발생")
         void validateEndDateTime_Fail() {
             // Given
-            Long userId = 1L;
             Long studyId = 1L;
-            User mockUser = mock(User.class);
             Study mockStudy = mock(Study.class);
             StudyScheduleCreateReq req = mock(StudyScheduleCreateReq.class);
 
-            when(entityFacade.getUser(userId)).thenReturn(mockUser);
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
             when(req.getStartDateTime()).thenReturn(java.time.LocalDateTime.of(2024, 6, 1, 10, 0));
             when(req.getEndDateTime()).thenReturn(java.time.LocalDateTime.of(2024, 6, 1, 9, 0));
 
             // When & Then
             MosException exception = assertThrows(MosException.class,
-                    () -> studyScheduleService.createStudySchedule(userId, studyId, req)
+                    () -> studyScheduleService.createStudySchedule(studyId, req)
             );
             assertEquals(exception.getErrorCode(), com.mos.backend.studyschedules.entity.exception.StudyScheduleErrorCode.INVALID_END_DATE_TIME);
         }
@@ -146,7 +139,6 @@ class StudyScheduleServiceTest {
             List<StudySchedule> studySchedules = List.of(studySchedule);
             List<StudyCurriculum> studyCurriculums = List.of(mock(StudyCurriculum.class));
 
-            when(entityFacade.getUser(userId)).thenReturn(mock(User.class));
             when(entityFacade.getStudy(studyId)).thenReturn(study);
             when(study.getId()).thenReturn(studyId);
             when(studyScheduleRepository.findByStudyId(studyId)).thenReturn(studySchedules);
@@ -155,10 +147,9 @@ class StudyScheduleServiceTest {
             when(studyCurriculumRepository.findAllByStudyScheduleId(studySchedule.getId())).thenReturn(studyCurriculums);
 
             // When
-            studyScheduleService.getStudySchedules(userId, studyId);
+            studyScheduleService.getStudySchedules(studyId);
 
             // Then
-            verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(studyScheduleRepository).findByStudyId(studyId);
             verify(studyCurriculumRepository, times(studySchedules.size())).findAllByStudyScheduleId(anyLong());
@@ -172,23 +163,19 @@ class StudyScheduleServiceTest {
         @DisplayName("스터디 일정 수정 성공")
         void updateStudySchedule_Success() {
             // Given
-            Long userId = 1L;
             Long studyId = 1L;
             Long studyScheduleId = 1L;
             Study study = mock(Study.class);
             StudySchedule studySchedule = mock(StudySchedule.class);
 
-            when(entityFacade.getUser(userId)).thenReturn(mock(User.class));
             when(entityFacade.getStudy(studyId)).thenReturn(study);
             when(entityFacade.getStudySchedule(studyScheduleId)).thenReturn(studySchedule);
-            when(studySchedule.getStudy()).thenReturn(study);
             when(study.getId()).thenReturn(studyId);
 
             // When
-            studyScheduleService.updateStudySchedule(userId, studyId, studyScheduleId, mock(StudyScheduleUpdateReq.class));
+            studyScheduleService.updateStudySchedule(studyId, studyScheduleId, mock(StudyScheduleUpdateReq.class));
 
             // Then
-            verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(entityFacade).getStudySchedule(studyScheduleId);
             verify(studySchedule).update(any(), any(), any(), any());
@@ -202,29 +189,23 @@ class StudyScheduleServiceTest {
         @DisplayName("일정 종료 시간이 시작 시간보다 이전인 경우 MosException 발생")
         void validateEndDateTime_Fail() {
             // Given
-            Long userId = 1L;
             Long studyId = 1L;
             Long studyScheduleId = 1L;
-            User mockUser = mock(User.class);
             Study mockStudy = mock(Study.class);
             StudySchedule mockStudySchedule = mock(StudySchedule.class);
             StudyScheduleUpdateReq req = mock(StudyScheduleUpdateReq.class);
 
-            when(entityFacade.getUser(userId)).thenReturn(mockUser);
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
             when(entityFacade.getStudySchedule(studyScheduleId)).thenReturn(mockStudySchedule);
-            when(mockStudySchedule.getStudy()).thenReturn(mockStudy);
-            when(mockStudy.getId()).thenReturn(studyId);
             when(req.getStartDateTime()).thenReturn(java.time.LocalDateTime.of(2024, 6, 1, 10, 0));
             when(req.getEndDateTime()).thenReturn(java.time.LocalDateTime.of(2024, 6, 1, 9, 0));
 
             // When & Then
             MosException exception = assertThrows(MosException.class,
-                    () -> studyScheduleService.updateStudySchedule(userId, studyId, studyScheduleId, req)
+                    () -> studyScheduleService.updateStudySchedule(studyId, studyScheduleId, req)
             );
             assertEquals(exception.getErrorCode(), com.mos.backend.studyschedules.entity.exception.StudyScheduleErrorCode.INVALID_END_DATE_TIME);
 
-            verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(entityFacade).getStudySchedule(studyScheduleId);
             verify(mockStudySchedule, never()).update(any(), any(), any(), any());
@@ -244,18 +225,12 @@ class StudyScheduleServiceTest {
             Study study = mock(Study.class);
             StudySchedule studySchedule = mock(StudySchedule.class);
 
-            when(entityFacade.getUser(userId)).thenReturn(mock(User.class));
-            when(entityFacade.getStudy(studyId)).thenReturn(study);
             when(entityFacade.getStudySchedule(studyScheduleId)).thenReturn(studySchedule);
-            when(studySchedule.getStudy()).thenReturn(study);
-            when(study.getId()).thenReturn(studyId);
 
             // When
-            studyScheduleService.deleteStudySchedule(userId, studyId, studyScheduleId);
+            studyScheduleService.deleteStudySchedule(studyId, studyScheduleId);
 
             // Then
-            verify(entityFacade).getUser(userId);
-            verify(entityFacade).getStudy(studyId);
             verify(entityFacade).getStudySchedule(studyScheduleId);
             verify(studyScheduleRepository).delete(studySchedule);
         }

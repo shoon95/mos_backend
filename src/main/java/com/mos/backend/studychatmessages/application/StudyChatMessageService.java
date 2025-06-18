@@ -15,6 +15,7 @@ import com.mos.backend.studychatrooms.entity.StudyChatRoomErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,13 +49,10 @@ public class StudyChatMessageService {
         return studyChatMessageRepository.save(studyChatMessage);
     }
 
+    @PreAuthorize("@studySecurity.isMemberOrAdmin(#studyId)")
     @Transactional(readOnly = true)
-    public InfinityScrollRes<StudyChatMessageRes> getStudyChatMessages(Long userId, Long studyChatRoomId, Long lastStudyChatMessageId, Integer size) {
-        User user = entityFacade.getUser(userId);
+    public InfinityScrollRes<StudyChatMessageRes> getStudyChatMessages(Long studyId, Long studyChatRoomId, Long lastStudyChatMessageId, Integer size) {
         StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(studyChatRoomId);
-
-        if (!studyMemberRepository.existsByUserAndStudy(user, studyChatRoom.getStudy()))
-            throw new MosException(StudyChatRoomErrorCode.FORBIDDEN);
 
         List<StudyChatMessage> studyChatMessages = studyChatMessageRepository.findAllByChatRoomIdForInfiniteScroll(
                 studyChatRoom.getId(), lastStudyChatMessageId, size

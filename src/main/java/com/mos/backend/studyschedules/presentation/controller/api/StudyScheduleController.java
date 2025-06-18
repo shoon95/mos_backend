@@ -19,10 +19,9 @@ public class StudyScheduleController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/studies/{studyId}/schedules")
-    public void createStudySchedule(@AuthenticationPrincipal Long userId,
-                                    @PathVariable Long studyId,
+    public void createStudySchedule(@PathVariable Long studyId,
                                     @Valid @RequestBody StudyScheduleCreateReq req) {
-        studyScheduleService.createStudySchedule(userId, studyId, req);
+        studyScheduleService.createStudySchedule(studyId, req);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -33,24 +32,22 @@ public class StudyScheduleController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/studies/{studyId}/schedules")
-    public List<StudyScheduleRes> getStudySchedules(@AuthenticationPrincipal Long userId, @PathVariable Long studyId) {
-        return studyScheduleService.getStudySchedules(userId, studyId);
+    public List<StudyScheduleRes> getStudySchedules(@PathVariable Long studyId) {
+        return studyScheduleService.getStudySchedules(studyId);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/studies/{studyId}/study-schedules/{studyScheduleId}")
-    public void updateStudySchedule(@AuthenticationPrincipal Long userId,
-                                    @PathVariable Long studyId,
+    public void updateStudySchedule(@PathVariable Long studyId,
                                     @PathVariable Long studyScheduleId,
                                     @Valid @RequestBody StudyScheduleUpdateReq req) {
-        studyScheduleService.updateStudySchedule(userId, studyId, studyScheduleId, req);
+        studyScheduleService.updateStudySchedule(studyId, studyScheduleId, req);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/studies/{studyId}/study-schedules/{studyScheduleId}")
-    public void deleteStudySchedule(@AuthenticationPrincipal Long userId,
-                                    @PathVariable Long studyId,
+    public void deleteStudySchedule(@PathVariable Long studyId,
                                     @PathVariable Long studyScheduleId) {
-        studyScheduleService.deleteStudySchedule(userId, studyId, studyScheduleId);
+        studyScheduleService.deleteStudySchedule(studyId, studyScheduleId);
     }
 }

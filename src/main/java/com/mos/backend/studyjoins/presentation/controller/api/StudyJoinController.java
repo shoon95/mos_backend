@@ -33,31 +33,25 @@ public class StudyJoinController {
 
     @GetMapping("/studies/{studyId}/study-joins")
     @ResponseStatus(HttpStatus.OK)
-    public List<StudyJoinRes> getStudyJoins(@AuthenticationPrincipal Long userId, @PathVariable Long studyId) {
-        return studyJoinService.getStudyJoins(userId, studyId);
+    public List<StudyJoinRes> getStudyJoins(@PathVariable Long studyId) {
+        return studyJoinService.getStudyJoins(studyId);
     }
 
     @PatchMapping("/studies/{studyId}/study-joins/{studyJoinId}/approval")
     @ResponseStatus(HttpStatus.OK)
-    public void approveStudyJoin(@AuthenticationPrincipal Long userId,
-                                 @PathVariable Long studyId,
-                                 @PathVariable Long studyJoinId) {
-        studyJoinService.approveStudyJoin(userId, studyId, studyJoinId);
+    public void approveStudyJoin(@PathVariable Long studyId, @PathVariable Long studyJoinId) {
+        studyJoinService.approveStudyJoin(studyId, studyJoinId);
     }
 
     @PatchMapping("/studies/{studyId}/study-joins/{studyJoinId}/rejection")
     @ResponseStatus(HttpStatus.OK)
-    public void rejectStudyJoin(@AuthenticationPrincipal Long userId,
-                                @PathVariable Long studyId,
-                                @PathVariable Long studyJoinId) {
-        studyJoinService.rejectStudyJoin(userId, studyId, studyJoinId);
+    public void rejectStudyJoin(@PathVariable Long studyId, @PathVariable Long studyJoinId) {
+        studyJoinService.rejectStudyJoin(studyId, studyJoinId);
     }
 
     @PatchMapping("/studies/{studyId}/study-joins/{studyJoinId}")
     @ResponseStatus(HttpStatus.OK)
-    public void cancelStudyJoin(@AuthenticationPrincipal Long userId,
-                                @PathVariable Long studyId,
-                                @PathVariable Long studyJoinId) {
-        studyJoinService.cancelStudyJoin(userId, studyId, studyJoinId);
+    public void cancelStudyJoin(@PathVariable Long studyId, @PathVariable Long studyJoinId) {
+        studyJoinService.cancelStudyJoin(studyId, studyJoinId);
     }
 }
