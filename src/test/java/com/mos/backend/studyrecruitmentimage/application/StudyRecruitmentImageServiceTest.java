@@ -111,7 +111,7 @@ class StudyRecruitmentImageServiceTest {
         willDoNothing().given(imageUsed).changeToPermanent(userId, mockStudy);
         willDoNothing().given(studyService).changeImageToPermanent(userId, studyId);
 
-        studyRecruitmentImageService.permanentUpload(userId, mockRequestDto, studyId);
+        studyRecruitmentImageService.permanentUpload(userId, mockRequestDto.getContent(), studyId);
 
         verify(uploader).uriToFileObjectKey(usedImagePath);
         verify(uploader).generateFileObjectKey(UploadType.STUDY, studyId, usedImageUUID);
@@ -164,7 +164,7 @@ class StudyRecruitmentImageServiceTest {
         willDoNothing().given(image2).changeToPermanent(anyLong(), any(Study.class));
         willDoNothing().given(studyService).changeImageToPermanent(anyLong(), anyLong());
 
-        studyRecruitmentImageService.permanentUpload(userId, mockRequestDto, studyId);
+        studyRecruitmentImageService.permanentUpload(userId, mockRequestDto.getContent(), studyId);
 
         verify(uploader, times(2)).moveFile(stringCaptor.capture(), stringCaptor.capture());
         assertThat(stringCaptor.getAllValues()).containsExactlyInAnyOrder(sourceKey1, destKey1, sourceKey2, destKey2);
@@ -201,7 +201,7 @@ class StudyRecruitmentImageServiceTest {
         willDoNothing().given(uploader).deleteFile(anyString());
         willDoNothing().given(studyRecruitmentImageRepository).delete(any(StudyRecruitmentImage.class));
 
-        studyRecruitmentImageService.permanentUpload(userId, mockRequestDto, studyId);
+        studyRecruitmentImageService.permanentUpload(userId, mockRequestDto.getContent(), studyId);
 
         verify(uploader, times(2)).deleteFile(stringCaptor.capture());
         assertThat(stringCaptor.getAllValues()).containsExactlyInAnyOrder(path1, path2);
@@ -227,7 +227,7 @@ class StudyRecruitmentImageServiceTest {
         given(mockRequestDto.getContent()).willReturn("Some content");
         given(studyRecruitmentImageRepository.findAllByUser(mockUser)).willReturn(List.of());
 
-        studyRecruitmentImageService.permanentUpload(userId, mockRequestDto, studyId);
+        studyRecruitmentImageService.permanentUpload(userId, mockRequestDto.getContent(), studyId);
 
         verify(uploader, never()).moveFile(anyString(), anyString());
         verify(uploader, never()).deleteFile(anyString());

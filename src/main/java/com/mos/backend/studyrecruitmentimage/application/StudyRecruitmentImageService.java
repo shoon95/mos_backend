@@ -40,11 +40,10 @@ public class StudyRecruitmentImageService {
     }
 
     @Transactional
-    public void permanentUpload(Long userId, StudyCreateRequestDto requestDto, Long studyId) {
+    public void permanentUpload(Long userId, String content, Long studyId) {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
 
-        String content = requestDto.getContent();
         List<StudyRecruitmentImage> studyRecruitmentImageList = studyRecruitmentImageRepository.findAllByUser(user);
 
         Map<Boolean, List<StudyRecruitmentImage>> dividedRecruitImageList = divideRecruitImageList(studyRecruitmentImageList, content);
