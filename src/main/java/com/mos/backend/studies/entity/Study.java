@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -84,6 +85,18 @@ public class Study extends BaseAuditableEntity {
 
     public void updateSubNotice(String subNotice) {
         this.notice = subNotice;
+    }
+
+    public void update(String title, String category, List<String> tags, int maxStudyMemberCount, LocalDate recruitmentStartDate, LocalDate recruitmentEndDate, String meetingType, String schedule, String content) {
+        this.title = title;
+        this.category = Category.fromDescription(category);
+        this.tags = StudyTag.fromList(tags);
+        this.maxStudyMemberCount = maxStudyMemberCount;
+        this.recruitmentStartDate = recruitmentStartDate;
+        this.recruitmentEndDate  = recruitmentEndDate;
+        this.meetingType = MeetingType.fromDescription(meetingType);
+        this.schedule = schedule;
+        this.content = content;
     }
 
     private String getOldChar(Long userId) {

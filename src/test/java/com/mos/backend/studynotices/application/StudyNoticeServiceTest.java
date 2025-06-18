@@ -52,9 +52,11 @@ class StudyNoticeServiceTest {
         boolean important = true;
 
         Study study = mock(Study.class);
+        when(study.getId()).thenReturn(studyId);
         User user = mock(User.class);
         doReturn(currentUserId).when(user).getId();
         StudyNotice studyNotice = mock(StudyNotice.class);
+        doReturn(study).when(studyNotice).getStudy();
         doReturn(title).when(studyNotice).getTitle();
         doReturn(content).when(studyNotice).getContent();
         doReturn(pinned).when(studyNotice).isPinned();
@@ -94,6 +96,7 @@ class StudyNoticeServiceTest {
         User user = mock(User.class);
         doReturn(currentUserId).when(user).getId();
         StudyNotice studyNotice = mock(StudyNotice.class);
+        doReturn(study).when(studyNotice).getStudy();
         doReturn(title).when(studyNotice).getTitle();
         doReturn(content).when(studyNotice).getContent();
         doReturn(pinned).when(studyNotice).isPinned();
