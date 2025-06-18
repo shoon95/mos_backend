@@ -2,6 +2,7 @@ package com.mos.backend.studyrecruitmentimage.application.consumer;
 
 import com.mos.backend.common.event.Event;
 import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
+import com.mos.backend.studies.application.event.StudyUpdatedEventPayload;
 import com.mos.backend.studyrecruitmentimage.application.StudyRecruitmentImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,12 @@ public class StudyRecruitmentImageConsumer {
     @TransactionalEventListener(phase = BEFORE_COMMIT)
     public void handleStudyCreatedEvent(Event<StudyCreatedEventPayload> event) {
         StudyCreatedEventPayload payload = event.getPayload();
-        studyRecruitmentImageService.permanentUpload(payload.getUserId(), payload.getRequestDto(), payload.getStudyId());
+        studyRecruitmentImageService.permanentUpload(payload.getUserId(), payload.getRequestDto().getContent(), payload.getStudyId());
+    }
+
+    @TransactionalEventListener(phase = BEFORE_COMMIT)
+    public void handleStudyUpdatedEvent(Event<StudyUpdatedEventPayload> event) {
+        StudyUpdatedEventPayload payload = event.getPayload();
+        studyRecruitmentImageService.permanentUpload(payload.getUserId(), payload.getRequestDto().getContent(), payload.getStudyId());
     }
 }
