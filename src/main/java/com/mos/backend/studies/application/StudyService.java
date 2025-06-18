@@ -10,12 +10,14 @@ import com.mos.backend.hotstudies.entity.HotStudyEventType;
 import com.mos.backend.hotstudies.infrastructure.HotStudyRepository;
 import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
 import com.mos.backend.studies.application.event.StudyDeletedEventPayload;
+import com.mos.backend.studies.application.event.StudyUpdatedEventPayload;
 import com.mos.backend.studies.application.event.StudyViewedEventPayload;
 import com.mos.backend.studies.application.responsedto.*;
 import com.mos.backend.studies.entity.*;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
 import com.mos.backend.studies.infrastructure.StudyRepository;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
+import com.mos.backend.studies.presentation.requestdto.StudyUpdateRequestDto;
 import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.users.application.responsedto.UserStudiesResponseDto;
 import com.mos.backend.users.entity.User;
@@ -54,7 +56,7 @@ public class StudyService {
 
     @Transactional
     public StudyCreateResponseDto create(Long userId, StudyCreateRequestDto requestDto) {
-        validateStudyCreateRequest(requestDto);
+        validateRecruitmentDate(requestDto.getRecruitmentStartDate(), requestDto.getRecruitmentEndDate());
 
         Study study = convertToEntity(requestDto);
         Study savedStudy = studyRepository.save(study);
@@ -62,6 +64,21 @@ public class StudyService {
         eventPublisher.publishEvent(new Event<>(EventType.STUDY_CREATED, new StudyCreatedEventPayload(userId, requestDto, savedStudy.getId())));
         return new StudyCreateResponseDto(savedStudy.getId());
     }
+
+    /**
+     * 스터디 업데이트
+     */
+    @Transactional
+    @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
+    public StudyResponseDto update(Long userId, Long studyId, StudyUpdateRequestDto requestDto) {
+        validateRecruitmentDate(requestDto.getRecruitmentStartDate(), requestDto.getRecruitmentEndDate());
+        Study study = entityFacade.getStudy(studyId);
+        updateStudy(requestDto, study);
+        eventPublisher.publishEvent(new Event<>(EventType.STUDY_UPDATED, new StudyUpdatedEventPayload(userId, requestDto, study.getId())));
+        return StudyResponseDto.from(study, studyMemberService.countCurrentStudyMember(studyId));
+    }
+
+
 
     /**
      * 스터디 단 건 조회
@@ -187,8 +204,8 @@ public class StudyService {
                 .build();
     }
 
-    private void validateStudyCreateRequest(StudyCreateRequestDto requestDto) {
-        if (requestDto.getRecruitmentStartDate().isAfter(requestDto.getRecruitmentEndDate())) {
+    private void validateRecruitmentDate(LocalDate startDate, LocalDate endDate) {
+        if (startDate.isAfter(endDate)) {
             throw new MosException(StudyErrorCode.INVALID_RECRUITMENT_DATES);
         }
     }
@@ -208,5 +225,9 @@ public class StudyService {
         if (!study.isRelated(studyId)) {
             throw new MosException(StudyErrorCode.UNRELATED_STUDY);
         }
+    }
+
+    private static void updateStudy(StudyUpdateRequestDto requestDto, Study study) {
+        study.update(requestDto.getTitle(), requestDto.getCategory(), requestDto.getTags(), requestDto.getMaxStudyMemberCount(), requestDto.getRecruitmentStartDate(), requestDto.getRecruitmentEndDate(), requestDto.getMeetingType(), requestDto.getSchedule(), requestDto.getContent());
     }
 }

@@ -4,16 +4,15 @@ import com.mos.backend.studies.application.StudyService;
 import com.mos.backend.studies.application.responsedto.*;
 import com.mos.backend.studies.presentation.requestdto.StudyCreateRequestDto;
 import com.mos.backend.studies.presentation.requestdto.StudySubNoticeRequestDto;
+import com.mos.backend.studies.presentation.requestdto.StudyUpdateRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -97,5 +96,17 @@ public class StudyController {
     @ResponseStatus(HttpStatus.OK)
     public StudyResponseDto updateSubNotice(@PathVariable Long studyId, @RequestBody StudySubNoticeRequestDto requestDto) {
         return studyService.updateSubNotice(studyId, requestDto.getSubNotice());
+    }
+
+    /**
+     * 스터디 수정
+     */
+    @PatchMapping("/{studyId}")
+    @ResponseStatus(HttpStatus.OK)
+    public StudyResponseDto update(
+            @PathVariable("studyId") Long studyId,
+            @RequestBody StudyUpdateRequestDto requestDto,
+            @AuthenticationPrincipal Long userId) {
+        return studyService.update(userId, studyId, requestDto);
     }
 }
