@@ -335,4 +335,62 @@ class StudyMemberServiceTest {
             verify(studyMember, never()).changeToLeader();
         }
     }
+
+    @Nested
+    @DisplayName("스터디 탈퇴 성공 시나리오")
+    class WithDrawSuccessScenarios {
+        @Test
+        @DisplayName("스터디 탈퇴 성공")
+        void withDraw_Success() {
+            // Given
+            Long userId = 1L;
+            Long studyId = 1L;
+            User user = mock(User.class);
+            Study study = mock(Study.class);
+            StudyMember studyMember = mock(StudyMember.class);
+
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(entityFacade.getStudy(studyId)).thenReturn(study);
+            when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(studyMember));
+            when(studyMember.isLeader()).thenReturn(false);
+
+            // When
+            studyMemberService.withDraw(userId, studyId);
+
+            // Then
+            verify(entityFacade).getUser(userId);
+            verify(entityFacade).getStudy(studyId);
+            verify(studyMemberRepository).findByUserIdAndStudyId(userId, studyId);
+            verify(studyMember).withDrawStudy();
+        }
+    }
+
+    @Nested
+    @DisplayName("스터디 탈퇴 실패 시나리오")
+    class WithDrawFailureScenarios {
+        @Test
+        @DisplayName("스터디장이 탈퇴하려고 할 때 MosException 발생")
+        void withDraw_LeaderWithDrawForbidden() {
+            // Given
+            Long userId = 1L;
+            Long studyId = 1L;
+            User user = mock(User.class);
+            Study study = mock(Study.class);
+            StudyMember studyMember = mock(StudyMember.class);
+
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(entityFacade.getStudy(studyId)).thenReturn(study);
+            when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(studyMember));
+            when(studyMember.isLeader()).thenReturn(true);
+
+            // When
+            MosException exception = assertThrows(MosException.class, () -> {
+                studyMemberService.withDraw(userId, studyId);
+            });
+
+            // Then
+            assertEquals(StudyMemberErrorCode.STUDY_LEADER_WITHDRAW_FORBIDDEN, exception.getErrorCode());
+            verify(studyMember, never()).withDrawStudy();
+        }
+    }
 }
