@@ -16,6 +16,7 @@ import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.users.entity.exception.UserErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,6 +77,7 @@ public class StudyMemberService {
                 .toList();
     }
 
+    @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
     @Transactional
     public void delegateLeader(Long userId, Long studyId, Long studyMemberId) {
         User user = entityFacade.getUser(userId);
@@ -84,25 +86,17 @@ public class StudyMemberService {
         StudyMember expectedStudyLeader = studyMemberRepository.findByUserIdAndStudyId(user.getId(), study.getId())
                 .orElseThrow(() -> new MosException(StudyMemberErrorCode.STUDY_MEMBER_NOT_FOUND));
 
-        if (!study.isRelated(studyMember.getStudy().getId()))
-            throw new MosException(StudyErrorCode.UNRELATED_STUDY);
-
-        if (!expectedStudyLeader.isLeader())
-            throw new MosException(StudyMemberErrorCode.ONLY_LEADER_CAN_DELEGATE);
-
         expectedStudyLeader.changeToMember();
         studyMember.changeToLeader();
     }
 
+    @PreAuthorize("@studySecurity.isMemberOrAdmin(#studyId)")
     @Transactional
     public void withDraw(Long userId, Long studyId) {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
         StudyMember studyMember = studyMemberRepository.findByUserIdAndStudyId(userId, studyId)
                 .orElseThrow(() -> new MosException(StudyMemberErrorCode.STUDY_MEMBER_NOT_FOUND));
-
-        if (study.isRelated(studyMember.getStudy().getId()))
-            throw new MosException(StudyErrorCode.UNRELATED_STUDY);
 
         if (studyMember.isLeader())
             throw new MosException(StudyMemberErrorCode.STUDY_LEADER_WITHDRAW_FORBIDDEN);

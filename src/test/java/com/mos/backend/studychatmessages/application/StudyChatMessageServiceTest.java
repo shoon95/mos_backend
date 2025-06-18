@@ -52,10 +52,10 @@ class StudyChatMessageServiceTest extends AbstractTestContainer {
 
             // When
             InfinityScrollRes<StudyChatMessageRes> result1 = studyChatMessageService.getStudyChatMessages(
-                    user1.getId(), studyChatRoom.getId(), lastStudyChatMessageId, size
+                    study.getId(), studyChatRoom.getId(), lastStudyChatMessageId, size
             );
             InfinityScrollRes<StudyChatMessageRes> result2 = studyChatMessageService.getStudyChatMessages(
-                    user1.getId(), studyChatRoom.getId(), result1.getLastElementId(), size
+                    study.getId(), studyChatRoom.getId(), result1.getLastElementId(), size
             );
 
             // Then

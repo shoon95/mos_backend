@@ -14,6 +14,7 @@ import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoomErrorCode;
 import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,6 +55,7 @@ public class PrivateChatMessageService {
         return privateChatMessageRepository.save(privateChatMessage);
     }
 
+    @PreAuthorize("@userSecurity.isOwnerOrAdmin(#userId)")
     @Transactional(readOnly = true)
     public InfinityScrollRes<PrivateChatMessageRes> getPrivateChatMessages(Long userId, Long privateChatRoomId, Long lastPrivateChatMessageId, int size) {
         User user = entityFacade.getUser(userId);

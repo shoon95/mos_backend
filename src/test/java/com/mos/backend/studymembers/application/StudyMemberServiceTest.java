@@ -288,9 +288,6 @@ class StudyMemberServiceTest {
             when(user.getId()).thenReturn(userId);
             when(study.getId()).thenReturn(studyId);
             when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(studyLeader));
-            when(studyMember.getStudy()).thenReturn(study);
-            when(study.isRelated(studyId)).thenReturn(true);
-            when(studyLeader.isLeader()).thenReturn(true);
 
             // When
             studyMemberService.delegateLeader(userId, studyId, studyMemberId);
@@ -309,38 +306,7 @@ class StudyMemberServiceTest {
     @DisplayName("스터디장 위임 실패 시나리오")
     class DelegateLeaderFailureScenarios {
         @Test
-        @DisplayName("스터디가 연관되어 있지 않을 때 MosException 발생")
-        void delegateLeader_UnrelatedStudy() {
-            // Given
-            Long userId = 1L;
-            Long studyId = 1L;
-            Long studyMemberId = 1L;
-            User user = mock(User.class);
-            Study study = mock(Study.class);
-            StudyMember studyMember = mock(StudyMember.class);
-
-            when(entityFacade.getUser(userId)).thenReturn(user);
-            when(entityFacade.getStudy(studyId)).thenReturn(study);
-            when(entityFacade.getStudyMember(studyMemberId)).thenReturn(studyMember);
-            when(user.getId()).thenReturn(userId);
-            when(study.getId()).thenReturn(studyId);
-            when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(studyMember));
-            when(studyMember.getStudy()).thenReturn(study);
-            when(study.isRelated(studyId)).thenReturn(false);
-
-            // When
-            MosException exception = assertThrows(MosException.class, () -> {
-                studyMemberService.delegateLeader(userId, studyId, studyMemberId);
-            });
-
-            // Then
-            assertEquals(StudyErrorCode.UNRELATED_STUDY, exception.getErrorCode());
-            verify(studyMember, never()).changeToMember();
-            verify(studyMember, never()).changeToLeader();
-        }
-
-        @Test
-        @DisplayName("스터디장이 아닐 때 MosException 발생")
+        @DisplayName("스터디장이 조회되지 않는 경우 MosException 발생")
         void delegateLeader_NotLeader() {
             // Given
             Long userId = 1L;
@@ -356,10 +322,7 @@ class StudyMemberServiceTest {
             when(entityFacade.getStudyMember(studyMemberId)).thenReturn(studyMember);
             when(user.getId()).thenReturn(userId);
             when(study.getId()).thenReturn(studyId);
-            when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(studyLeader));
-            when(studyMember.getStudy()).thenReturn(study);
-            when(study.isRelated(studyId)).thenReturn(true);
-            when(studyLeader.isLeader()).thenReturn(false);
+            when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.empty());
 
             // When
             MosException exception = assertThrows(MosException.class, () -> {
@@ -367,9 +330,67 @@ class StudyMemberServiceTest {
             });
 
             // Then
-            assertEquals(StudyMemberErrorCode.ONLY_LEADER_CAN_DELEGATE, exception.getErrorCode());
+            assertEquals(StudyMemberErrorCode.STUDY_MEMBER_NOT_FOUND, exception.getErrorCode());
             verify(studyLeader, never()).changeToMember();
             verify(studyMember, never()).changeToLeader();
+        }
+    }
+
+    @Nested
+    @DisplayName("스터디 탈퇴 성공 시나리오")
+    class WithDrawSuccessScenarios {
+        @Test
+        @DisplayName("스터디 탈퇴 성공")
+        void withDraw_Success() {
+            // Given
+            Long userId = 1L;
+            Long studyId = 1L;
+            User user = mock(User.class);
+            Study study = mock(Study.class);
+            StudyMember studyMember = mock(StudyMember.class);
+
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(entityFacade.getStudy(studyId)).thenReturn(study);
+            when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(studyMember));
+            when(studyMember.isLeader()).thenReturn(false);
+
+            // When
+            studyMemberService.withDraw(userId, studyId);
+
+            // Then
+            verify(entityFacade).getUser(userId);
+            verify(entityFacade).getStudy(studyId);
+            verify(studyMemberRepository).findByUserIdAndStudyId(userId, studyId);
+            verify(studyMember).withDrawStudy();
+        }
+    }
+
+    @Nested
+    @DisplayName("스터디 탈퇴 실패 시나리오")
+    class WithDrawFailureScenarios {
+        @Test
+        @DisplayName("스터디장이 탈퇴하려고 할 때 MosException 발생")
+        void withDraw_LeaderWithDrawForbidden() {
+            // Given
+            Long userId = 1L;
+            Long studyId = 1L;
+            User user = mock(User.class);
+            Study study = mock(Study.class);
+            StudyMember studyMember = mock(StudyMember.class);
+
+            when(entityFacade.getUser(userId)).thenReturn(user);
+            when(entityFacade.getStudy(studyId)).thenReturn(study);
+            when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(studyMember));
+            when(studyMember.isLeader()).thenReturn(true);
+
+            // When
+            MosException exception = assertThrows(MosException.class, () -> {
+                studyMemberService.withDraw(userId, studyId);
+            });
+
+            // Then
+            assertEquals(StudyMemberErrorCode.STUDY_LEADER_WITHDRAW_FORBIDDEN, exception.getErrorCode());
+            verify(studyMember, never()).withDrawStudy();
         }
     }
 }

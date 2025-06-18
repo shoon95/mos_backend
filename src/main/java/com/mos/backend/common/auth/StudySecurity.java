@@ -31,7 +31,6 @@ public class StudySecurity {
         Long currentUserId = Long.valueOf(authentication.getName());
 
         User user = entityFacade.getUser(currentUserId);
-
         if (user.isAdmin()) {
             return true;
         }
@@ -39,24 +38,6 @@ public class StudySecurity {
         return entityFacade.getStudyMember(currentUserId, studyId).isLeader();
     }
 
-    /**
-     * 로그인한 User와 요청 User 가 같은지 또는 로그인한 User가 관리자인지 검증
-     */
-
-    public boolean isOwnerOrAdmin(Long userId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        isAuthenticated(authentication);
-
-        Long currentUserId = Long.valueOf(authentication.getName());
-
-        User currentUser = entityFacade.getUser(currentUserId);
-
-        if (currentUser.isAdmin()) {
-            return true;
-        } else {
-            return currentUser.isOwner(userId);
-        }
-    }
 
     /**
      * 로그인한 User가 지원자 본인인지 또는 관리자인지 검증

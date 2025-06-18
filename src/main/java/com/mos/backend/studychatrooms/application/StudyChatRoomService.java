@@ -7,6 +7,7 @@ import com.mos.backend.studychatrooms.entity.StudyChatRoom;
 import com.mos.backend.studychatrooms.infrastructure.StudyChatRoomRepository;
 import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,13 +27,17 @@ public class StudyChatRoomService {
         studyChatRoomRepository.save(studyChatRoom);
     }
 
-    public void enter(Long userId, Long studyChatRoomId) {
+    @PreAuthorize("@studySecurity.isMemberOrAdmin(#studyId)")
+    @Transactional(readOnly = true)
+    public void enter(Long userId, Long studyId, Long studyChatRoomId) {
         User user = entityFacade.getUser(userId);
         StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(studyChatRoomId);
         redisStudyChatRoomUtil.enterChatRoom(user.getId(), studyChatRoom.getId());
     }
 
-    public void leave(Long userId, Long studyChatRoomId) {
+    @PreAuthorize("@studySecurity.isMemberOrAdmin(#studyId)")
+    @Transactional(readOnly = true)
+    public void leave(Long userId, Long studyId, Long studyChatRoomId) {
         User user = entityFacade.getUser(userId);
         StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(studyChatRoomId);
         redisStudyChatRoomUtil.leaveChatRoom(user.getId(), studyChatRoom.getId());
