@@ -12,15 +12,15 @@ public class StudyChatRoomController {
     private final StudyChatRoomService studyChatRoomService;
 
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/study-chat-rooms/{studyChatRoomId}")
-    public void enter(@AuthenticationPrincipal Long userId, @PathVariable Long studyChatRoomId) {
-        studyChatRoomService.enter(userId, studyChatRoomId);
+    @PostMapping("/studies/{studyId}/chat-rooms/{studyChatRoomId}")
+    public void enter(@AuthenticationPrincipal Long userId, @PathVariable Long studyId, @PathVariable Long studyChatRoomId) {
+        studyChatRoomService.enter(userId, studyId, studyChatRoomId);
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping("/study-chat-rooms/{studyChatRoomId}")
-    public void leave(@AuthenticationPrincipal Long userId, @PathVariable Long studyChatRoomId) {
-        studyChatRoomService.leave(userId, studyChatRoomId);
+    @DeleteMapping("/studies/{studyId}/chat-rooms/{studyChatRoomId}")
+    public void leave(@AuthenticationPrincipal Long userId, @PathVariable Long studyId, @PathVariable Long studyChatRoomId) {
+        studyChatRoomService.leave(userId, studyId,  studyChatRoomId);
     }
 
 }

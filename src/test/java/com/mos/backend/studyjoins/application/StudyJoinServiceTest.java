@@ -199,7 +199,6 @@ public class StudyJoinServiceTest {
         @DisplayName("스터디의 스터디 신청 목록 조회")
         void getStudyJoins_Success() {
             // Given
-            Long userId = 1L;
             Long studyId = 1L;
             Long studyJoinId1 = 1L;
             Long studyJoinId2 = 2L;
@@ -214,7 +213,6 @@ public class StudyJoinServiceTest {
 
             when(mockStudyJoin1.getId()).thenReturn(studyJoinId1);
             when(mockStudyJoin2.getId()).thenReturn(studyJoinId2);
-            when(entityFacade.getUser(userId)).thenReturn(user);
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
             when(mockStudy.getId()).thenReturn(studyId);
             when(studyJoinRepository.findAllByStudyId(studyId)).thenReturn(mockStudyJoins);
@@ -224,10 +222,9 @@ public class StudyJoinServiceTest {
             when(mockStudyJoin2.getUser()).thenReturn(user);
 
             // When
-            List<StudyJoinRes> studyJoinResList = studyJoinService.getStudyJoins(userId, studyId);
+            List<StudyJoinRes> studyJoinResList = studyJoinService.getStudyJoins(studyId);
 
             // Then
-            verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(studyJoinRepository).findAllByStudyId(studyId);
             verify(questionAnswerRepository).findAllByStudyJoinId(1L);
@@ -286,7 +283,6 @@ public class StudyJoinServiceTest {
             Study mockStudy = mock(Study.class);
             StudyJoin mockStudyJoin = mock(StudyJoin.class);
 
-            when(entityFacade.getUser(userId)).thenReturn(mockUser);
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
             when(entityFacade.getStudyJoin(studyJoinId)).thenReturn(mockStudyJoin);
             when(mockStudyJoin.getUser()).thenReturn(mockUser);
@@ -295,10 +291,9 @@ public class StudyJoinServiceTest {
             when(mockStudy.getMaxStudyMemberCount()).thenReturn(5);
 
             // When
-            studyJoinService.approveStudyJoin(userId, studyId, studyJoinId);
+            studyJoinService.approveStudyJoin(studyId, studyJoinId);
 
             // Then
-            verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(entityFacade).getStudyJoin(studyJoinId);
             verify(mockStudyJoin).isSameStudy(mockStudy);
@@ -325,12 +320,11 @@ public class StudyJoinServiceTest {
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyJoinService.approveStudyJoin(userId, studyId, studyJoinId);
+                studyJoinService.approveStudyJoin(studyId, studyJoinId);
             });
 
             assertEquals(StudyErrorCode.STUDY_NOT_FOUND, exception.getErrorCode());
 
-            verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(entityFacade, never()).getStudyJoin(studyJoinId);
             verify(mockStudyJoin, never()).isSameStudy(mockStudy);
@@ -356,12 +350,11 @@ public class StudyJoinServiceTest {
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyJoinService.approveStudyJoin(userId, studyId, studyJoinId);
+                studyJoinService.approveStudyJoin(studyId, studyJoinId);
             });
 
             assertEquals(StudyJoinErrorCode.STUDY_JOIN_MISMATCH, exception.getErrorCode());
 
-            verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(entityFacade).getStudyJoin(studyJoinId);
             verify(mockStudyJoin).isSameStudy(mockStudy);
@@ -378,23 +371,19 @@ public class StudyJoinServiceTest {
         @DisplayName("스터디 신청 거절")
         void rejectStudyMember_Success() {
             // Given
-            Long userId = 1L;
             Long studyId = 1L;
             Long studyJoinId = 1L;
-            User mockUser = mock(User.class);
             Study mockStudy = mock(Study.class);
             StudyJoin mockStudyJoin = mock(StudyJoin.class);
 
-            when(entityFacade.getUser(userId)).thenReturn(mockUser);
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
             when(entityFacade.getStudyJoin(studyJoinId)).thenReturn(mockStudyJoin);
             when(mockStudyJoin.isSameStudy(mockStudy)).thenReturn(true);
 
             // When
-            studyJoinService.rejectStudyJoin(userId, studyId, studyJoinId);
+            studyJoinService.rejectStudyJoin(studyId, studyJoinId);
 
             // Then
-            verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(entityFacade).getStudyJoin(studyJoinId);
             verify(mockStudyJoin).isSameStudy(mockStudy);
@@ -409,26 +398,22 @@ public class StudyJoinServiceTest {
         @DisplayName("스터디가입이 요청한 스터디와 일치하지 않을 때 MosException 발생")
         void rejectStudyMember_StudyJoinMismatch() {
             // Given
-            Long userId = 1L;
             Long studyId = 1L;
             Long studyJoinId = 1L;
-            User mockUser = mock(User.class);
             Study mockStudy = mock(Study.class);
             StudyJoin mockStudyJoin = mock(StudyJoin.class);
 
-            when(entityFacade.getUser(userId)).thenReturn(mockUser);
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
             when(entityFacade.getStudyJoin(studyJoinId)).thenReturn(mockStudyJoin);
             when(mockStudyJoin.isSameStudy(mockStudy)).thenReturn(false);
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyJoinService.rejectStudyJoin(userId, studyId, studyJoinId);
+                studyJoinService.rejectStudyJoin(studyId, studyJoinId);
             });
 
             assertEquals(StudyJoinErrorCode.STUDY_JOIN_MISMATCH, exception.getErrorCode());
 
-            verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(entityFacade).getStudyJoin(studyJoinId);
             verify(mockStudyJoin).isSameStudy(mockStudy);
@@ -443,24 +428,20 @@ public class StudyJoinServiceTest {
         @DisplayName("스터디 신청 취소")
         void cancelStudyMember_Success() {
             // Given
-            Long userId = 1L;
             Long studyId = 1L;
             Long studyJoinId = 1L;
-            User mockUser = mock(User.class);
             Study mockStudy = mock(Study.class);
             StudyJoin mockStudyJoin = mock(StudyJoin.class);
 
-            when(entityFacade.getUser(userId)).thenReturn(mockUser);
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
             when(entityFacade.getStudyJoin(studyJoinId)).thenReturn(mockStudyJoin);
             when(mockStudyJoin.isPending()).thenReturn(true);
             when(mockStudyJoin.isSameStudy(mockStudy)).thenReturn(true);
 
             // When
-            studyJoinService.cancelStudyJoin(userId, studyId, studyJoinId);
+            studyJoinService.cancelStudyJoin(studyId, studyJoinId);
 
             // Then
-            verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(entityFacade).getStudyJoin(studyJoinId);
             verify(mockStudyJoin).isSameStudy(mockStudy);
@@ -475,26 +456,22 @@ public class StudyJoinServiceTest {
         @DisplayName("스터디가입이 요청한 스터디와 일치하지 않을 때 MosException 발생")
         void cancelStudyMember_StudyJoinMismatch() {
             // Given
-            Long userId = 1L;
             Long studyId = 1L;
             Long studyJoinId = 1L;
-            User mockUser = mock(User.class);
             Study mockStudy = mock(Study.class);
             StudyJoin mockStudyJoin = mock(StudyJoin.class);
 
-            when(entityFacade.getUser(userId)).thenReturn(mockUser);
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
             when(entityFacade.getStudyJoin(studyJoinId)).thenReturn(mockStudyJoin);
             when(mockStudyJoin.isSameStudy(mockStudy)).thenReturn(false);
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyJoinService.cancelStudyJoin(userId, studyId, studyJoinId);
+                studyJoinService.cancelStudyJoin(studyId, studyJoinId);
             });
 
             assertEquals(StudyJoinErrorCode.STUDY_JOIN_MISMATCH, exception.getErrorCode());
 
-            verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(entityFacade).getStudyJoin(studyJoinId);
             verify(mockStudyJoin).isSameStudy(mockStudy);
@@ -505,14 +482,11 @@ public class StudyJoinServiceTest {
         @DisplayName("스터디 신청 상태가 PENDING이 아닐 때 MosException 발생")
         void deleteStudyJoin_NotPending() {
             // Given
-            Long userId = 1L;
             Long studyId = 1L;
             Long studyJoinId = 1L;
-            User mockUser = mock(User.class);
             Study mockStudy = mock(Study.class);
             StudyJoin mockStudyJoin = mock(StudyJoin.class);
 
-            when(entityFacade.getUser(userId)).thenReturn(mockUser);
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
             when(entityFacade.getStudyJoin(studyJoinId)).thenReturn(mockStudyJoin);
             when(mockStudyJoin.isSameStudy(mockStudy)).thenReturn(true);
@@ -520,12 +494,11 @@ public class StudyJoinServiceTest {
 
             // When & Then
             MosException exception = assertThrows(MosException.class, () -> {
-                studyJoinService.cancelStudyJoin(userId, studyId, studyJoinId);
+                studyJoinService.cancelStudyJoin(studyId, studyJoinId);
             });
 
             assertEquals(StudyJoinErrorCode.STUDY_JOIN_NOT_PENDING, exception.getErrorCode());
 
-            verify(entityFacade).getUser(userId);
             verify(entityFacade).getStudy(studyId);
             verify(entityFacade).getStudyJoin(studyJoinId);
             verify(mockStudyJoin).isSameStudy(mockStudy);

@@ -10,6 +10,7 @@ import com.mos.backend.userschedules.infrastructure.UserScheduleRepository;
 import com.mos.backend.userschedules.presentation.req.UserScheduleCreateReq;
 import com.mos.backend.userschedules.presentation.req.UserScheduleUpdateReq;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,7 @@ public class UserScheduleService {
         return userSchedules.stream().map(UserScheduleRes::from).toList();
     }
 
+    @PreAuthorize("@userScheduleSecurity.isScheduleOwnerOrAdmin(#userScheduleId)")
     @Transactional
     public void updateUserSchedule(Long userId, Long userScheduleId, UserScheduleUpdateReq req) {
         User user = entityFacade.getUser(userId);
@@ -47,6 +49,7 @@ public class UserScheduleService {
         userSchedule.update(req.getTitle(), req.getDescription(), req.getStartDateTime(), req.getEndDateTime());
     }
 
+    @PreAuthorize("@userScheduleSecurity.isScheduleOwnerOrAdmin(#userScheduleId)")
     @Transactional
     public void deleteUserSchedule(Long userId, Long userScheduleId) {
         User user = entityFacade.getUser(userId);
