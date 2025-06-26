@@ -59,6 +59,9 @@ public class StudyMemberService {
         if (studyMemberCnt >= study.getMaxStudyMemberCount())
             throw new MosException(StudyMemberErrorCode.STUDY_MEMBER_FULL);
 
+        if (studyMemberRepository.existsByUserAndStudy(user, study))
+            throw new MosException(StudyMemberErrorCode.CONFLICT);
+
         studyMemberRepository.save(StudyMember.createStudyMember(study, user));
     }
 
