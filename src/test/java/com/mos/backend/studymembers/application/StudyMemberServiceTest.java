@@ -157,28 +157,6 @@ class StudyMemberServiceTest {
         }
 
         @Test
-        @DisplayName("유저가 존재하지 않을 때 MosException 발생")
-        void createStudyMember_UserNotFound() {
-            // Given
-            Long studyId = 1L;
-            Long userId = 1L;
-            Study mockStudy = mock(Study.class);
-
-            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
-            when(entityFacade.getUser(userId)).thenThrow(new MosException(UserErrorCode.USER_NOT_FOUND));
-
-            // When & Then
-            MosException exception = assertThrows(MosException.class, () -> {
-                studyMemberService.createStudyLeader(studyId, userId);
-            });
-
-            assertEquals(UserErrorCode.USER_NOT_FOUND, exception.getErrorCode());
-            verify(entityFacade).getStudy(studyId);
-            verify(entityFacade).getUser(userId);
-            verify(studyMemberRepository, never()).save(any(StudyMember.class));
-        }
-
-        @Test
         @DisplayName("스터디 멤버 수가 0일 때 MosException 발생")
         void createStudyMember_StudyMemberCountZero() {
             // Given

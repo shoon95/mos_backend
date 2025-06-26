@@ -14,7 +14,6 @@ import com.mos.backend.studymembers.entity.StudyMemberRoleType;
 import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.users.entity.User;
-import com.mos.backend.users.entity.exception.UserErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -123,11 +122,5 @@ public class StudyMemberService {
         Study study = entityFacade.getStudy(studyId);
         List<ParticipationStatus> currentParticipationStatusList = Arrays.asList(ParticipationStatus.ACTIVATED, ParticipationStatus.COMPLETED);
         return studyMemberRepository.countByStudyAndStatusIn(study, currentParticipationStatusList);
-    }
-
-    public void validateStudyMember(User user, Study study) {
-        if (!studyMemberRepository.existsByUserAndStudy(user, study)) {
-            throw new MosException(UserErrorCode.USER_FORBIDDEN);
-        }
     }
 }
