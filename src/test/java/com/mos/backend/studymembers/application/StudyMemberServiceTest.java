@@ -228,6 +228,32 @@ class StudyMemberServiceTest {
             verify(entityFacade).getUser(userId);
             verify(studyMemberRepository, never()).save(any(StudyMember.class));
         }
+
+        @Test
+        @DisplayName("이미 스터디에 참여 중인 유저일 때 MosException 발생")
+        void createStudyMember_UserAlreadyInStudy() {
+            // Given
+            Long studyId = 1L;
+            Long userId = 1L;
+            Study mockStudy = mock(Study.class);
+            User mockUser = mock(User.class);
+
+            when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+            when(entityFacade.getUser(userId)).thenReturn(mockUser);
+            when(studyMemberRepository.countByStudyAndStatusIn(mockStudy, List.of(ParticipationStatus.ACTIVATED, ParticipationStatus.COMPLETED))).thenReturn(1);
+            when(mockStudy.getMaxStudyMemberCount()).thenReturn(5);
+            when(studyMemberRepository.existsByUserAndStudy(mockUser, mockStudy)).thenReturn(true);
+
+            // When & Then
+            MosException exception = assertThrows(MosException.class, () -> {
+                studyMemberService.createStudyMember(studyId, userId);
+            });
+
+            assertEquals(StudyMemberErrorCode.CONFLICT, exception.getErrorCode());
+            verify(entityFacade, times(2)).getStudy(studyId);
+            verify(entityFacade).getUser(userId);
+            verify(studyMemberRepository, never()).save(any(StudyMember.class));
+        }
     }
 
     @Nested
