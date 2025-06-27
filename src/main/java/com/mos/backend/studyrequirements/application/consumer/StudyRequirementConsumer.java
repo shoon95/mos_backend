@@ -2,6 +2,7 @@ package com.mos.backend.studyrequirements.application.consumer;
 
 import com.mos.backend.common.event.Event;
 import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
+import com.mos.backend.studies.application.event.StudyUpdatedEventPayload;
 import com.mos.backend.studyrequirements.application.StudyRequirementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,12 @@ public class StudyRequirementConsumer {
     @TransactionalEventListener(phase = BEFORE_COMMIT)
     public void handleStudyCreatedEvent(Event<StudyCreatedEventPayload> event) {
         StudyCreatedEventPayload payload = event.getPayload();
+        studyRequirementService.createOrUpdateOrDelete(payload.getStudyId(), payload.getRequestDto().getRequirements());
+    }
+
+    @TransactionalEventListener(phase = BEFORE_COMMIT)
+    public void handleStudyUpdatedEvent(Event<StudyUpdatedEventPayload> event) {
+        StudyUpdatedEventPayload payload = event.getPayload();
         studyRequirementService.createOrUpdateOrDelete(payload.getStudyId(), payload.getRequestDto().getRequirements());
     }
 }
