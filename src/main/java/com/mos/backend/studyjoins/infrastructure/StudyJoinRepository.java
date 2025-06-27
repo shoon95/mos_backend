@@ -13,7 +13,7 @@ public interface StudyJoinRepository {
 
     List<StudyJoin> findAllByUserIdAndStatus(Long userId, StudyJoinStatus status);
 
-    List<StudyJoin> findAllByStudyId(Long studyId);
-
     boolean existsByUserIdAndStudyId(Long userId, Long studyId);
+
+    List<StudyJoin> findAllByStudyIdAndStatus(Long studyId, StudyJoinStatus studyJoinStatus);
 }

@@ -30,8 +30,8 @@ public class StudyJoinRepositoryImpl implements StudyJoinRepository {
     }
 
     @Override
-    public List<StudyJoin> findAllByStudyId(Long studyId) {
-        return studyJoinJpaRepository.findAllByStudyId(studyId);
+    public List<StudyJoin> findAllByStudyIdAndStatus(Long studyId, StudyJoinStatus status) {
+        return studyJoinQueryDslRepository.findAllByStudyIdAndStatus(studyId, status);
     }
 
     @Override

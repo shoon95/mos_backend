@@ -33,8 +33,8 @@ public class StudyJoinController {
 
     @GetMapping("/studies/{studyId}/study-joins")
     @ResponseStatus(HttpStatus.OK)
-    public List<StudyJoinRes> getStudyJoins(@PathVariable Long studyId) {
-        return studyJoinService.getStudyJoins(studyId);
+    public List<StudyJoinRes> getStudyJoins(@PathVariable Long studyId, @RequestParam(required = false) String studyJoinStatus) {
+        return studyJoinService.getStudyJoins(studyId, studyJoinStatus);
     }
 
     @PatchMapping("/studies/{studyId}/study-joins/{studyJoinId}/approval")

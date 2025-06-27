@@ -211,22 +211,21 @@ public class StudyJoinServiceTest {
             QuestionAnswerRes questionAnswerRes2 = mock(QuestionAnswerRes.class);
             List<QuestionAnswerRes> mockQuestionAnswers = List.of(questionAnswerRes1, questionAnswerRes2);
 
-            when(mockStudyJoin1.getId()).thenReturn(studyJoinId1);
-            when(mockStudyJoin2.getId()).thenReturn(studyJoinId2);
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
+            when(studyJoinRepository.findAllByStudyIdAndStatus(studyId, null)).thenReturn(mockStudyJoins);
             when(mockStudy.getId()).thenReturn(studyId);
-            when(studyJoinRepository.findAllByStudyId(studyId)).thenReturn(mockStudyJoins);
             when(questionAnswerRepository.findAllByStudyJoinId(studyJoinId1)).thenReturn(mockQuestionAnswers);
             when(questionAnswerRepository.findAllByStudyJoinId(studyJoinId2)).thenReturn(mockQuestionAnswers);
+            when(mockStudyJoin1.getId()).thenReturn(studyJoinId1);
+            when(mockStudyJoin2.getId()).thenReturn(studyJoinId2);
             when(mockStudyJoin1.getUser()).thenReturn(user);
             when(mockStudyJoin2.getUser()).thenReturn(user);
 
             // When
-            List<StudyJoinRes> studyJoinResList = studyJoinService.getStudyJoins(studyId);
+            List<StudyJoinRes> studyJoinResList = studyJoinService.getStudyJoins(studyId, null);
 
             // Then
             verify(entityFacade).getStudy(studyId);
-            verify(studyJoinRepository).findAllByStudyId(studyId);
             verify(questionAnswerRepository).findAllByStudyJoinId(1L);
             verify(questionAnswerRepository).findAllByStudyJoinId(2L);
             assertNotNull(studyJoinResList);

@@ -24,7 +24,15 @@ public class StudyJoinQueryDslRepository {
                 .where(studyJoin.user.id.eq(userId))
                 .where(eqStatus(status))
                 .fetch();
+    }
 
+    public List<StudyJoin> findAllByStudyIdAndStatus(Long studyId, StudyJoinStatus status) {
+        return queryFactory
+                .selectFrom(studyJoin)
+                .join(studyJoin.study).fetchJoin()
+                .where(studyJoin.study.id.eq(studyId))
+                .where(eqStatus(status))
+                .fetch();
     }
 
     private static BooleanExpression eqStatus(StudyJoinStatus status) {

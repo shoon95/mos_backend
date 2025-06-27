@@ -112,10 +112,15 @@ public class StudyJoinService {
 
     @Transactional(readOnly = true)
     @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
-    public List<StudyJoinRes> getStudyJoins(Long studyId) {
+    public List<StudyJoinRes> getStudyJoins(Long studyId, String status) {
         Study study = entityFacade.getStudy(studyId);
 
-        List<StudyJoin> studyJoins = studyJoinRepository.findAllByStudyId(study.getId());
+        StudyJoinStatus studyJoinStatus = null;
+        if (status != null && !status.isBlank()) {
+            studyJoinStatus = StudyJoinStatus.fromDescription(status);
+        }
+
+        List<StudyJoin> studyJoins = studyJoinRepository.findAllByStudyIdAndStatus(study.getId(), studyJoinStatus);
 
         return studyJoins.stream()
                 .map(studyJoin -> {
