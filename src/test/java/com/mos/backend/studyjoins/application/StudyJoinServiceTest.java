@@ -210,10 +210,13 @@ public class StudyJoinServiceTest {
             QuestionAnswerRes questionAnswerRes1 = mock(QuestionAnswerRes.class);
             QuestionAnswerRes questionAnswerRes2 = mock(QuestionAnswerRes.class);
             List<QuestionAnswerRes> mockQuestionAnswers = List.of(questionAnswerRes1, questionAnswerRes2);
+            StudyJoinStatus status = StudyJoinStatus.PENDING;
 
             when(entityFacade.getStudy(studyId)).thenReturn(mockStudy);
             when(studyJoinRepository.findAllByStudyIdAndStatus(studyId, null)).thenReturn(mockStudyJoins);
             when(mockStudy.getId()).thenReturn(studyId);
+            when(mockStudyJoin1.getStatus()).thenReturn(status);
+            when(mockStudyJoin2.getStatus()).thenReturn(status);
             when(questionAnswerRepository.findAllByStudyJoinId(studyJoinId1)).thenReturn(mockQuestionAnswers);
             when(questionAnswerRepository.findAllByStudyJoinId(studyJoinId2)).thenReturn(mockQuestionAnswers);
             when(mockStudyJoin1.getId()).thenReturn(studyJoinId1);
@@ -252,7 +255,7 @@ public class StudyJoinServiceTest {
             when(entityFacade.getUser(userId)).thenReturn(user);
             when(mockStudyJoin1.getStudy()).thenReturn(mockStudy1);
             when(mockStudyJoin2.getStudy()).thenReturn(mockStudy2);
-            when(studyJoinRepository.findAllByUserIdAndStatus(userId, status)).thenReturn(mockStudyJoins);
+            when(studyJoinRepository.findAllByUserIdAndStatus(userId, status.getDescription())).thenReturn(mockStudyJoins);
             when(mockStudy1.getCategory()).thenReturn(mock(Category.class));
             when(mockStudy2.getCategory()).thenReturn(mock(Category.class));
             when(mockStudyJoin1.getStatus()).thenReturn(status);
@@ -263,7 +266,7 @@ public class StudyJoinServiceTest {
 
             // Then
             verify(entityFacade).getUser(userId);
-            verify(studyJoinRepository).findAllByUserIdAndStatus(userId, status);
+            verify(studyJoinRepository).findAllByUserIdAndStatus(userId, status.getDescription());
             assertThat(myStudyJoinResList).hasSize(mockStudyJoins.size());
         }
     }
