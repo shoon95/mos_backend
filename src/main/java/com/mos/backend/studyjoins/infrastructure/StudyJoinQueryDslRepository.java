@@ -21,7 +21,7 @@ public class StudyJoinQueryDslRepository {
         return queryFactory
                 .selectFrom(studyJoin)
                 .join(studyJoin.study).fetchJoin()
-                .where(studyJoin.user.id.eq(userId))
+                .where(eqUserId(userId))
                 .where(eqStatus(status))
                 .fetch();
     }
@@ -30,9 +30,17 @@ public class StudyJoinQueryDslRepository {
         return queryFactory
                 .selectFrom(studyJoin)
                 .join(studyJoin.study).fetchJoin()
-                .where(studyJoin.study.id.eq(studyId))
+                .where(eqStudyId(studyId))
                 .where(eqStatus(status))
                 .fetch();
+    }
+
+    private static BooleanExpression eqStudyId(Long studyId) {
+        return studyJoin.study.id.eq(studyId);
+    }
+
+    private static BooleanExpression eqUserId(Long userId) {
+        return studyJoin.user.id.eq(userId);
     }
 
     private static BooleanExpression eqStatus(StudyJoinStatus status) {
