@@ -140,8 +140,7 @@ public class StudyService {
     @Transactional
     @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
     public void delete(Long userId, Long studyId) {
-        Study study = entityFacade.getStudy(studyId);
-        studyRepository.delete(study);
+        studyRepository.delete(studyId);
         eventPublisher.publishEvent(new Event<>(EventType.STUDY_DELETED, new StudyDeletedEventPayload(HotStudyEventType.DELETE, userId, studyId)));
     }
 

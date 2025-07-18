@@ -5,11 +5,13 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.studies.entity.Study;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
 
 import java.util.List;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
+import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 
 @Entity
 @Getter
@@ -26,6 +28,7 @@ public class StudyQuestion extends BaseAuditableEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "study_id", nullable = false)
+    @OnDelete(action = CASCADE)
     private Study study;
 
     @Column(nullable = false)
