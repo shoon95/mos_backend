@@ -14,13 +14,13 @@ public interface StudyRepository {
     Study save(Study study);
     Optional<Study> findById(Long id);
 
-    void increaseViewCount(long studyId);
+    void increaseViewCount(Long studyId);
 
     Page<StudiesResponseDto> findStudies(Long currentUserId, Pageable pageable, String categoryCond, String meetingTypeCond, String recruitmentStatusCond, String progressStatusCond, boolean liked);
 
     long count();
 
-    void delete(Study study);
+    void delete(Long studyId);
 
     List<UserStudiesResponseDto> readUserStudies(User user, String progressStatusCond, String participationStatusCond);
 }

@@ -31,7 +31,7 @@ public class StudyRepositoryImpl implements StudyRepository{
     }
 
     @Override
-    public void increaseViewCount(long studyId) {
+    public void increaseViewCount(Long studyId) {
         studyJpaRepository.increaseViewCount(studyId);
     }
 
@@ -46,8 +46,8 @@ public class StudyRepositoryImpl implements StudyRepository{
     }
 
     @Override
-    public void delete(Study study) {
-        studyJpaRepository.delete(study);
+    public void delete(Long studyId) {
+        studyJpaRepository.deleteById(studyId);
     }
 
     @Override
