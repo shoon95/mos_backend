@@ -10,4 +10,8 @@ public interface UserStudyLikeRepository {
     void save(UserStudyLike userStudyLike);
 
     void deleteByUserAndStudy(User user, Study study);
+
+    Long getLikedCountByStudyId(Long studyId);
+
+    boolean isLikedByMe(Long studyId, Long currentUserId);
 }
