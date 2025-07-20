@@ -6,10 +6,12 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
 
 import java.time.LocalDateTime;
 
 import static jakarta.persistence.FetchType.LAZY;
+import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 
 @Entity
 @Getter
@@ -26,6 +28,7 @@ public class StudySchedule extends BaseAuditableEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(nullable = false, name = "study_id")
+    @OnDelete(action = CASCADE)
     private Study study;
 
     @Column(nullable = false)

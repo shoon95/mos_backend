@@ -5,8 +5,10 @@ import com.mos.backend.studies.entity.Study;
 import com.mos.backend.users.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
 
 import static jakarta.persistence.FetchType.LAZY;
+import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 
 @Entity
 @Getter
@@ -27,6 +29,7 @@ public class StudyJoin extends BaseAuditableEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "study_id", nullable = false)
+    @OnDelete(action = CASCADE)
     private Study study;
 
     @Enumerated(EnumType.STRING)

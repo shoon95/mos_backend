@@ -7,8 +7,10 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
 
 import static jakarta.persistence.FetchType.LAZY;
+import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 
 @Entity
 @Getter
@@ -26,6 +28,7 @@ public class StudyChatMessage extends BaseAuditableEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(nullable = false, name = "study_chat_room_id")
+    @OnDelete(action = CASCADE)
     private StudyChatRoom studyChatRoom;
 
     @ManyToOne(fetch = LAZY)
