@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class JwtAuthenticationInterceptor implements ChannelInterceptor {
+public class StompInterceptor implements ChannelInterceptor {
 
     private final TokenUtil tokenUtil;
 
