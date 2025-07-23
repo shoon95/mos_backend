@@ -1,6 +1,6 @@
 package com.mos.backend.common.config;
 
-import com.mos.backend.common.jwt.StompInterceptor;
+import com.mos.backend.common.stomp.interceptor.StompInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;

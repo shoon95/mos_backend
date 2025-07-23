@@ -1,5 +1,6 @@
-package com.mos.backend.common.jwt;
+package com.mos.backend.common.stomp.interceptor;
 
+import com.mos.backend.common.jwt.TokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
