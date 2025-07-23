@@ -1,7 +1,7 @@
 package com.mos.backend.privatechatrooms.presentation.controller.api;
 
 import com.mos.backend.privatechatrooms.application.PrivateChatRoomService;
-import com.mos.backend.privatechatrooms.application.res.PrivateChatRoomRes;
+import com.mos.backend.privatechatrooms.application.res.MyPrivateChatRoomRes;
 import com.mos.backend.privatechatrooms.presentation.req.PrivateChatRoomCreateReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,7 +31,7 @@ public class PrivateChatRoomController {
     }
 
     @GetMapping("/private-chat-rooms")
-    public List<PrivateChatRoomRes> getMyPrivateChatRooms(@AuthenticationPrincipal Long userId) {
+    public List<MyPrivateChatRoomRes> getMyPrivateChatRooms(@AuthenticationPrincipal Long userId) {
         return privateChatRoomService.getMyPrivateChatRooms(userId);
     }
 

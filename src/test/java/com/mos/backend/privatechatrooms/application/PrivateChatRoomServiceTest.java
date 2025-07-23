@@ -4,7 +4,7 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.privatechatmessages.entity.PrivateChatMessage;
 import com.mos.backend.privatechatmessages.infrastructure.PrivateChatMessageRepository;
-import com.mos.backend.privatechatrooms.application.res.PrivateChatRoomRes;
+import com.mos.backend.privatechatrooms.application.res.MyPrivateChatRoomRes;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoomErrorCode;
 import com.mos.backend.privatechatrooms.infrastructure.PrivateChatRoomRepository;
@@ -173,7 +173,7 @@ class PrivateChatRoomServiceTest {
                     .thenReturn(Optional.of(privateChatMessage));
 
             // When
-            List<PrivateChatRoomRes> result = privateChatRoomService.getMyPrivateChatRooms(userId);
+            List<MyPrivateChatRoomRes> result = privateChatRoomService.getMyPrivateChatRooms(userId);
 
             // Then
             assertEquals(1, result.size());
@@ -201,7 +201,7 @@ class PrivateChatRoomServiceTest {
                     .thenReturn(Optional.empty());
 
             // When
-            List<PrivateChatRoomRes> result = privateChatRoomService.getMyPrivateChatRooms(userId);
+            List<MyPrivateChatRoomRes> result = privateChatRoomService.getMyPrivateChatRooms(userId);
 
             // Then
             assertEquals(1, result.size());
@@ -223,7 +223,7 @@ class PrivateChatRoomServiceTest {
             when(privateChatRoomRepository.findByRequesterOrReceiver(user)).thenReturn(Collections.emptyList());
 
             // When
-            List<PrivateChatRoomRes> result = privateChatRoomService.getMyPrivateChatRooms(userId);
+            List<MyPrivateChatRoomRes> result = privateChatRoomService.getMyPrivateChatRooms(userId);
 
             // Then
             assertTrue(result.isEmpty());

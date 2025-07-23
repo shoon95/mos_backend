@@ -5,7 +5,7 @@ import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.common.redis.RedisPrivateChatRoomUtil;
 import com.mos.backend.privatechatmessages.entity.PrivateChatMessage;
 import com.mos.backend.privatechatmessages.infrastructure.PrivateChatMessageRepository;
-import com.mos.backend.privatechatrooms.application.res.PrivateChatRoomRes;
+import com.mos.backend.privatechatrooms.application.res.MyPrivateChatRoomRes;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoomErrorCode;
 import com.mos.backend.privatechatrooms.infrastructure.PrivateChatRoomRepository;
@@ -50,22 +50,22 @@ public class PrivateChatRoomService {
     }
 
     @Transactional(readOnly = true)
-    public List<PrivateChatRoomRes> getMyPrivateChatRooms(Long userId) {
+    public List<MyPrivateChatRoomRes> getMyPrivateChatRooms(Long userId) {
         User user = entityFacade.getUser(userId);
         List<PrivateChatRoom> privateChatRooms = privateChatRoomRepository.findByRequesterOrReceiver(user);
 
-        List<PrivateChatRoomRes> privateChatRoomResList = privateChatRooms.stream()
+        List<MyPrivateChatRoomRes> myPrivateChatRoomResList = privateChatRooms.stream()
                 .map(privateChatRoom -> {
                     Long counterpartId = privateChatRoom.getCounterpart(user).getId();
                     Optional<PrivateChatMessage> optionalPrivateChatMessage = getLastChatMessage(privateChatRoom);
 
                     return optionalPrivateChatMessage
-                            .map(privateChatMessage -> PrivateChatRoomRes.of(privateChatRoom, counterpartId, privateChatMessage))
-                            .orElseGet(() -> PrivateChatRoomRes.of(privateChatRoom, counterpartId));
+                            .map(privateChatMessage -> MyPrivateChatRoomRes.of(privateChatRoom, counterpartId, privateChatMessage))
+                            .orElseGet(() -> MyPrivateChatRoomRes.of(privateChatRoom, counterpartId));
                 })
                 .toList();
 
-        return privateChatRoomResList;
+        return myPrivateChatRoomResList;
     }
 
     private Optional<PrivateChatMessage> getLastChatMessage(PrivateChatRoom privateChatRoom) {
