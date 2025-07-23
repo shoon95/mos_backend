@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class EntitySaver {
@@ -137,9 +138,9 @@ public class EntitySaver {
         );
     }
 
-    public PrivateChatRoom savePrivateChatRoom(User user1, User user2) {
+    public PrivateChatRoom savePrivateChatRoom() {
         return privateChatRoomRepository.save(
-                PrivateChatRoom.createInvisibleChatRoom(user1, user2)
+                PrivateChatRoom.createInvisibleChatRoom(UUID.randomUUID().toString())
         );
     }
 
