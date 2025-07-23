@@ -211,12 +211,12 @@ class StudyServiceTest {
         when(httpServletRequest.getHeader("X-Forwarded-For")).thenReturn("0.0.0.0");
 
         // when
-        StudyResponseDto studyResponseDto = studyService.get(study.getId(), httpServletRequest);
+        StudyResponseDto studyResponseDto = studyService.get(study.getId(), httpServletRequest, 1L);
 
         // then
         verify(viewCountService).handleViewCount(eq(study.getId()), anyString());
         verify(studyRepository).findById(study.getId());
-        assertNotNull(studyResponseDto);
+        verify(studyRepository).getStudyDetails(study.getId(), 1L);
     }
 
     @Test
@@ -231,7 +231,7 @@ class StudyServiceTest {
         when(studyRepository.findById(studyId)).thenReturn(Optional.empty());
 
         // when
-        MosException mosException = assertThrows(MosException.class, () -> studyService.get(studyId, httpServletRequest));
+        MosException mosException = assertThrows(MosException.class, () -> studyService.get(studyId, httpServletRequest, 1L));
 
         // then
         verify(viewCountService).handleViewCount(eq(studyId), anyString());

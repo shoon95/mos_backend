@@ -10,7 +10,6 @@ import com.mos.backend.hotstudies.entity.HotStudyEventType;
 import com.mos.backend.hotstudies.infrastructure.HotStudyRepository;
 import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
 import com.mos.backend.studies.application.event.StudyDeletedEventPayload;
-import com.mos.backend.studies.application.event.StudyUpdatedEventPayload;
 import com.mos.backend.studies.application.event.StudyViewedEventPayload;
 import com.mos.backend.studies.application.responsedto.*;
 import com.mos.backend.studies.entity.*;
@@ -21,16 +20,13 @@ import com.mos.backend.studies.presentation.requestdto.StudyUpdateRequestDto;
 import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.users.application.responsedto.UserStudiesResponseDto;
 import com.mos.backend.users.entity.User;
-import com.mos.backend.users.entity.exception.UserErrorCode;
-import com.querydsl.core.util.StringUtils;
+import com.mos.backend.userstudylikes.application.UserStudyLikeService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.support.Querydsl;
-import org.springframework.data.querydsl.QuerydslUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +49,7 @@ public class StudyService {
     private final EntityFacade entityFacade;
     private final ViewCountService viewCountService;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserStudyLikeService userStudyLikeService;
 
     /**
      * 스터디 생성
@@ -74,12 +71,11 @@ public class StudyService {
      */
     @Transactional
     @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
-    public StudyResponseDto update(Long userId, Long studyId, StudyUpdateRequestDto requestDto) {
+    public StudyResponseDto update(Long currentUserId, Long studyId, StudyUpdateRequestDto requestDto) {
         validateRecruitmentDate(requestDto.getRecruitmentStartDate(), requestDto.getRecruitmentEndDate());
         Study study = entityFacade.getStudy(studyId);
         updateStudy(requestDto, study);
-        eventPublisher.publishEvent(new Event<>(EventType.STUDY_UPDATED, new StudyUpdatedEventPayload(userId, requestDto, study.getId())));
-        return StudyResponseDto.from(study, studyMemberService.countCurrentStudyMember(studyId));
+        return studyRepository.getStudyDetails(studyId, currentUserId);
     }
 
 
@@ -89,17 +85,16 @@ public class StudyService {
      */
 
     @Transactional
-    public StudyResponseDto get(long studyId, HttpServletRequest httpServletRequest) {
+    public StudyResponseDto get(long studyId, HttpServletRequest httpServletRequest, Long currentUserId) {
         String ipAddress = ClientInfoExtractor.extractIpAddress(httpServletRequest);
 
         viewCountService.handleViewCount(studyId, ipAddress);
 
         Study study = findStudyById(studyId);
-        int studyMemberCount = studyMemberService.countCurrentStudyMember(studyId);
 
         eventPublisher.publishEvent(new Event<>(EventType.STUDY_VIEWED, new StudyViewedEventPayload(HotStudyEventType.VIEW, studyId)));
 
-        return StudyResponseDto.from(study, studyMemberCount);
+        return studyRepository.getStudyDetails(studyId, currentUserId);
     }
 
     /**
@@ -119,11 +114,11 @@ public class StudyService {
      * @return
      */
     @Transactional
-    public List<StudiesResponseDto> readHotStudies() {
+    public List<StudiesResponseDto> readHotStudies(Long currentUserId) {
         return hotStudyRepository.readAll().stream()
                 .map(id -> {
                     try {
-                        return this.getHotStudy(id);
+                        return this.getHotStudy(id, currentUserId);
                     } catch (MosException e) {
                         hotStudyRepository.remove(id);
                         return null;
@@ -150,11 +145,10 @@ public class StudyService {
 
     @Transactional
     @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
-    public StudyResponseDto updateSubNotice(Long studyId, String content) {
+    public StudyResponseDto updateSubNotice(Long studyId, String content, Long currentUserId) {
         Study study = entityFacade.getStudy(studyId);
         study.updateSubNotice(content);
-        int studyMemberCount = studyMemberService.countCurrentStudyMember(studyId);
-        return StudyResponseDto.from(study, studyMemberCount);
+        return studyRepository.getStudyDetails(studyId, currentUserId);
     }
 
 
@@ -184,10 +178,8 @@ public class StudyService {
     /**
      * 인기 스터디 dto 값 채우기
      */
-    private StudiesResponseDto getHotStudy(Long studyId) {
-        Study study = entityFacade.getStudy(studyId);
-        int currentStudyMembers = studyMemberService.countCurrentStudyMember(studyId);
-        return StudiesResponseDto.from(study, Long.valueOf(currentStudyMembers));
+    private StudiesResponseDto getHotStudy(Long studyId, Long currentUserId) {
+        return studyRepository.getHotStudyDetails(studyId, currentUserId);
     }
 
     private Study findStudyById(long studyId) {

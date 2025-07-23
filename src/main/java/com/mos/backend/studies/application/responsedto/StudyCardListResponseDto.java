@@ -14,5 +14,4 @@ public class StudyCardListResponseDto {
     private int currentPage;
     private int totalPages;
     private List<StudiesResponseDto> studies;
-    
 }

@@ -2,6 +2,7 @@ package com.mos.backend.studies.infrastructure;
 
 import com.mos.backend.common.utils.QueryDslSortUtil;
 import com.mos.backend.studies.application.responsedto.StudiesResponseDto;
+import com.mos.backend.studies.application.responsedto.StudyResponseDto;
 import com.mos.backend.studies.entity.*;
 import com.mos.backend.studymembers.entity.ParticipationStatus;
 import com.mos.backend.studymembers.entity.QStudyMember;
@@ -10,6 +11,7 @@ import com.mos.backend.users.entity.User;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -32,6 +34,48 @@ import static com.querydsl.core.util.StringUtils.isNullOrEmpty;
 public class StudyQueryDslRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
+
+    /**
+     * 스터디 단 건 조회
+     */
+
+    public StudyResponseDto getStudyDetails(Long studyId, Long currentUserId) {
+        return jpaQueryFactory
+                .select(Projections.constructor(StudyResponseDto.class,
+                        study.id,
+                        study.title,
+                        study.notice,
+                        study.content,
+                        JPAExpressions
+                                .select(studyMember.count())
+                                .from(studyMember)
+                                .where(studyMember.study.eq(study)
+                                        .and(studyMember.status.in(Arrays.asList(ParticipationStatus.ACTIVATED, ParticipationStatus.COMPLETED)))
+                                ),
+                        study.maxStudyMemberCount,
+                        study.category,
+                        study.schedule,
+                        study.recruitmentStartDate,
+                        study.recruitmentEndDate,
+                        study.viewCount,
+                        study.recruitmentStatus,
+                        study.progressStatus,
+                        study.meetingType,
+                        study.tags,
+                        JPAExpressions
+                                .select(userStudyLike.count())
+                                .from(userStudyLike)
+                                .where(userStudyLike.study.eq(study)),
+                        isLikedByMe(currentUserId)
+                ))
+                .from(study)
+                .where(study.id.eq(studyId))
+                .fetchFirst();
+    }
+
+    /**
+     *  스터디 다 건 조회 (카드 리스트)
+     */
 
     public Page<StudiesResponseDto> findStudies(Long currentUserId, Pageable pageable, String categoryCond, String meetingTypeCond, String recruitmentStatusCond, String progressStatusCond, boolean liked) {
         List<Long> findStudyId = jpaQueryFactory
@@ -68,7 +112,13 @@ public class StudyQueryDslRepository {
                                 ),
                         study.maxStudyMemberCount,
                         study.viewCount,
-                        study.tags))
+                        study.tags,
+                        JPAExpressions
+                                .select(userStudyLike.count())
+                                .from(userStudyLike)
+                                .where(userStudyLike.study.eq(study)),
+                        isLikedByMe(currentUserId)
+                ))
                 .from(study)
                 .where(study.id.in(findStudyId))
                 .orderBy(getOrderSpecifiers(pageable))
@@ -86,6 +136,47 @@ public class StudyQueryDslRepository {
         return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchCount);
     }
 
+    /**
+     * 인기 스터디 상세 조회
+     */
+
+    public StudiesResponseDto getHotStudyDetails(Long studyId, Long currentUserId) {
+        StudiesResponseDto result = jpaQueryFactory
+                .select(Projections.constructor(StudiesResponseDto.class,
+                        study.id,
+                        study.title,
+                        study.category,
+                        study.meetingType,
+                        study.progressStatus,
+                        study.recruitmentStatus,
+                        study.content,
+                        study.recruitmentStartDate,
+                        study.recruitmentEndDate,
+                        JPAExpressions
+                                .select(studyMember.count())
+                                .from(studyMember)
+                                .where(studyMember.study.eq(study)
+                                        .and(studyMember.status.in(Arrays.asList(ParticipationStatus.ACTIVATED, ParticipationStatus.COMPLETED)))
+                                ),
+                        study.maxStudyMemberCount,
+                        study.viewCount,
+                        study.tags,
+                        JPAExpressions
+                                .select(userStudyLike.count())
+                                .from(userStudyLike)
+                                .where(userStudyLike.study.eq(study)),
+                        isLikedByMe(currentUserId)
+                ))
+                .from(study)
+                .where(study.id.eq(studyId))
+                .fetchOne();
+
+        return result;
+    }
+
+    /**
+     * 유저가 참여 중인 스터디 목록 조회
+     */
     public List<UserStudiesResponseDto> readUserStudies(User user, String progressStatusCond, String participationStatusCond) {
         return jpaQueryFactory
                 .select(Projections.constructor(UserStudiesResponseDto.class,
@@ -154,5 +245,20 @@ public class StudyQueryDslRepository {
                         .from(userStudyLike)
                         .where(userStudyLike.user.id.eq(currentUserId))
         );
+    }
+
+    private BooleanExpression isLikedByMe(Long currentUserId) {
+        if (currentUserId == null) {
+            return Expressions.asBoolean(true).isFalse();
+        }
+
+        return JPAExpressions
+                .selectOne()
+                .from(userStudyLike)
+                .where(
+                        userStudyLike.study.id.eq(study.id),
+                        userStudyLike.user.id.eq(currentUserId)
+                )
+                .exists();
     }
 }

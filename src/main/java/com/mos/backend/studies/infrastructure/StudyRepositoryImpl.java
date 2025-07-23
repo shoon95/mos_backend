@@ -1,6 +1,7 @@
 package com.mos.backend.studies.infrastructure;
 
 import com.mos.backend.studies.application.responsedto.StudiesResponseDto;
+import com.mos.backend.studies.application.responsedto.StudyResponseDto;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.users.application.responsedto.UserStudiesResponseDto;
 import com.mos.backend.users.entity.User;
@@ -18,7 +19,6 @@ public class StudyRepositoryImpl implements StudyRepository{
 
     private final StudyJpaRepository studyJpaRepository;
     private final StudyQueryDslRepository studyQueryDSLRepository;
-
 
     @Override
     public Study save(Study study) {
@@ -53,5 +53,15 @@ public class StudyRepositoryImpl implements StudyRepository{
     @Override
     public List<UserStudiesResponseDto> readUserStudies(User user, String progressStatusCond, String participationStatusCond) {
         return studyQueryDSLRepository.readUserStudies(user, progressStatusCond, participationStatusCond);
+    }
+
+    @Override
+    public StudyResponseDto getStudyDetails(Long studyId, Long currentUserId) {
+        return studyQueryDSLRepository.getStudyDetails(studyId, currentUserId);
+    }
+
+    @Override
+    public StudiesResponseDto getHotStudyDetails(Long studyId, Long currentUserId) {
+        return studyQueryDSLRepository.getHotStudyDetails(studyId, currentUserId);
     }
 }

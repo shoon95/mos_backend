@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 public class UserStudyLikeRepositoryImpl implements UserStudyLikeRepository {
 
     private final UserStudyLikeJpaRepository userStudyLikeJpaRepository;
+    private final UserStudyLikeQueryDslRepository userStudyLikeQueryDslRepository;
 
     @Override
     public boolean existsUserStudyLikeByUserAndStudy(User user, Study study) {
@@ -25,5 +26,15 @@ public class UserStudyLikeRepositoryImpl implements UserStudyLikeRepository {
     @Override
     public void deleteByUserAndStudy(User user, Study study) {
         userStudyLikeJpaRepository.deleteByUserAndStudy(user, study);
+    }
+
+    @Override
+    public Long getLikedCountByStudyId(Long studyId) {
+        return userStudyLikeQueryDslRepository.getLikedCountByStudyId(studyId);
+    }
+
+    @Override
+    public boolean isLikedByMe(Long studyId, Long currentUserId) {
+        return userStudyLikeQueryDslRepository.isLikedByMe(studyId, currentUserId);
     }
 }
