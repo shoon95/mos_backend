@@ -74,16 +74,4 @@ public class PrivateChatRoomService {
     private Optional<PrivateChatMessage> getLastChatMessage(PrivateChatRoom privateChatRoom) {
         return privateChatMessageRepository.findFirstByPrivateChatRoomOrderByCreatedAtDesc(privateChatRoom);
     }
-
-    public void enter(Long userId, Long privateChatRoomId) {
-        User user = entityFacade.getUser(userId);
-        PrivateChatRoom privateChatRoom = entityFacade.getPrivateChatRoom(privateChatRoomId);
-        redisPrivateChatRoomUtil.enterChatRoom(user.getId(), privateChatRoom.getId());
-    }
-
-    public void leave(Long userId, Long privateChatRoomId) {
-        User user = entityFacade.getUser(userId);
-        PrivateChatRoom privateChatRoom = entityFacade.getPrivateChatRoom(privateChatRoomId);
-        redisPrivateChatRoomUtil.leaveChatRoom(user.getId(), privateChatRoom.getId());
-    }
 }

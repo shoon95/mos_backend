@@ -1,6 +1,7 @@
 package com.mos.backend.privatechatroommember.application;
 
 import com.mos.backend.common.exception.MosException;
+import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.privatechatroommember.entity.PrivateChatRoomMember;
 import com.mos.backend.privatechatroommember.entity.PrivateChatRoomMemberErrorCode;
 import com.mos.backend.privatechatroommember.infrastructure.PrivateChatRoomMemberRepository;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class PrivateChatRoomMemberService {
+    private final EntityFacade entityFacade;
     private final PrivateChatRoomMemberRepository privateChatRoomMemberRepository;
 
     @Transactional
@@ -29,4 +31,9 @@ public class PrivateChatRoomMemberService {
                 .orElseThrow(() -> new MosException(PrivateChatRoomMemberErrorCode.NOT_FOUND));
     }
 
+    @Transactional
+    public void updateLastEntryTime(Long userId, Long privateChatRoomId) {
+        PrivateChatRoomMember privateChatRoomMember = entityFacade.getPrivateChatRoomMember(userId, privateChatRoomId);
+        privateChatRoomMember.updateLastEntryTime();
+    }
 }

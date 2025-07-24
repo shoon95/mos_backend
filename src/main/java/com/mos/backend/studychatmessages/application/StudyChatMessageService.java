@@ -5,6 +5,7 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.common.redis.RedisPublisher;
 import com.mos.backend.common.utils.InfinityScrollUtil;
+import com.mos.backend.common.utils.StompSessionUtil;
 import com.mos.backend.studychatmessages.application.dto.StudyChatMessageDto;
 import com.mos.backend.studychatmessages.application.res.StudyChatMessageRes;
 import com.mos.backend.studychatmessages.entity.StudyChatMessage;
@@ -15,6 +16,7 @@ import com.mos.backend.studychatrooms.entity.StudyChatRoomErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +33,8 @@ public class StudyChatMessageService {
     private final EntityFacade entityFacade;
 
     @Transactional
-    public void publish(Long userId, StudyChatMessagePublishReq req) {
+    public void publish(StompHeaderAccessor accessor, StudyChatMessagePublishReq req) {
+        Long userId = StompSessionUtil.getUserId(accessor);
         User user = entityFacade.getUser(userId);
         StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(req.getStudyChatRoomId());
 

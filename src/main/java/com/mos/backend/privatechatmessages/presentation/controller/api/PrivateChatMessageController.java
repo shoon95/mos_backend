@@ -1,17 +1,16 @@
 package com.mos.backend.privatechatmessages.presentation.controller.api;
 
-import com.mos.backend.common.annotation.Sender;
 import com.mos.backend.common.dto.InfinityScrollRes;
 import com.mos.backend.privatechatmessages.application.PrivateChatMessageService;
 import com.mos.backend.privatechatmessages.application.res.PrivateChatMessageRes;
 import com.mos.backend.privatechatmessages.presentation.req.PrivateChatMessagePublishReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -19,8 +18,9 @@ public class PrivateChatMessageController {
     private final PrivateChatMessageService privateChatMessageService;
 
     @MessageMapping("/private-chat-messages")
-    public void publishPrivateChatMessage(@Sender Long userId, PrivateChatMessagePublishReq privateChatMessagePublishReq) {
-        privateChatMessageService.publish(userId, privateChatMessagePublishReq);
+    public void publishPrivateChatMessage(Message<?> message, PrivateChatMessagePublishReq privateChatMessagePublishReq) {
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        privateChatMessageService.publish(accessor, privateChatMessagePublishReq);
     }
 
     @ResponseStatus(HttpStatus.OK)
