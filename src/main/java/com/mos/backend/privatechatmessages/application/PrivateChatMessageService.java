@@ -1,7 +1,6 @@
 package com.mos.backend.privatechatmessages.application;
 
 import com.mos.backend.common.dto.InfinityScrollRes;
-import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.common.redis.RedisPublisher;
 import com.mos.backend.common.utils.InfinityScrollUtil;
@@ -11,7 +10,6 @@ import com.mos.backend.privatechatmessages.entity.PrivateChatMessage;
 import com.mos.backend.privatechatmessages.infrastructure.PrivateChatMessageRepository;
 import com.mos.backend.privatechatmessages.presentation.req.PrivateChatMessagePublishReq;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
-import com.mos.backend.privatechatrooms.entity.PrivateChatRoomErrorCode;
 import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,9 +32,6 @@ public class PrivateChatMessageService {
         User user = entityFacade.getUser(userId);
         PrivateChatRoom privateChatRoom = entityFacade.getPrivateChatRoom(req.getPrivateChatRoomId());
 
-        if (isNotChatRoomMember(user, privateChatRoom))
-            throw new MosException(PrivateChatRoomErrorCode.FORBIDDEN);
-
         privateChatRoom.visible();
 
         PrivateChatMessage privateChatMessage = savePrivateChatMessage(user, privateChatRoom, req.getMessage());
@@ -44,25 +39,15 @@ public class PrivateChatMessageService {
         redisPublisher.publishPrivateChatMessage(PrivateChatMessageDto.of(privateChatMessage, user.getId()));
     }
 
-    private boolean isNotChatRoomMember(User user, PrivateChatRoom privateChatRoom) {
-        Long userId = user.getId();
-        return !userId.equals(privateChatRoom.getRequester().getId())
-                && !userId.equals(privateChatRoom.getReceiver().getId());
-    }
-
     private PrivateChatMessage savePrivateChatMessage(User user, PrivateChatRoom privateChatRoom, String message) {
         PrivateChatMessage privateChatMessage = PrivateChatMessage.of(user, privateChatRoom, message);
         return privateChatMessageRepository.save(privateChatMessage);
     }
 
-    @PreAuthorize("@userSecurity.isOwnerOrAdmin(#userId)")
+    @PreAuthorize("@chatRoomSecurity.isPrivateChatRoomMember(#userId, #privateChatRoomId)")
     @Transactional(readOnly = true)
     public InfinityScrollRes<PrivateChatMessageRes> getPrivateChatMessages(Long userId, Long privateChatRoomId, Long lastPrivateChatMessageId, int size) {
-        User user = entityFacade.getUser(userId);
         PrivateChatRoom privateChatRoom = entityFacade.getPrivateChatRoom(privateChatRoomId);
-
-        if (isNotChatRoomMember(user, privateChatRoom))
-            throw new MosException(PrivateChatRoomErrorCode.FORBIDDEN);
 
         List<PrivateChatMessage> privateChatMessages = privateChatMessageRepository.findAllByChatRoomIdForInfiniteScroll(
                 privateChatRoom.getId(), lastPrivateChatMessageId, size
