@@ -20,8 +20,9 @@ public interface PrivateChatRoomJpaRepository extends JpaRepository<PrivateChatR
     Optional<Long> findPrivateChatRoomIdByUsers(@Param("user1") User user1, @Param("user2") User user2);
 
     @Query("""
-            SELECT p FROM PrivateChatRoom p
-            WHERE p.requester = :user OR p.receiver = :user
+                select m.privateChatRoom
+                from PrivateChatRoomMember m
+                where m.user = :user
             """)
-    List<PrivateChatRoom> findByRequesterOrReceiver(User user);
+    List<PrivateChatRoom> findByUser(@Param("user") User user);
 }

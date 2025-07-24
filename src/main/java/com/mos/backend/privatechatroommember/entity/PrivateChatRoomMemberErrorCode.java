@@ -10,7 +10,7 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public enum PrivateChatRoomMemberErrorCode implements ErrorCode {
     CONFLICT(HttpStatus.NOT_FOUND, "private-chat-room-member.conflict"),
-    ;
+    NOT_FOUND(HttpStatus.NOT_FOUND, "private-chat-room-member.not-found");
 
     private final HttpStatus httpStatus;
     private final String messageKey;

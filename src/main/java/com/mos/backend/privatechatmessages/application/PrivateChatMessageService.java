@@ -16,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,5 +66,16 @@ public class PrivateChatMessageService {
                 .toList();
 
         return InfinityScrollRes.of(privateChatMessageResList, lastElementId, hasNext);
+    }
+
+    @Transactional(readOnly = true)
+    public int getUnreadCnt(Long userId, Long privateChatRoomId) {
+        User user = entityFacade.getUser(userId);
+        PrivateChatRoom privateChatRoom = entityFacade.getPrivateChatRoom(privateChatRoomId);
+
+        PrivateChatRoomMember privateChatRoomMember = privateChatRoomMemberService.findByUserAndPrivateChatRoom(user, privateChatRoom);
+        LocalDateTime lastEntryTime = privateChatRoomMember.getLastEntryTime();
+
+        return privateChatMessageRepository.countByPrivateChatRoomIdAndCreatedAtAfter(privateChatRoom.getId(), lastEntryTime);
     }
 }

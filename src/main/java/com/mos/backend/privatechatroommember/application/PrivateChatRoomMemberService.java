@@ -23,4 +23,10 @@ public class PrivateChatRoomMemberService {
 
         privateChatRoomMemberRepository.save(PrivateChatRoomMember.of(privateChatRoom, user));
     }
+
+    public PrivateChatRoomMember findByUserAndPrivateChatRoom(User user, PrivateChatRoom privateChatRoom) {
+        return privateChatRoomMemberRepository.findByUserAndPrivateChatRoom(user, privateChatRoom)
+                .orElseThrow(() -> new MosException(PrivateChatRoomMemberErrorCode.NOT_FOUND));
+    }
+
 }

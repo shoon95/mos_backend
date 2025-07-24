@@ -4,35 +4,30 @@ import com.mos.backend.privatechatmessages.entity.PrivateChatMessage;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.logging.log4j.util.Strings;
 
 import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
 public class MyPrivateChatRoomRes {
-    private Long counterpartId;
-
     private Long privateChatRoomId;
+    private String chatName;
+
     private String lastMessage;
     private LocalDateTime lastMessageAt;
 
-    public static MyPrivateChatRoomRes of(PrivateChatRoom privateChatRoom, Long counterpartId, PrivateChatMessage privateChatMessage) {
+    private int unreadCnt;
+
+    public static MyPrivateChatRoomRes of(PrivateChatRoom privateChatRoom, PrivateChatMessage privateChatMessage, int unreadCnt) {
         MyPrivateChatRoomRes myPrivateChatRoomRes = new MyPrivateChatRoomRes();
-        myPrivateChatRoomRes.counterpartId = counterpartId;
+
         myPrivateChatRoomRes.privateChatRoomId = privateChatRoom.getId();
+        myPrivateChatRoomRes.chatName = privateChatRoom.getName();
+
         myPrivateChatRoomRes.lastMessage = privateChatMessage.getMessage();
         myPrivateChatRoomRes.lastMessageAt = privateChatMessage.getCreatedAt();
+
+        myPrivateChatRoomRes.unreadCnt = unreadCnt;
         return myPrivateChatRoomRes;
     }
-
-    public static MyPrivateChatRoomRes of(PrivateChatRoom privateChatRoom, Long counterpartId) {
-        MyPrivateChatRoomRes myPrivateChatRoomRes = new MyPrivateChatRoomRes();
-        myPrivateChatRoomRes.counterpartId = counterpartId;
-        myPrivateChatRoomRes.privateChatRoomId = privateChatRoom.getId();
-        myPrivateChatRoomRes.lastMessage = Strings.EMPTY;
-        myPrivateChatRoomRes.lastMessageAt = null;
-        return myPrivateChatRoomRes;
-    }
-
 }

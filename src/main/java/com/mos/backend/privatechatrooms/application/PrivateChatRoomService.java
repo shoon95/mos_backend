@@ -1,7 +1,7 @@
 package com.mos.backend.privatechatrooms.application;
 
 import com.mos.backend.common.infrastructure.EntityFacade;
-import com.mos.backend.common.redis.RedisPrivateChatRoomUtil;
+import com.mos.backend.privatechatmessages.application.PrivateChatMessageService;
 import com.mos.backend.privatechatmessages.entity.PrivateChatMessage;
 import com.mos.backend.privatechatmessages.infrastructure.PrivateChatMessageRepository;
 import com.mos.backend.privatechatroommember.application.PrivateChatRoomMemberService;
@@ -15,12 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class PrivateChatRoomService {
-    private final RedisPrivateChatRoomUtil redisPrivateChatRoomUtil;
     private final EntityFacade entityFacade;
     private final PrivateChatRoomRepository privateChatRoomRepository;
     private final PrivateChatMessageRepository privateChatMessageRepository;
@@ -53,24 +53,26 @@ public class PrivateChatRoomService {
     @Transactional(readOnly = true)
     public List<MyPrivateChatRoomRes> getMyPrivateChatRooms(Long userId) {
         User user = entityFacade.getUser(userId);
-        List<PrivateChatRoom> privateChatRooms = privateChatRoomRepository.findByRequesterOrReceiver(user);
+        List<PrivateChatRoom> privateChatRooms = privateChatRoomRepository.findByUser(user);
 
         List<MyPrivateChatRoomRes> myPrivateChatRoomResList = privateChatRooms.stream()
                 .map(privateChatRoom -> {
-                    Long counterpartId = privateChatRoom.getCounterpart(user).getId();
                     Optional<PrivateChatMessage> optionalPrivateChatMessage = getLastChatMessage(privateChatRoom);
-
+                    int unreadCount = privateChatMessageService.getUnreadCnt(user.getId(), privateChatRoom.getId());
                     return optionalPrivateChatMessage
-                            .map(privateChatMessage -> MyPrivateChatRoomRes.of(privateChatRoom, counterpartId, privateChatMessage))
-                            .orElseGet(() -> MyPrivateChatRoomRes.of(privateChatRoom, counterpartId));
+                            .map(privateChatMessage -> MyPrivateChatRoomRes.of(privateChatRoom, privateChatMessage, unreadCount))
+                            .orElse(null);
                 })
+                .filter(Objects::nonNull)
                 .toList();
 
         return myPrivateChatRoomResList;
     }
 
+    private final PrivateChatMessageService privateChatMessageService;
+
     private Optional<PrivateChatMessage> getLastChatMessage(PrivateChatRoom privateChatRoom) {
-        return privateChatMessageRepository.findFirstByPrivateChatRoomOrderByCreatedByDesc(privateChatRoom);
+        return privateChatMessageRepository.findFirstByPrivateChatRoomOrderByCreatedAtDesc(privateChatRoom);
     }
 
     public void enter(Long userId, Long privateChatRoomId) {
