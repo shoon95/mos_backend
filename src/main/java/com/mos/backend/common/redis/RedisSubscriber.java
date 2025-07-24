@@ -18,8 +18,8 @@ public class RedisSubscriber {
     private final ObjectMapper objectMapper;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    private final String PRIVATE_CHAT_FORMAT = "/sub/private-chat-room/%d";
-    private final String STUDY_CHAT_FORMAT = "/sub/study-chat-room/%d";
+    private final String PRIVATE_CHAT_FORMAT = "/sub/private-chat-rooms/%d";
+    private final String STUDY_CHAT_FORMAT = "/sub/study-chat-rooms/%d";
 
     public void onPrivateChatMessage(String publishedMessage) {
         try {
