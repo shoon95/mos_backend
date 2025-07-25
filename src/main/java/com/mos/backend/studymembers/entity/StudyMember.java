@@ -42,7 +42,7 @@ public class StudyMember extends BaseAuditableEntity {
     @Column(nullable = false)
     private StudyMemberRoleType roleType;
 
-    private LocalDateTime lastEntryAt;
+    private LocalDateTime lastEntryAt = LocalDateTime.now();
 
     public static StudyMember createStudyLeader(Study study, User user) {
         StudyMember studyMember = new StudyMember();

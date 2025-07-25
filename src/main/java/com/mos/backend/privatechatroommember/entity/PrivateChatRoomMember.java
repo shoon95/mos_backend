@@ -29,7 +29,7 @@ public class PrivateChatRoomMember extends BaseAuditableEntity {
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 
-    private LocalDateTime lastEntryAt;
+    private LocalDateTime lastEntryAt = LocalDateTime.now();
 
     public static PrivateChatRoomMember of(PrivateChatRoom privateChatRoom, User user) {
         PrivateChatRoomMember privateChatRoomMember = new PrivateChatRoomMember();
