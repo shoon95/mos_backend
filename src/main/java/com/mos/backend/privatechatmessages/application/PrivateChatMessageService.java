@@ -80,8 +80,8 @@ public class PrivateChatMessageService {
         PrivateChatRoom privateChatRoom = entityFacade.getPrivateChatRoom(privateChatRoomId);
 
         PrivateChatRoomMember privateChatRoomMember = privateChatRoomMemberService.findByUserAndPrivateChatRoom(user, privateChatRoom);
-        LocalDateTime lastEntryTime = privateChatRoomMember.getLastEntryTime();
+        LocalDateTime lastEntryAt = privateChatRoomMember.getLastEntryAt();
 
-        return privateChatMessageRepository.countByPrivateChatRoomIdAndCreatedAtAfter(privateChatRoom.getId(), lastEntryTime);
+        return privateChatMessageRepository.countByPrivateChatRoomIdAndCreatedAtAfter(privateChatRoom.getId(), lastEntryAt);
     }
 }

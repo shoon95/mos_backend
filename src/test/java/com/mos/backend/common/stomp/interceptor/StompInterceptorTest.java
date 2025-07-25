@@ -167,7 +167,7 @@ class StompInterceptorTest {
             // Then
             List<Subscription> subscriptions = StompSessionUtil.getAndRemoveAllSubscription(accessor);
             assertThat(subscriptions).isEmpty();
-            verify(privateChatRoomMemberService).updateLastEntryTime(userId, privateChatRoomId);
+            verify(privateChatRoomMemberService).updateLastEntryAt(userId, privateChatRoomId);
         }
     }
 
@@ -197,7 +197,7 @@ class StompInterceptorTest {
             // Then
             List<Subscription> subscriptions = StompSessionUtil.getAndRemoveAllSubscription(accessor);
             assertThat(subscriptions).isEmpty();
-            verify(privateChatRoomMemberService).updateLastEntryTime(userId, privateChatRoomId);
+            verify(privateChatRoomMemberService).updateLastEntryAt(userId, privateChatRoomId);
         }
     }
 }

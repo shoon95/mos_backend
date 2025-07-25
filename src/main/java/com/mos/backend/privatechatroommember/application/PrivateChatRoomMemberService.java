@@ -32,8 +32,8 @@ public class PrivateChatRoomMemberService {
     }
 
     @Transactional
-    public void updateLastEntryTime(Long userId, Long privateChatRoomId) {
+    public void updateLastEntryAt(Long userId, Long privateChatRoomId) {
         PrivateChatRoomMember privateChatRoomMember = entityFacade.getPrivateChatRoomMember(userId, privateChatRoomId);
-        privateChatRoomMember.updateLastEntryTime();
+        privateChatRoomMember.updateLastEntryAt();
     }
 }

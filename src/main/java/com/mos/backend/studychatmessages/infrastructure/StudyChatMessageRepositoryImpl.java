@@ -26,8 +26,8 @@ public class StudyChatMessageRepositoryImpl implements StudyChatMessageRepositor
     }
 
     @Override
-    public int countByStudyChatRoomIdAndCreatedAtAfter(Long studyChatRoomId, LocalDateTime lastEntryTime) {
-        return studyChatMessageJpaRepository.countByStudyChatRoomIdAndCreatedAtAfter(studyChatRoomId, lastEntryTime);
+    public int countByStudyChatRoomIdAndCreatedAtAfter(Long studyChatRoomId, LocalDateTime lastEntryAt) {
+        return studyChatMessageJpaRepository.countByStudyChatRoomIdAndCreatedAtAfter(studyChatRoomId, lastEntryAt);
     }
 
     @Override

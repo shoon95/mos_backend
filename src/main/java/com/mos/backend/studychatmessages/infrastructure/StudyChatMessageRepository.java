@@ -12,7 +12,7 @@ public interface StudyChatMessageRepository {
 
     List<StudyChatMessage> findAllByChatRoomIdForInfiniteScroll(Long studyChatRoomId, Long lastStudyChatMessageId, Integer size);
 
-    int countByStudyChatRoomIdAndCreatedAtAfter(Long studyChatRoomId, LocalDateTime lastEntryTime);
+    int countByStudyChatRoomIdAndCreatedAtAfter(Long studyChatRoomId, LocalDateTime lastEntryAt);
 
     Optional<StudyChatMessage> findFirstByStudyChatRoomOrderByCreatedAtDesc(StudyChatRoom studyChatRoom);
 }

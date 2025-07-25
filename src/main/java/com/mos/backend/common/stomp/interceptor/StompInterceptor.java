@@ -57,7 +57,7 @@ public class StompInterceptor implements ChannelInterceptor {
 
         optionalSubscription.ifPresent(subscription -> {
             Long userId = StompSessionUtil.getUserId(accessor);
-            updateLastEntryTime(subscription, userId);
+            updateLastEntryAt(subscription, userId);
         });
     }
 
@@ -66,14 +66,14 @@ public class StompInterceptor implements ChannelInterceptor {
         List<Subscription> subscriptions = StompSessionUtil.getAndRemoveAllSubscription(accessor);
 
         subscriptions.forEach(
-                subscription -> updateLastEntryTime(subscription, userId)
+                subscription -> updateLastEntryAt(subscription, userId)
         );
     }
 
-    private void updateLastEntryTime(Subscription subscription, Long userId) {
+    private void updateLastEntryAt(Subscription subscription, Long userId) {
         switch (subscription.getSubscriptionType()) {
-            case PRIVATE_CHAT_ROOM -> privateChatRoomMemberService.updateLastEntryTime(userId, subscription.getId());
-            case STUDY_CHAT_ROOM -> studyMemberService.updateLastEntryTime(userId, subscription.getId());
+            case PRIVATE_CHAT_ROOM -> privateChatRoomMemberService.updateLastEntryAt(userId, subscription.getId());
+            case STUDY_CHAT_ROOM -> studyMemberService.updateLastEntryAt(userId, subscription.getId());
         }
     }
 

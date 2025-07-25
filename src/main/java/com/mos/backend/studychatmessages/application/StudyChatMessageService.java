@@ -6,8 +6,6 @@ import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.common.redis.RedisPublisher;
 import com.mos.backend.common.utils.InfinityScrollUtil;
 import com.mos.backend.common.utils.StompSessionUtil;
-import com.mos.backend.privatechatroommember.entity.PrivateChatRoomMember;
-import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
 import com.mos.backend.studychatmessages.application.dto.StudyChatMessageDto;
 import com.mos.backend.studychatmessages.application.res.StudyChatMessageRes;
 import com.mos.backend.studychatmessages.entity.StudyChatMessage;
@@ -87,9 +85,9 @@ public class StudyChatMessageService {
         StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(studyChatRoomId);
 
         StudyMember studyMember = studyMemberService.findByStudyAndUser(studyChatRoom.getStudy(), user);
-        LocalDateTime lastEntryTime = studyMember.getLastEntryTime();
+        LocalDateTime lastEntryAt = studyMember.getLastEntryAt();
 
-        return studyChatMessageRepository.countByStudyChatRoomIdAndCreatedAtAfter(studyChatRoom.getId(), lastEntryTime);
+        return studyChatMessageRepository.countByStudyChatRoomIdAndCreatedAtAfter(studyChatRoom.getId(), lastEntryAt);
     }
 
     @Transactional(readOnly = true)

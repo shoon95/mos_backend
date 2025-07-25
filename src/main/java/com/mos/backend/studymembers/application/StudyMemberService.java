@@ -126,10 +126,10 @@ public class StudyMemberService {
     }
 
     @Transactional
-    public void updateLastEntryTime(Long userId, Long studyChatRoomId) {
+    public void updateLastEntryAt(Long userId, Long studyChatRoomId) {
         StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(studyChatRoomId);
         StudyMember studyMember = entityFacade.getStudyMember(userId, studyChatRoom.getStudy().getId());
 
-        studyMember.updateLastEntryTime();
+        studyMember.updateLastEntryAt();
     }
 }

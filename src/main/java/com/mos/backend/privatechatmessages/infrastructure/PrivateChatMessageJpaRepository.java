@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface PrivateChatMessageJpaRepository extends JpaRepository<PrivateChatMessage, Long> {
     Optional<PrivateChatMessage> findFirstByPrivateChatRoomOrderByCreatedAtDesc(PrivateChatRoom privateChatRoom);
 
-    int countByPrivateChatRoomIdAndCreatedAtAfter(Long privateChatRoomId, LocalDateTime lastEntryTime);
+    int countByPrivateChatRoomIdAndCreatedAtAfter(Long privateChatRoomId, LocalDateTime lastEntryAt);
 }

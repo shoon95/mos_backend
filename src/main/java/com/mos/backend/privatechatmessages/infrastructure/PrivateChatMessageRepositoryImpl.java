@@ -31,7 +31,7 @@ public class PrivateChatMessageRepositoryImpl implements PrivateChatMessageRepos
     }
 
     @Override
-    public int countByPrivateChatRoomIdAndCreatedAtAfter(Long privateChatRoomId, LocalDateTime lastEntryTime) {
-        return privateChatMessageJpaRepository.countByPrivateChatRoomIdAndCreatedAtAfter(privateChatRoomId, lastEntryTime);
+    public int countByPrivateChatRoomIdAndCreatedAtAfter(Long privateChatRoomId, LocalDateTime lastEntryAt) {
+        return privateChatMessageJpaRepository.countByPrivateChatRoomIdAndCreatedAtAfter(privateChatRoomId, lastEntryAt);
     }
 }
