@@ -151,7 +151,8 @@ public class EntitySaver {
     }
 
     public StudyChatRoom saveStudyChatRoom(Study study) {
-        return studyChatRoomRepository.save(StudyChatRoom.create(study));
+        String title = study.getTitle();
+        return studyChatRoomRepository.save(StudyChatRoom.create(study, title));
     }
 
     public StudyChatMessage saveStudyChatMessage(User user, StudyChatRoom studyChatRoom, String message) {

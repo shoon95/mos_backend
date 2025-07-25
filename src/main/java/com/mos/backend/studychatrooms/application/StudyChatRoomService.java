@@ -17,8 +17,9 @@ public class StudyChatRoomService {
     @Transactional
     public void create(Long studyId) {
         Study study = entityFacade.getStudy(studyId);
+        String title = study.getTitle();
 
-        StudyChatRoom studyChatRoom = StudyChatRoom.create(study);
+        StudyChatRoom studyChatRoom = StudyChatRoom.create(study, title);
 
         studyChatRoomRepository.save(studyChatRoom);
     }

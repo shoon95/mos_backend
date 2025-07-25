@@ -24,9 +24,13 @@ public class StudyChatRoom {
     @OnDelete(action = CASCADE)
     private Study study;
 
-    public static StudyChatRoom create(Study study) {
+    @Column(nullable = false)
+    private String name;
+
+    public static StudyChatRoom create(Study study, String name) {
         StudyChatRoom studyChatRoom = new StudyChatRoom();
         studyChatRoom.study = study;
+        studyChatRoom.name = name;
         return studyChatRoom;
     }
 }
