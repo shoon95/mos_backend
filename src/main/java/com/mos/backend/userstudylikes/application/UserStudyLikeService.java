@@ -7,6 +7,7 @@ import com.mos.backend.hotstudies.entity.HotStudyEventType;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.userstudylikes.application.event.StudyLikeEventPayload;
+import com.mos.backend.userstudylikes.application.response.LikesResponseDto;
 import com.mos.backend.userstudylikes.application.response.UserStudyLikeResponseDto;
 import com.mos.backend.userstudylikes.entity.UserStudyLike;
 import com.mos.backend.userstudylikes.infrastructure.UserStudyLikeRepository;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +49,14 @@ public class UserStudyLikeService {
         }
         return new UserStudyLikeResponseDto(userId, studyId, userStudyLikeRepository.getLikedCountByStudyId(studyId));
     }
+
+    /**
+     * 스터디 ID 목록으로 isLiked, likedCount 조회
+     */
+    public List<LikesResponseDto> getLikes(List<Long> studyIds, Long currentUserId) {
+        return userStudyLikeRepository.getLikes(studyIds, currentUserId);
+    }
+
 
     /**
      * 스터디의 좋아요 수 조회
