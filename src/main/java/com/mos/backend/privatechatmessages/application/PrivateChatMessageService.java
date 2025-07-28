@@ -34,8 +34,7 @@ public class PrivateChatMessageService {
     private final PrivateChatRoomMemberService privateChatRoomMemberService;
 
     @Transactional
-    public void publish(StompHeaderAccessor accessor, PrivateChatMessagePublishReq req) {
-        Long userId = StompSessionUtil.getUserId(accessor);
+    public void publish(Long userId, PrivateChatMessagePublishReq req) {
         User user = entityFacade.getUser(userId);
         PrivateChatRoom privateChatRoom = entityFacade.getPrivateChatRoom(req.getPrivateChatRoomId());
 

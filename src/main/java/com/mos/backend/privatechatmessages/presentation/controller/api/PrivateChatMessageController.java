@@ -1,6 +1,7 @@
 package com.mos.backend.privatechatmessages.presentation.controller.api;
 
 import com.mos.backend.common.dto.InfinityScrollRes;
+import com.mos.backend.common.utils.StompPrincipalUtil;
 import com.mos.backend.privatechatmessages.application.PrivateChatMessageService;
 import com.mos.backend.privatechatmessages.application.res.PrivateChatMessageRes;
 import com.mos.backend.privatechatmessages.presentation.req.PrivateChatMessagePublishReq;
@@ -20,7 +21,8 @@ public class PrivateChatMessageController {
     @MessageMapping("/private-chat-messages")
     public void publishPrivateChatMessage(Message<?> message, PrivateChatMessagePublishReq privateChatMessagePublishReq) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        privateChatMessageService.publish(accessor, privateChatMessagePublishReq);
+        Long userId = StompPrincipalUtil.getUserId(accessor);
+        privateChatMessageService.publish(userId, privateChatMessagePublishReq);
     }
 
     @ResponseStatus(HttpStatus.OK)

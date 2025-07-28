@@ -37,8 +37,7 @@ public class StudyChatMessageService {
     private final EntityFacade entityFacade;
 
     @Transactional
-    public void publish(StompHeaderAccessor accessor, StudyChatMessagePublishReq req) {
-        Long userId = StompSessionUtil.getUserId(accessor);
+    public void publish(Long userId, StudyChatMessagePublishReq req) {
         User user = entityFacade.getUser(userId);
         StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(req.getStudyChatRoomId());
 

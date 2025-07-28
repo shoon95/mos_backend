@@ -40,8 +40,7 @@ public class StompInterceptor implements ChannelInterceptor {
     }
 
     private void handleConnect(StompHeaderAccessor accessor) {
-        Long userId = StompHeaderUtil.getUserId(accessor);
-        StompSessionUtil.putUserId(accessor, userId);
+        StompPrincipalUtil.validatePrincipal(accessor);
     }
 
     private void handleSubscribe(StompHeaderAccessor accessor) {
@@ -56,13 +55,13 @@ public class StompInterceptor implements ChannelInterceptor {
         Optional<Subscription> optionalSubscription = StompSessionUtil.getAndRemoveSubscription(accessor);
 
         optionalSubscription.ifPresent(subscription -> {
-            Long userId = StompSessionUtil.getUserId(accessor);
+            Long userId = StompPrincipalUtil.getUserId(accessor);
             updateLastEntryAt(subscription, userId);
         });
     }
 
     private void handleDisconnect(StompHeaderAccessor accessor) {
-        Long userId = StompSessionUtil.getAndRemoveUserId(accessor);
+        Long userId = StompPrincipalUtil.getUserId(accessor);
         List<Subscription> subscriptions = StompSessionUtil.getAndRemoveAllSubscription(accessor);
 
         subscriptions.forEach(

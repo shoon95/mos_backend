@@ -1,6 +1,7 @@
 package com.mos.backend.studychatmessages.presentation.controller.api;
 
 import com.mos.backend.common.dto.InfinityScrollRes;
+import com.mos.backend.common.utils.StompPrincipalUtil;
 import com.mos.backend.studychatmessages.application.StudyChatMessageService;
 import com.mos.backend.studychatmessages.application.res.StudyChatMessageRes;
 import com.mos.backend.studychatmessages.presentation.req.StudyChatMessagePublishReq;
@@ -21,7 +22,8 @@ public class StudyChatMessageController {
     @MessageMapping("/study-chat-messages")
     public void publishPrivateChatMessage(Message<?> message, StudyChatMessagePublishReq studyChatMessagePublishReq) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        studyChatMessageService.publish(accessor, studyChatMessagePublishReq);
+        Long userId = StompPrincipalUtil.getUserId(accessor);
+        studyChatMessageService.publish(userId, studyChatMessagePublishReq);
     }
 
     @GetMapping("/studies/{studyId}/chat-rooms/{studyChatRoomId}/messages")
