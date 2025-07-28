@@ -3,7 +3,6 @@ package com.mos.backend.privatechatrooms.application;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.privatechatmessages.application.PrivateChatMessageService;
 import com.mos.backend.privatechatmessages.entity.PrivateChatMessage;
-import com.mos.backend.privatechatmessages.infrastructure.PrivateChatMessageRepository;
 import com.mos.backend.privatechatroommember.application.PrivateChatRoomMemberService;
 import com.mos.backend.privatechatrooms.application.res.MyPrivateChatRoomRes;
 import com.mos.backend.privatechatrooms.application.res.PrivateChatRoomIdRes;
@@ -15,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -57,21 +54,12 @@ public class PrivateChatRoomService {
 
         List<MyPrivateChatRoomRes> myPrivateChatRoomResList = privateChatRooms.stream()
                 .map(privateChatRoom -> {
-                    Optional<PrivateChatMessage> optionalPrivateChatMessage = getLastChatMessage(privateChatRoom);
+                    PrivateChatMessage privateChatMessage = privateChatMessageService.getLastMessage(privateChatRoom);
                     int unreadCount = privateChatMessageService.getUnreadCnt(user.getId(), privateChatRoom.getId());
-                    return optionalPrivateChatMessage
-                            .map(privateChatMessage -> MyPrivateChatRoomRes.of(privateChatRoom, privateChatMessage, unreadCount))
-                            .orElse(null);
+                    return MyPrivateChatRoomRes.of(privateChatRoom, privateChatMessage, unreadCount);
                 })
-                .filter(Objects::nonNull)
                 .toList();
 
         return myPrivateChatRoomResList;
-    }
-
-    private final PrivateChatMessageService privateChatMessageService;
-
-    private Optional<PrivateChatMessage> getLastChatMessage(PrivateChatRoom privateChatRoom) {
-        return privateChatMessageRepository.findFirstByPrivateChatRoomOrderByCreatedAtDesc(privateChatRoom);
     }
 }

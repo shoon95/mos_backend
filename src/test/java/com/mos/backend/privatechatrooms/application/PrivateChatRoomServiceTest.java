@@ -118,6 +118,7 @@ class PrivateChatRoomServiceTest {
             when(privateChatRoomRepository.findByUser(user)).thenReturn(List.of(privateChatRoom));
             when(privateChatMessageRepository.findFirstByPrivateChatRoomOrderByCreatedAtDesc(privateChatRoom))
                     .thenReturn(Optional.of(privateChatMessage));
+            when(privateChatMessageService.getLastMessage(privateChatRoom)).thenReturn(privateChatMessage);
 
             // When
             List<MyPrivateChatRoomRes> result = privateChatRoomService.getMyPrivateChatRooms(userId);
@@ -135,10 +136,12 @@ class PrivateChatRoomServiceTest {
             Long userId = 1L;
             User user = mock(User.class);
             PrivateChatRoom privateChatRoom = mock(PrivateChatRoom.class);
+            PrivateChatMessage privateChatMessage = mock(PrivateChatMessage.class);
 
             when(entityFacade.getUser(userId)).thenReturn(user);
             when(privateChatRoomRepository.findByUser(user)).thenReturn(List.of(privateChatRoom));
             when(privateChatMessageRepository.findFirstByPrivateChatRoomOrderByCreatedAtDesc(privateChatRoom)).thenReturn(Optional.empty());
+            when(privateChatMessageService.getLastMessage(privateChatRoom)).thenReturn(privateChatMessage);
 
             // When
             List<MyPrivateChatRoomRes> result = privateChatRoomService.getMyPrivateChatRooms(userId);

@@ -1,13 +1,15 @@
 package com.mos.backend.privatechatmessages.application;
 
 import com.mos.backend.common.dto.InfinityScrollRes;
+import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.common.redis.RedisPublisher;
 import com.mos.backend.common.utils.InfinityScrollUtil;
-import com.mos.backend.common.utils.StompSessionUtil;
 import com.mos.backend.privatechatmessages.application.dto.PrivateChatMessageDto;
+import com.mos.backend.privatechatmessages.application.dto.PrivateChatRoomInfoMessageDto;
 import com.mos.backend.privatechatmessages.application.res.PrivateChatMessageRes;
 import com.mos.backend.privatechatmessages.entity.PrivateChatMessage;
+import com.mos.backend.privatechatmessages.entity.PrivateChatMessageErrorCode;
 import com.mos.backend.privatechatmessages.infrastructure.PrivateChatMessageRepository;
 import com.mos.backend.privatechatmessages.presentation.req.PrivateChatMessagePublishReq;
 import com.mos.backend.privatechatroommember.application.PrivateChatRoomMemberService;
@@ -15,7 +17,6 @@ import com.mos.backend.privatechatroommember.entity.PrivateChatRoomMember;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
 import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,5 +83,10 @@ public class PrivateChatMessageService {
         LocalDateTime lastEntryAt = privateChatRoomMember.getLastEntryAt();
 
         return privateChatMessageRepository.countByPrivateChatRoomIdAndCreatedAtAfter(privateChatRoom.getId(), lastEntryAt);
+    }
+
+    public PrivateChatMessage getLastMessage(PrivateChatRoom privateChatRoom) {
+        return privateChatMessageRepository.findFirstByPrivateChatRoomOrderByCreatedAtDesc(privateChatRoom)
+                .orElseThrow(() -> new MosException(PrivateChatMessageErrorCode.NOT_FOUND));
     }
 }

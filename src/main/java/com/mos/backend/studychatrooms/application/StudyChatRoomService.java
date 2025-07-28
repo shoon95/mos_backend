@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -42,18 +40,18 @@ public class StudyChatRoomService {
                 .map(studyChatRoom -> {
                     int unreadCount = studyChatMessageService.getUnreadCnt(user.getId(), studyChatRoom.getId());
 
-                    Optional<StudyChatMessage> optionalStudyChatMessage = getLastMessage(studyChatRoom);
-                    return optionalStudyChatMessage
-                            .map(studyChatMessage -> MyStudyChatRoomRes.of(studyChatRoom, studyChatMessage, unreadCount))
-                            .orElse(null);
+                    StudyChatMessage studyChatMessage = studyChatMessageService.getLastMessage(studyChatRoom);
+
+                    return MyStudyChatRoomRes.of(
+                            studyChatRoom.getId(),
+                            studyChatRoom.getName(),
+                            studyChatMessage.getMessage(),
+                            studyChatMessage.getCreatedAt(),
+                            unreadCount
+                    );
                 })
-                .filter(Objects::nonNull)
                 .toList();
 
         return myStudyChatRoomResList;
-    }
-
-    private Optional<StudyChatMessage> getLastMessage(StudyChatRoom studyChatRoom) {
-        return studyChatMessageService.findFirstByStudyChatRoomOrderByCreatedAtDesc(studyChatRoom);
     }
 }

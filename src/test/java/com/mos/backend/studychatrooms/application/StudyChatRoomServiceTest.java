@@ -68,6 +68,7 @@ class StudyChatRoomServiceTest {
 
             User user = mock(User.class);
             StudyChatRoom studyChatRoom = mock(StudyChatRoom.class);
+            StudyChatMessage studyChatMessage = mock(StudyChatMessage.class);
 
             when(entityFacade.getUser(userId)).thenReturn(user);
             when(user.getId()).thenReturn(userId);
@@ -76,6 +77,7 @@ class StudyChatRoomServiceTest {
             when(studyChatMessageService.getUnreadCnt(userId, studyChatRoomId)).thenReturn(unreadCount);
             when(studyChatMessageService.findFirstByStudyChatRoomOrderByCreatedAtDesc(studyChatRoom))
                     .thenReturn(Optional.of(mock(StudyChatMessage.class)));
+            when(studyChatMessageService.getLastMessage(studyChatRoom)).thenReturn(studyChatMessage);
 
             // When
             studyChatRoomService.getMyStudyChatRooms(userId);

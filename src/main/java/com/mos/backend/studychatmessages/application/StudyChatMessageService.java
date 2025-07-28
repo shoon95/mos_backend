@@ -5,12 +5,13 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.common.redis.RedisPublisher;
 import com.mos.backend.common.utils.InfinityScrollUtil;
-import com.mos.backend.common.utils.StompSessionUtil;
 import com.mos.backend.studychatmessages.application.dto.StudyChatMessageDto;
 import com.mos.backend.studychatmessages.application.res.StudyChatMessageRes;
 import com.mos.backend.studychatmessages.entity.StudyChatMessage;
+import com.mos.backend.studychatmessages.entity.exception.StudyChatMessageErrorCode;
 import com.mos.backend.studychatmessages.infrastructure.StudyChatMessageRepository;
 import com.mos.backend.studychatmessages.presentation.req.StudyChatMessagePublishReq;
+import com.mos.backend.studychatrooms.application.dto.StudyChatRoomInfoMessageDto;
 import com.mos.backend.studychatrooms.entity.StudyChatRoom;
 import com.mos.backend.studychatrooms.entity.StudyChatRoomErrorCode;
 import com.mos.backend.studymembers.application.StudyMemberService;
@@ -18,7 +19,6 @@ import com.mos.backend.studymembers.entity.StudyMember;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,5 +92,10 @@ public class StudyChatMessageService {
     @Transactional(readOnly = true)
     public Optional<StudyChatMessage> findFirstByStudyChatRoomOrderByCreatedAtDesc(StudyChatRoom studyChatRoom) {
         return studyChatMessageRepository.findFirstByStudyChatRoomOrderByCreatedAtDesc(studyChatRoom);
+    }
+
+    public StudyChatMessage getLastMessage(StudyChatRoom studyChatRoom) {
+        return studyChatMessageRepository.findFirstByStudyChatRoomOrderByCreatedAtDesc(studyChatRoom)
+                .orElseThrow(() -> new MosException(StudyChatMessageErrorCode.NOT_FOUND));
     }
 }
