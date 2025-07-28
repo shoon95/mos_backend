@@ -2,6 +2,7 @@ package com.mos.backend.privatechatrooms.application.res;
 
 import com.mos.backend.privatechatmessages.entity.PrivateChatMessage;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
+import com.mos.backend.privatechatrooms.entity.PrivateChatRoomInfo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,15 +19,12 @@ public class MyPrivateChatRoomRes {
 
     private int unreadCnt;
 
-    public static MyPrivateChatRoomRes of(PrivateChatRoom privateChatRoom, PrivateChatMessage privateChatMessage, int unreadCnt) {
+    public static MyPrivateChatRoomRes of(Long privateChatRoomId, String chatName, String lastMessage, LocalDateTime lastMessageAt, int unreadCnt) {
         MyPrivateChatRoomRes myPrivateChatRoomRes = new MyPrivateChatRoomRes();
-
-        myPrivateChatRoomRes.privateChatRoomId = privateChatRoom.getId();
-        myPrivateChatRoomRes.chatName = privateChatRoom.getName();
-
-        myPrivateChatRoomRes.lastMessage = privateChatMessage.getMessage();
-        myPrivateChatRoomRes.lastMessageAt = privateChatMessage.getCreatedAt();
-
+        myPrivateChatRoomRes.privateChatRoomId = privateChatRoomId;
+        myPrivateChatRoomRes.chatName = chatName;
+        myPrivateChatRoomRes.lastMessage = lastMessage;
+        myPrivateChatRoomRes.lastMessageAt = lastMessageAt;
         myPrivateChatRoomRes.unreadCnt = unreadCnt;
         return myPrivateChatRoomRes;
     }

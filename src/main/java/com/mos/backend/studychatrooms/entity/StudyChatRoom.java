@@ -27,6 +27,9 @@ public class StudyChatRoom {
     @Column(nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    private StudyChatRoomStatus status = StudyChatRoomStatus.VISIBLE;
+
     public static StudyChatRoom create(Study study, String name) {
         StudyChatRoom studyChatRoom = new StudyChatRoom();
         studyChatRoom.study = study;

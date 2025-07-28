@@ -132,4 +132,8 @@ public class StudyMemberService {
 
         studyMember.updateLastEntryAt();
     }
+
+    public List<StudyMember> findAllByUserNotAndStudy(User user, Study study) {
+        return studyMemberRepository.findAllByUserNotAndStudy(user, study);
+    }
 }

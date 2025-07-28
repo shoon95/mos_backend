@@ -1,7 +1,5 @@
 package com.mos.backend.studychatrooms.application.res;
 
-import com.mos.backend.studychatmessages.entity.StudyChatMessage;
-import com.mos.backend.studychatrooms.entity.StudyChatRoom;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,17 +17,13 @@ public class MyStudyChatRoomRes {
 
     private int unreadCnt;
 
-    public static MyStudyChatRoomRes of(StudyChatRoom studyChatRoom, StudyChatMessage studyChatMessage, int unreadCnt) {
+    public static MyStudyChatRoomRes of(Long studyChatRoomId, String chatName, String lastMessage, LocalDateTime lastMessageAt, int unreadCnt) {
         MyStudyChatRoomRes myStudyChatRoomRes = new MyStudyChatRoomRes();
-
-        myStudyChatRoomRes.studyChatRoomId = studyChatRoom.getId();
-        myStudyChatRoomRes.chatName = studyChatRoom.getName();
-
-        myStudyChatRoomRes.lastMessage = studyChatMessage.getMessage();
-        myStudyChatRoomRes.lastMessageAt = studyChatMessage.getCreatedAt();
-
+        myStudyChatRoomRes.studyChatRoomId = studyChatRoomId;
+        myStudyChatRoomRes.chatName = chatName;
+        myStudyChatRoomRes.lastMessage = lastMessage;
+        myStudyChatRoomRes.lastMessageAt = lastMessageAt;
         myStudyChatRoomRes.unreadCnt = unreadCnt;
-
         return myStudyChatRoomRes;
     }
 }

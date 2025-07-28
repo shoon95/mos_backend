@@ -20,6 +20,7 @@ public class StudyChatRoomService {
     private final EntityFacade entityFacade;
     private final StudyChatMessageService studyChatMessageService;
     private final StudyChatRoomRepository studyChatRoomRepository;
+    private final StudyChatRoomInfoService studyChatRoomInfoService;
 
     @Transactional
     public void create(Long studyId) {
@@ -51,6 +52,8 @@ public class StudyChatRoomService {
                     );
                 })
                 .toList();
+
+        studyChatRoomInfoService.cachingStudyChatRoomInfos(userId, myStudyChatRoomResList);
 
         return myStudyChatRoomResList;
     }

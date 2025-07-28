@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum SubscriptionType {
-    USER("users"),
+    CHAT_ROOM_LIST("chat-rooms"),
     PRIVATE_CHAT_ROOM("private-chat-rooms"),
     STUDY_CHAT_ROOM("study-chat-rooms"),
     ;
@@ -21,4 +21,3 @@ public enum SubscriptionType {
                 .orElseThrow(() -> new MosException(StompErrorCode.INVALID_DESTINATION));
     }
 }
-

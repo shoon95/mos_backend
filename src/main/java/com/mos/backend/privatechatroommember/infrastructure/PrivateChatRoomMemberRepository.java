@@ -14,4 +14,6 @@ public interface PrivateChatRoomMemberRepository {
     Optional<PrivateChatRoomMember> findByUserAndPrivateChatRoom(User user, PrivateChatRoom privateChatRoom);
 
     PrivateChatRoomMember findByUserIdAndPrivateChatRoomId(Long userId, Long privateChatRoomId);
+
+    Optional<PrivateChatRoomMember> findByUserNotAndPrivateChatRoom(User user, PrivateChatRoom privateChatRoom);
 }

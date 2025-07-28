@@ -1,10 +1,13 @@
 package com.mos.backend.common.stomp.interceptor;
 
-import com.mos.backend.common.stomp.entity.SubscriptionType;
 import com.mos.backend.common.stomp.entity.Subscription;
+import com.mos.backend.common.stomp.entity.SubscriptionType;
 import com.mos.backend.common.utils.StompHeaderUtil;
+import com.mos.backend.common.utils.StompPrincipalUtil;
 import com.mos.backend.common.utils.StompSessionUtil;
 import com.mos.backend.privatechatroommember.application.PrivateChatRoomMemberService;
+import com.mos.backend.privatechatrooms.application.PrivateChatRoomInfoService;
+import com.mos.backend.studychatrooms.application.StudyChatRoomInfoService;
 import com.mos.backend.studymembers.application.StudyMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
@@ -21,8 +24,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class StompInterceptor implements ChannelInterceptor {
 
+    private final PrivateChatRoomInfoService privateChatRoomInfoService;
     private final PrivateChatRoomMemberService privateChatRoomMemberService;
     private final StudyMemberService studyMemberService;
+    private final StudyChatRoomInfoService studyChatRoomInfoService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -57,6 +62,7 @@ public class StompInterceptor implements ChannelInterceptor {
         optionalSubscription.ifPresent(subscription -> {
             Long userId = StompPrincipalUtil.getUserId(accessor);
             updateLastEntryAt(subscription, userId);
+            resetUnreadCount(subscription, userId);
         });
     }
 
@@ -65,14 +71,31 @@ public class StompInterceptor implements ChannelInterceptor {
         List<Subscription> subscriptions = StompSessionUtil.getAndRemoveAllSubscription(accessor);
 
         subscriptions.forEach(
-                subscription -> updateLastEntryAt(subscription, userId)
+                subscription -> {
+                    updateLastEntryAt(subscription, userId);
+                    resetChatRoomInfos(subscription, userId);
+                }
         );
+    }
+
+    private void resetChatRoomInfos(Subscription subscription, Long userId) {
+        switch (subscription.getType()) {
+            case PRIVATE_CHAT_ROOM -> privateChatRoomInfoService.resetChatRoomInfos(userId);
+            case STUDY_CHAT_ROOM -> studyChatRoomInfoService.resetChatRoomInfos(userId);
+        }
     }
 
     private void updateLastEntryAt(Subscription subscription, Long userId) {
         switch (subscription.getType()) {
             case PRIVATE_CHAT_ROOM -> privateChatRoomMemberService.updateLastEntryAt(userId, subscription.getId());
             case STUDY_CHAT_ROOM -> studyMemberService.updateLastEntryAt(userId, subscription.getId());
+        }
+    }
+
+    private void resetUnreadCount(Subscription subscription, Long userId) {
+        switch (subscription.getType()) {
+            case PRIVATE_CHAT_ROOM -> privateChatRoomInfoService.resetUnreadCount(userId, subscription.getId());
+            case STUDY_CHAT_ROOM -> studyChatRoomInfoService.resetUnreadCount(userId, subscription.getId());
         }
     }
 

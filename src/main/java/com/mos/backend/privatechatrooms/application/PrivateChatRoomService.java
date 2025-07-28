@@ -20,8 +20,9 @@ import java.util.List;
 public class PrivateChatRoomService {
     private final EntityFacade entityFacade;
     private final PrivateChatRoomRepository privateChatRoomRepository;
-    private final PrivateChatMessageRepository privateChatMessageRepository;
+    private final PrivateChatRoomInfoService privateChatRoomInfoService;
     private final PrivateChatRoomMemberService privateChatRoomMemberService;
+    private final PrivateChatMessageService privateChatMessageService;
 
     private static final String CHAT_ROOM_NAME_FORMAT = "%s,%s";
 
@@ -56,9 +57,17 @@ public class PrivateChatRoomService {
                 .map(privateChatRoom -> {
                     PrivateChatMessage privateChatMessage = privateChatMessageService.getLastMessage(privateChatRoom);
                     int unreadCount = privateChatMessageService.getUnreadCnt(user.getId(), privateChatRoom.getId());
-                    return MyPrivateChatRoomRes.of(privateChatRoom, privateChatMessage, unreadCount);
+                    return MyPrivateChatRoomRes.of(
+                            privateChatRoom.getId(),
+                            privateChatRoom.getName(),
+                            privateChatMessage.getMessage(),
+                            privateChatMessage.getCreatedAt(),
+                            unreadCount
+                    );
                 })
                 .toList();
+
+        privateChatRoomInfoService.cachingPrivateChatRoomInfos(userId, myPrivateChatRoomResList);
 
         return myPrivateChatRoomResList;
     }

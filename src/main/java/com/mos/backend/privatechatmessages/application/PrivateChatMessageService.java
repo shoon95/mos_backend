@@ -42,8 +42,17 @@ public class PrivateChatMessageService {
         privateChatRoom.visible();
 
         PrivateChatMessage privateChatMessage = savePrivateChatMessage(user, privateChatRoom, req.getMessage());
+        redisPublisher.publishPrivateChatMessage(
+                PrivateChatMessageDto.of(
+                        user.getId(), privateChatRoom.getId(), privateChatMessage.getMessage(), privateChatMessage.getCreatedAt()
+                )
+        );
 
-        redisPublisher.publishPrivateChatMessage(PrivateChatMessageDto.of(privateChatMessage, user.getId()));
+        PrivateChatRoomMember other = privateChatRoomMemberService.findByUserNotAndPrivateChatRoom(user, privateChatRoom);
+        PrivateChatRoomInfoMessageDto privateChatRoomInfoMessageDto = PrivateChatRoomInfoMessageDto.of(
+                other.getUser().getId(), privateChatRoom.getId(), privateChatMessage.getMessage(), privateChatMessage.getCreatedAt()
+        );
+        redisPublisher.publishPrivateChatRoomInfoMessage(privateChatRoomInfoMessageDto);
     }
 
     private PrivateChatMessage savePrivateChatMessage(User user, PrivateChatRoom privateChatRoom, String message) {

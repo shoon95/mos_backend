@@ -6,19 +6,11 @@ import com.mos.backend.common.stomp.entity.Subscription;
 import com.mos.backend.common.stomp.entity.SubscriptionType;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StompHeaderUtil {
-    static final String USER_ID = "user-id";
-    private static final Pattern DESTINATION_PATTERN = Pattern.compile("^/sub/([a-zA-Z\\-]+)/?(\\d+)?$");
-
-    public static Long getUserId(StompHeaderAccessor accessor) {
-        return Optional.ofNullable(accessor.getFirstNativeHeader(USER_ID))
-                .map(Long::valueOf)
-                .orElseThrow(() -> new MosException(StompErrorCode.MISSING_USER_ID_IN_HEADER));
-    }
+    private static final Pattern DESTINATION_PATTERN = Pattern.compile("^(/user)?/sub/([a-zA-Z\\-]+)(?:/(\\d+))?$", Pattern.CASE_INSENSITIVE);
 
     public static Subscription parseDestination(StompHeaderAccessor accessor) {
         String destination = accessor.getDestination();
@@ -28,8 +20,9 @@ public class StompHeaderUtil {
 
         Matcher matcher = DESTINATION_PATTERN.matcher(destination);
         if (matcher.matches()) {
-            String typeStr = matcher.group(1);
-            Long id = matcher.group(2) != null ? Long.valueOf(matcher.group(2)) : null;
+            String typeStr = matcher.group(2);
+            Long id = matcher.group(3) != null ? Long.valueOf(matcher.group(3)) : null;
+
             SubscriptionType subscriptionType = SubscriptionType.from(typeStr);
             return Subscription.of(subscriptionType, id);
         }

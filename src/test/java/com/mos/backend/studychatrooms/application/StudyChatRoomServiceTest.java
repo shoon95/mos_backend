@@ -31,6 +31,8 @@ class StudyChatRoomServiceTest {
     private StudyChatRoomRepository studyChatRoomRepository;
     @Mock
     private StudyChatMessageService studyChatMessageService;
+    @Mock
+    private StudyChatRoomInfoService studyChatRoomInfoService;
 
     @InjectMocks
     private StudyChatRoomService studyChatRoomService;
@@ -75,8 +77,6 @@ class StudyChatRoomServiceTest {
             when(studyChatRoomRepository.findAllByUserId(userId)).thenReturn(List.of(studyChatRoom));
             when(studyChatRoom.getId()).thenReturn(1L);
             when(studyChatMessageService.getUnreadCnt(userId, studyChatRoomId)).thenReturn(unreadCount);
-            when(studyChatMessageService.findFirstByStudyChatRoomOrderByCreatedAtDesc(studyChatRoom))
-                    .thenReturn(Optional.of(mock(StudyChatMessage.class)));
             when(studyChatMessageService.getLastMessage(studyChatRoom)).thenReturn(studyChatMessage);
 
             // When
@@ -85,7 +85,6 @@ class StudyChatRoomServiceTest {
             // Then
             verify(studyChatRoomRepository).findAllByUserId(userId);
             verify(studyChatMessageService).getUnreadCnt(userId, studyChatRoomId);
-            verify(studyChatMessageService).findFirstByStudyChatRoomOrderByCreatedAtDesc(studyChatRoom);
         }
     }
 }

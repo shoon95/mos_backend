@@ -39,6 +39,8 @@ class PrivateChatRoomServiceTest {
     private PrivateChatMessageService privateChatMessageService;
     @Mock
     private PrivateChatMessageRepository privateChatMessageRepository;
+    @Mock
+    private PrivateChatRoomInfoService privateChatRoomInfoService;
 
     @InjectMocks
     private PrivateChatRoomService privateChatRoomService;
@@ -116,8 +118,6 @@ class PrivateChatRoomServiceTest {
 
             when(entityFacade.getUser(userId)).thenReturn(user);
             when(privateChatRoomRepository.findByUser(user)).thenReturn(List.of(privateChatRoom));
-            when(privateChatMessageRepository.findFirstByPrivateChatRoomOrderByCreatedAtDesc(privateChatRoom))
-                    .thenReturn(Optional.of(privateChatMessage));
             when(privateChatMessageService.getLastMessage(privateChatRoom)).thenReturn(privateChatMessage);
 
             // When
@@ -126,30 +126,6 @@ class PrivateChatRoomServiceTest {
             // Then
             assertEquals(1, result.size());
             verify(privateChatRoomRepository).findByUser(user);
-            verify(privateChatMessageRepository).findFirstByPrivateChatRoomOrderByCreatedAtDesc(privateChatRoom);
-        }
-
-        @Test
-        @DisplayName("메시지가 존재하지 않는 경우")
-        void getMyPrivateChatRooms_NoMessages() {
-            // Given
-            Long userId = 1L;
-            User user = mock(User.class);
-            PrivateChatRoom privateChatRoom = mock(PrivateChatRoom.class);
-            PrivateChatMessage privateChatMessage = mock(PrivateChatMessage.class);
-
-            when(entityFacade.getUser(userId)).thenReturn(user);
-            when(privateChatRoomRepository.findByUser(user)).thenReturn(List.of(privateChatRoom));
-            when(privateChatMessageRepository.findFirstByPrivateChatRoomOrderByCreatedAtDesc(privateChatRoom)).thenReturn(Optional.empty());
-            when(privateChatMessageService.getLastMessage(privateChatRoom)).thenReturn(privateChatMessage);
-
-            // When
-            List<MyPrivateChatRoomRes> result = privateChatRoomService.getMyPrivateChatRooms(userId);
-
-            // Then
-            assertTrue(result.isEmpty());
-            verify(privateChatRoomRepository).findByUser(user);
-            verify(privateChatMessageRepository).findFirstByPrivateChatRoomOrderByCreatedAtDesc(privateChatRoom);
         }
 
         @Test

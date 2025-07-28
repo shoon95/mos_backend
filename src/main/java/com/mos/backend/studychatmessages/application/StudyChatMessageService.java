@@ -48,6 +48,15 @@ public class StudyChatMessageService {
 
         StudyChatMessageDto studyChatMessageDto = StudyChatMessageDto.of(studyChatMessage, user.getId());
         redisPublisher.publishStudyChatMessage(studyChatMessageDto);
+
+        List<StudyMember> studyMembers = studyMemberService.findAllByUserNotAndStudy(user, studyChatRoom.getStudy());
+        studyMembers.forEach(studyMember -> {
+            StudyChatRoomInfoMessageDto studyChatRoomInfoMessageDto = StudyChatRoomInfoMessageDto.of(
+                    studyMember.getUser().getId(), studyChatRoom.getId(), studyChatMessage.getMessage(), studyChatMessage.getCreatedAt()
+            );
+            redisPublisher.publishStudyChatRoomInfoMessage(studyChatRoomInfoMessageDto);
+        });
+
     }
 
     private StudyChatMessage saveStudyChatMessage(StudyChatMessagePublishReq req, User user, StudyChatRoom studyChatRoom) {
@@ -87,11 +96,6 @@ public class StudyChatMessageService {
         LocalDateTime lastEntryAt = studyMember.getLastEntryAt();
 
         return studyChatMessageRepository.countByStudyChatRoomIdAndCreatedAtAfter(studyChatRoom.getId(), lastEntryAt);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<StudyChatMessage> findFirstByStudyChatRoomOrderByCreatedAtDesc(StudyChatRoom studyChatRoom) {
-        return studyChatMessageRepository.findFirstByStudyChatRoomOrderByCreatedAtDesc(studyChatRoom);
     }
 
     public StudyChatMessage getLastMessage(StudyChatRoom studyChatRoom) {

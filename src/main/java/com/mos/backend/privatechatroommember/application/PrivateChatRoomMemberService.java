@@ -36,4 +36,10 @@ public class PrivateChatRoomMemberService {
         PrivateChatRoomMember privateChatRoomMember = entityFacade.getPrivateChatRoomMember(userId, privateChatRoomId);
         privateChatRoomMember.updateLastEntryAt();
     }
+
+
+    public PrivateChatRoomMember findByUserNotAndPrivateChatRoom(User user, PrivateChatRoom privateChatRoom) {
+        return privateChatRoomMemberRepository.findByUserNotAndPrivateChatRoom(user, privateChatRoom)
+                .orElseThrow(() -> new MosException(PrivateChatRoomMemberErrorCode.NOT_FOUND));
+    }
 }

@@ -15,7 +15,7 @@ public interface StudyChatRoomJpaRepository extends JpaRepository<StudyChatRoom,
                     select sm.study.id
                     from StudyMember sm
                     where sm.user.id = :userId
-                )
+                ) and scr.status = 'VISIBLE'
             """)
     List<StudyChatRoom> findAllByUserId(Long userId);
 }

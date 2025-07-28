@@ -32,4 +32,9 @@ public class PrivateChatRoomMemberRepositoryImpl implements PrivateChatRoomMembe
     public PrivateChatRoomMember findByUserIdAndPrivateChatRoomId(Long userId, Long privateChatRoomId) {
         return privateChatRoomMemberJpaRepository.findByUserIdAndPrivateChatRoomId(userId, privateChatRoomId);
     }
+
+    @Override
+    public Optional<PrivateChatRoomMember> findByUserNotAndPrivateChatRoom(User user, PrivateChatRoom privateChatRoom) {
+        return privateChatRoomMemberJpaRepository.findByUserNotAndPrivateChatRoom(user, privateChatRoom);
+    }
 }

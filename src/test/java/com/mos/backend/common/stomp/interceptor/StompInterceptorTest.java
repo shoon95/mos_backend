@@ -7,6 +7,8 @@ import com.mos.backend.common.stomp.entity.SubscriptionType;
 import com.mos.backend.common.utils.StompPrincipalUtil;
 import com.mos.backend.common.utils.StompSessionUtil;
 import com.mos.backend.privatechatroommember.application.PrivateChatRoomMemberService;
+import com.mos.backend.privatechatrooms.application.PrivateChatRoomInfoService;
+import com.mos.backend.studychatrooms.application.StudyChatRoomInfoService;
 import com.mos.backend.studymembers.application.StudyMemberService;
 import com.mos.backend.users.entity.exception.UserErrorCode;
 import org.junit.jupiter.api.DisplayName;
@@ -32,9 +34,13 @@ import static org.mockito.Mockito.*;
 @DisplayName("StompInterceptor 테스트")
 class StompInterceptorTest {
     @Mock
+    private PrivateChatRoomInfoService privateChatRoomInfoService;
+    @Mock
     private PrivateChatRoomMemberService privateChatRoomMemberService;
     @Mock
     private StudyMemberService studyMemberService;
+    @Mock
+    private StudyChatRoomInfoService studyChatRoomInfoService;
     @InjectMocks
     private StompInterceptor stompInterceptor;
     @Mock
@@ -46,7 +52,7 @@ class StompInterceptorTest {
     @DisplayName("CONNECT 명령어 처리 성공 시나리오")
     class StompConnectSuccessScenarios {
         @Test
-        @DisplayName("헤더의 user-id 추출하여, session에 저장")
+        @DisplayName("Principal의 user-id 추출하여, session에 저장")
         void connectCommandSuccess() {
             // Given
             final Long userId = 123L;
@@ -171,6 +177,7 @@ class StompInterceptorTest {
             List<Subscription> subscriptions = StompSessionUtil.getAndRemoveAllSubscription(accessor);
             assertThat(subscriptions).isEmpty();
             verify(privateChatRoomMemberService).updateLastEntryAt(userId, privateChatRoomId);
+            verify(privateChatRoomInfoService).resetUnreadCount(userId, privateChatRoomId);
         }
     }
 
@@ -178,7 +185,7 @@ class StompInterceptorTest {
     @DisplayName("DISCONNECT 명령어 처리 성공 시나리오")
     class StompDisconnectSuccessScenarios {
         @Test
-        @DisplayName("헤더의 user-id로 모든 subscription 제거 및 서비스 호출")
+        @DisplayName("모든 subscription 제거 및 서비스 호출")
         void disconnectCommandSuccess() {
             // Given
             final Long userId = 123L;
@@ -202,6 +209,7 @@ class StompInterceptorTest {
             List<Subscription> subscriptions = StompSessionUtil.getAndRemoveAllSubscription(accessor);
             assertThat(subscriptions).isEmpty();
             verify(privateChatRoomMemberService).updateLastEntryAt(userId, privateChatRoomId);
+            verify(privateChatRoomInfoService).resetChatRoomInfos(userId);
         }
     }
 }
