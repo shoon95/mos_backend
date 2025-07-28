@@ -73,7 +73,7 @@ class StudyChatRoomServiceTest {
             when(user.getId()).thenReturn(userId);
             when(studyChatRoomRepository.findAllByUserId(userId)).thenReturn(List.of(studyChatRoom));
             when(studyChatRoom.getId()).thenReturn(1L);
-            when(studyChatMessageService.getUnreadCount(userId, studyChatRoomId)).thenReturn(unreadCount);
+            when(studyChatMessageService.getUnreadCnt(userId, studyChatRoomId)).thenReturn(unreadCount);
             when(studyChatMessageService.findFirstByStudyChatRoomOrderByCreatedAtDesc(studyChatRoom))
                     .thenReturn(Optional.of(mock(StudyChatMessage.class)));
 
@@ -82,7 +82,7 @@ class StudyChatRoomServiceTest {
 
             // Then
             verify(studyChatRoomRepository).findAllByUserId(userId);
-            verify(studyChatMessageService).getUnreadCount(userId, studyChatRoomId);
+            verify(studyChatMessageService).getUnreadCnt(userId, studyChatRoomId);
             verify(studyChatMessageService).findFirstByStudyChatRoomOrderByCreatedAtDesc(studyChatRoom);
         }
     }

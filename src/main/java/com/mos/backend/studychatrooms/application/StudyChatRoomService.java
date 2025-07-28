@@ -40,7 +40,7 @@ public class StudyChatRoomService {
 
         List<MyStudyChatRoomRes> myStudyChatRoomResList = studyChatRooms.stream()
                 .map(studyChatRoom -> {
-                    int unreadCount = studyChatMessageService.getUnreadCount(user.getId(), studyChatRoom.getId());
+                    int unreadCount = studyChatMessageService.getUnreadCnt(user.getId(), studyChatRoom.getId());
 
                     Optional<StudyChatMessage> optionalStudyChatMessage = getLastMessage(studyChatRoom);
                     return optionalStudyChatMessage

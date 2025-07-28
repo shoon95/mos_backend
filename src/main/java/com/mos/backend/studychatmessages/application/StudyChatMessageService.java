@@ -79,7 +79,7 @@ public class StudyChatMessageService {
     }
 
     @Transactional(readOnly = true)
-    public int getUnreadCount(Long userId, Long studyChatRoomId) {
+    public int getUnreadCnt(Long userId, Long studyChatRoomId) {
         User user = entityFacade.getUser(userId);
         StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(studyChatRoomId);
 
