@@ -111,7 +111,7 @@ class StompInterceptorTest {
             List<Subscription> subscriptions = StompSessionUtil.getAndRemoveAllSubscription(accessor);
             assertThat(subscriptions).hasSize(1);
             Subscription subscription = subscriptions.get(0);
-            assertThat(subscription.getSubscriptionType()).isEqualTo(SubscriptionType.PRIVATE_CHAT_ROOM);
+            assertThat(subscription.getType()).isEqualTo(SubscriptionType.PRIVATE_CHAT_ROOM);
             assertThat(subscription.getId()).isEqualTo(privateChatRoomId);
         }
     }

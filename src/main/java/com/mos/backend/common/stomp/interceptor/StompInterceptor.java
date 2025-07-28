@@ -46,10 +46,10 @@ public class StompInterceptor implements ChannelInterceptor {
 
     private void handleSubscribe(StompHeaderAccessor accessor) {
         Subscription subscription = StompHeaderUtil.parseDestination(accessor);
-        if (subscription.getSubscriptionType() == SubscriptionType.USER)
-            return;
-
-        StompSessionUtil.putSubscription(accessor, subscription);
+        if (subscription.getType() == SubscriptionType.PRIVATE_CHAT_ROOM
+                || subscription.getType() == SubscriptionType.STUDY_CHAT_ROOM) {
+            StompSessionUtil.putSubscription(accessor, subscription);
+        }
     }
 
     private void handleUnsubscribe(StompHeaderAccessor accessor) {
@@ -71,7 +71,7 @@ public class StompInterceptor implements ChannelInterceptor {
     }
 
     private void updateLastEntryAt(Subscription subscription, Long userId) {
-        switch (subscription.getSubscriptionType()) {
+        switch (subscription.getType()) {
             case PRIVATE_CHAT_ROOM -> privateChatRoomMemberService.updateLastEntryAt(userId, subscription.getId());
             case STUDY_CHAT_ROOM -> studyMemberService.updateLastEntryAt(userId, subscription.getId());
         }
