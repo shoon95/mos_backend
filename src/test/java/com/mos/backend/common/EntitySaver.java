@@ -2,6 +2,8 @@ package com.mos.backend.common;
 
 import com.mos.backend.privatechatmessages.entity.PrivateChatMessage;
 import com.mos.backend.privatechatmessages.infrastructure.PrivateChatMessageRepository;
+import com.mos.backend.privatechatroommember.entity.PrivateChatRoomMember;
+import com.mos.backend.privatechatroommember.infrastructure.PrivateChatRoomMemberRepository;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
 import com.mos.backend.privatechatrooms.infrastructure.PrivateChatRoomRepository;
 import com.mos.backend.questionanswers.entity.QuestionAnswer;
@@ -62,6 +64,8 @@ public class EntitySaver {
     private StudyQuestionRepository studyQuestionRepository;
     @Autowired
     private PrivateChatRoomRepository privateChatRoomRepository;
+    @Autowired
+    private PrivateChatRoomMemberRepository privateChatRoomMemberRepository;
     @Autowired
     private PrivateChatMessageRepository privateChatMessageRepository;
     @Autowired
@@ -158,6 +162,12 @@ public class EntitySaver {
     public StudyChatMessage saveStudyChatMessage(User user, StudyChatRoom studyChatRoom, String message) {
         return studyChatMessageRepository.save(
                 StudyChatMessage.of(user, studyChatRoom, message)
+        );
+    }
+
+    public PrivateChatRoomMember savePrivateChatRoomMember(User user, PrivateChatRoom privateChatRoom) {
+        return privateChatRoomMemberRepository.save(
+                PrivateChatRoomMember.of(privateChatRoom, user)
         );
     }
 }

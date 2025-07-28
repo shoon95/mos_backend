@@ -4,9 +4,11 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.stomp.entity.StompErrorCode;
 import com.mos.backend.common.stomp.entity.Subscription;
 import com.mos.backend.common.stomp.entity.SubscriptionType;
+import com.mos.backend.common.utils.StompPrincipalUtil;
 import com.mos.backend.common.utils.StompSessionUtil;
 import com.mos.backend.privatechatroommember.application.PrivateChatRoomMemberService;
 import com.mos.backend.studymembers.application.StudyMemberService;
+import com.mos.backend.users.entity.exception.UserErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -52,6 +54,7 @@ class StompInterceptorTest {
             accessor.setNativeHeader(STOMP_HEADER_USER_ID, String.valueOf(userId));
             Message<?> message = mock(Message.class);
             accessor.setSessionAttributes(new HashMap<>());
+            accessor.setUser(() -> String.valueOf(userId));
 
             when(message.getHeaders()).thenReturn(accessor.getMessageHeaders());
 
@@ -59,7 +62,7 @@ class StompInterceptorTest {
             stompInterceptor.preSend(message, messageChannel);
 
             // Then
-            assertThat(StompSessionUtil.getUserId(accessor)).isEqualTo(userId);
+            assertThat(StompPrincipalUtil.getUserId(accessor)).isEqualTo(userId);
         }
     }
 
@@ -67,7 +70,7 @@ class StompInterceptorTest {
     @DisplayName("CONNECT 명령어 처리 실패 시나리오")
     class StompConnectFailScenarios {
         @Test
-        @DisplayName("헤더의 user-id가 없는 경우")
+        @DisplayName("Principal에 userId 없는 경우")
         void connectCommandFail() {
             // Given
             StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.CONNECT);
@@ -80,7 +83,7 @@ class StompInterceptorTest {
             MosException e = assertThrows(MosException.class, () -> stompInterceptor.preSend(message, messageChannel));
 
             // Then
-            assertThat(e.getErrorCode()).isEqualTo(StompErrorCode.MISSING_USER_ID_IN_HEADER);
+            assertThat(e.getErrorCode()).isEqualTo(UserErrorCode.USER_UNAUTHORIZED);
         }
     }
 
@@ -154,9 +157,9 @@ class StompInterceptorTest {
             accessor.setSessionAttributes(new HashMap<>());
             accessor.setNativeHeader(STOMP_HEADER_USER_ID, String.valueOf(userId));
             accessor.setSubscriptionId(subscriptionId);
+            accessor.setUser(() -> String.valueOf(userId));
             Message<?> message = mock(Message.class);
 
-            StompSessionUtil.putUserId(accessor, userId);
             StompSessionUtil.putSubscription(accessor, Subscription.of(SubscriptionType.PRIVATE_CHAT_ROOM, privateChatRoomId));
 
             when(message.getHeaders()).thenReturn(accessor.getMessageHeaders());
@@ -185,6 +188,7 @@ class StompInterceptorTest {
             accessor.setNativeHeader(STOMP_HEADER_USER_ID, String.valueOf(userId));
             accessor.getSessionAttributes().put("USER_ID", userId);
             accessor.setSubscriptionId("sub-0");
+            accessor.setUser(() -> String.valueOf(userId));
 
             StompSessionUtil.putSubscription(accessor, Subscription.of(SubscriptionType.PRIVATE_CHAT_ROOM, privateChatRoomId));
 
