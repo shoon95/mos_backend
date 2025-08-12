@@ -1,9 +1,9 @@
 spring:
   application:
     name: backend
-#  sql:
-#    init:
-#      mode: always
+  sql:
+    init:
+      mode: always
 
   messages:
     basename: messages/messages-error, messages/messages-notification
@@ -22,7 +22,7 @@ spring:
     generate-ddl: ${GENERATE_DDL}
     hibernate:
       ddl-auto: ${DDL_AUTO}
-#    defer-datasource-initialization: true
+    defer-datasource-initialization: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
