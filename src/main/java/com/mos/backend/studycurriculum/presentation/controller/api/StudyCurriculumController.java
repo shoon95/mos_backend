@@ -1,4 +1,4 @@
-package com.mos.backend.studycurriculum.presentation.requestdto.controller.api;
+package com.mos.backend.studycurriculum.presentation.controller.api;
 
 import com.mos.backend.studycurriculum.application.StudyCurriculumService;
 import com.mos.backend.studycurriculum.application.responsedto.StudyCurriculumResponseDto;
