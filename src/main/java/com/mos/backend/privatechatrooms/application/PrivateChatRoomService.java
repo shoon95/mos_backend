@@ -51,7 +51,7 @@ public class PrivateChatRoomService {
     @Transactional(readOnly = true)
     public List<MyPrivateChatRoomRes> getMyPrivateChatRooms(Long userId) {
         User user = entityFacade.getUser(userId);
-        List<PrivateChatRoom> privateChatRooms = privateChatRoomRepository.findByUser(user);
+        List<PrivateChatRoom> privateChatRooms = privateChatRoomRepository.findByUserAndStatusIsVisible(user);
 
         List<MyPrivateChatRoomRes> myPrivateChatRoomResList = privateChatRooms.stream()
                 .map(privateChatRoom -> {

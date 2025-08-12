@@ -29,7 +29,7 @@ public class PrivateChatRoomRepositoryImpl implements PrivateChatRoomRepository 
     }
 
     @Override
-    public List<PrivateChatRoom> findByUser(User user) {
-        return privateChatRoomJpaRepository.findByUser(user);
+    public List<PrivateChatRoom> findByUserAndStatusIsVisible(User user) {
+        return privateChatRoomJpaRepository.findByUserAndStatusIsVisible(user);
     }
 }
