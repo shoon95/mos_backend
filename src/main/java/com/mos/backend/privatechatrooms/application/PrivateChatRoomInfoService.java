@@ -56,7 +56,7 @@ public class PrivateChatRoomInfoService {
                     privateChatRoomId, info.getChatName(), info.getLastMessage(), info.getLastMessageAt(), info.getUnreadCnt()
             );
         } catch (MosException e) {
-            if (e.getErrorCode() != PrivateChatRoomErrorCode.INFO_NOT_FOUND) {
+            if (e.getErrorCode() == PrivateChatRoomErrorCode.INFO_NOT_FOUND) {
                 PrivateChatRoomInfo info = savePrivateChatRoomInfo(privateChatRoomId, userId);
                 return MyPrivateChatRoomRes.of(
                         privateChatRoomId, info.getChatName(), info.getLastMessage(), info.getLastMessageAt(), info.getUnreadCnt()
