@@ -8,9 +8,11 @@ import com.mos.backend.privatechatmessages.presentation.req.PrivateChatMessagePu
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -18,11 +20,13 @@ import org.springframework.web.bind.annotation.*;
 public class PrivateChatMessageController {
     private final PrivateChatMessageService privateChatMessageService;
 
-    @MessageMapping("/private-chat-messages")
-    public void publishPrivateChatMessage(Message<?> message, PrivateChatMessagePublishReq privateChatMessagePublishReq) {
+    @MessageMapping("/privateChatRooms/{privateChatRoomId}/messages")
+    public void publishPrivateChatMessage(Message<?> message,
+                                          @DestinationVariable Long privateChatRoomId,
+                                          @Validated PrivateChatMessagePublishReq privateChatMessagePublishReq) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         Long userId = StompPrincipalUtil.getUserId(accessor);
-        privateChatMessageService.publish(userId, privateChatMessagePublishReq);
+        privateChatMessageService.publish(userId, privateChatRoomId, privateChatMessagePublishReq);
     }
 
     @ResponseStatus(HttpStatus.OK)
