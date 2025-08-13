@@ -72,6 +72,8 @@ public class StompInterceptor implements ChannelInterceptor {
 
     private void handleDisconnect(StompHeaderAccessor accessor) {
         Long userId = StompPrincipalUtil.getUserId(accessor);
+        if (Objects.isNull(userId)) return;
+
         List<Subscription> subscriptions = StompSessionUtil.getAndRemoveAllSubscription(accessor);
 
         subscriptions.forEach(
