@@ -18,6 +18,7 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -49,7 +50,10 @@ public class StompInterceptor implements ChannelInterceptor {
     }
 
     private void handleSubscribe(StompHeaderAccessor accessor) {
-        Subscription subscription = StompHeaderUtil.parseDestination(accessor);
+        String destination = accessor.getDestination();
+        if (Objects.nonNull(destination) && destination.startsWith("/user")) return;
+
+        Subscription subscription = StompHeaderUtil.parseDestination(destination);
         if (subscription.getType() == SubscriptionType.PRIVATE_CHAT_ROOM
                 || subscription.getType() == SubscriptionType.STUDY_CHAT_ROOM) {
             StompSessionUtil.putSubscription(accessor, subscription);
