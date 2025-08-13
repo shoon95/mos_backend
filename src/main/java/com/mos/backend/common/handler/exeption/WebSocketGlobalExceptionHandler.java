@@ -1,4 +1,4 @@
-package com.mos.backend.common.handler;
+package com.mos.backend.common.handler.exeption;
 
 import com.mos.backend.common.dto.ServerSideMessage;
 import com.mos.backend.common.exception.ErrorCode;

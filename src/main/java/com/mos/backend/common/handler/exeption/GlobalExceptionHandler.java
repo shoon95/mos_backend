@@ -1,4 +1,4 @@
-package com.mos.backend.common.handler;
+package com.mos.backend.common.handler.exeption;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.mos.backend.common.exception.ClientException;
