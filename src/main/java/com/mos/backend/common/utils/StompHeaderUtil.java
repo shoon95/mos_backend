@@ -4,6 +4,7 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.stomp.entity.StompErrorCode;
 import com.mos.backend.common.stomp.entity.Subscription;
 import com.mos.backend.common.stomp.entity.SubscriptionType;
+import org.apache.logging.log4j.util.Strings;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,7 +13,7 @@ public class StompHeaderUtil {
     private static final Pattern DESTINATION_PATTERN = Pattern.compile("^(/user)?/sub/([a-zA-Z\\-]+)(?:/(\\d+))?$", Pattern.CASE_INSENSITIVE);
 
     public static Subscription parseDestination(String destination) {
-        if (destination == null) {
+        if (Strings.isEmpty(destination)) {
             throw new MosException(StompErrorCode.INVALID_DESTINATION);
         }
 
