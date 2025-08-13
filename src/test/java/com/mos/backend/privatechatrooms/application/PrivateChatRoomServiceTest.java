@@ -117,7 +117,7 @@ class PrivateChatRoomServiceTest {
             PrivateChatMessage privateChatMessage = mock(PrivateChatMessage.class);
 
             when(entityFacade.getUser(userId)).thenReturn(user);
-            when(privateChatRoomRepository.findByUser(user)).thenReturn(List.of(privateChatRoom));
+            when(privateChatRoomRepository.findByUserAndStatusIsVisible(user)).thenReturn(List.of(privateChatRoom));
             when(privateChatMessageService.getLastMessage(privateChatRoom)).thenReturn(privateChatMessage);
 
             // When
@@ -125,7 +125,7 @@ class PrivateChatRoomServiceTest {
 
             // Then
             assertEquals(1, result.size());
-            verify(privateChatRoomRepository).findByUser(user);
+            verify(privateChatRoomRepository).findByUserAndStatusIsVisible(user);
         }
 
         @Test
@@ -136,14 +136,14 @@ class PrivateChatRoomServiceTest {
             User user = mock(User.class);
 
             when(entityFacade.getUser(userId)).thenReturn(user);
-            when(privateChatRoomRepository.findByUser(user)).thenReturn(Collections.emptyList());
+            when(privateChatRoomRepository.findByUserAndStatusIsVisible(user)).thenReturn(Collections.emptyList());
 
             // When
             List<MyPrivateChatRoomRes> result = privateChatRoomService.getMyPrivateChatRooms(userId);
 
             // Then
             assertTrue(result.isEmpty());
-            verify(privateChatRoomRepository).findByUser(user);
+            verify(privateChatRoomRepository).findByUserAndStatusIsVisible(user);
             verify(privateChatMessageRepository, never()).findFirstByPrivateChatRoomOrderByCreatedAtDesc(any(PrivateChatRoom.class));
         }
     }
