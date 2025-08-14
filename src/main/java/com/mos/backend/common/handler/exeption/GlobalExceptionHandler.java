@@ -1,6 +1,9 @@
-package com.mos.backend.common.exception;
+package com.mos.backend.common.handler.exeption;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.mos.backend.common.exception.ClientException;
+import com.mos.backend.common.exception.ErrorCode;
+import com.mos.backend.common.exception.MosException;
 import com.mos.backend.users.entity.exception.UserErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -15,8 +18,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
-
     private final MessageSource messageSource;
+
     @ExceptionHandler(MosException.class)
     public ResponseEntity<String> handleMosException(MosException e) {
         ErrorCode errorCode = e.getErrorCode();

@@ -26,10 +26,13 @@ public class AuthenticatedPrincipalHandshakeHandler extends DefaultHandshakeHand
     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
         if (request instanceof ServletServerHttpRequest servletRequest) {
             HttpServletRequest httpServletRequest = servletRequest.getServletRequest();
-            Long userId = getVerifiedUserId(httpServletRequest);
-            return () -> String.valueOf(userId);
+            try {
+                Long userId = getVerifiedUserId(httpServletRequest);
+                return () -> String.valueOf(userId);
+            } catch (Exception e) {
+                return null;
+            }
         }
-
         return null;
     }
 
