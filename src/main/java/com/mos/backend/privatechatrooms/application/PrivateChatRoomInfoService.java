@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -35,13 +36,15 @@ public class PrivateChatRoomInfoService {
     }
 
     public void resetUnreadCount(Long userId, Long privateChatRoomId) {
-        PrivateChatRoomInfo info = privateChatRoomInfoRepository.resetUnreadCount(userId, privateChatRoomId);
+        PrivateChatRoomInfo updatedInfo = privateChatRoomInfoRepository.resetUnreadCount(userId, privateChatRoomId);
 
-        PrivateChatRoomInfoMessageDto privateChatMessageDto = PrivateChatRoomInfoMessageDto.of(
-                userId, privateChatRoomId, info.getLastMessage(), info.getLastMessageAt()
-        );
+        if (Objects.nonNull(updatedInfo)) {
+            PrivateChatRoomInfoMessageDto privateChatMessageDto = PrivateChatRoomInfoMessageDto.of(
+                    userId, privateChatRoomId, updatedInfo.getLastMessage(), updatedInfo.getLastMessageAt()
+            );
 
-        redisPublisher.publishPrivateChatRoomInfoMessage(privateChatMessageDto);
+            redisPublisher.publishPrivateChatRoomInfoMessage(privateChatMessageDto);
+        }
     }
 
     public MyPrivateChatRoomRes updatePrivateChatRoomInfo(PrivateChatRoomInfoMessageDto dto) {
@@ -56,7 +59,7 @@ public class PrivateChatRoomInfoService {
                     privateChatRoomId, info.getChatName(), info.getLastMessage(), info.getLastMessageAt(), info.getUnreadCnt()
             );
         } catch (MosException e) {
-            if (e.getErrorCode() != PrivateChatRoomErrorCode.INFO_NOT_FOUND) {
+            if (e.getErrorCode() == PrivateChatRoomErrorCode.INFO_NOT_FOUND) {
                 PrivateChatRoomInfo info = savePrivateChatRoomInfo(privateChatRoomId, userId);
                 return MyPrivateChatRoomRes.of(
                         privateChatRoomId, info.getChatName(), info.getLastMessage(), info.getLastMessageAt(), info.getUnreadCnt()

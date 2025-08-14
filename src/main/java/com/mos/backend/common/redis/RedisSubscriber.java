@@ -52,6 +52,11 @@ public class RedisSubscriber {
         }
     }
 
+    /**
+     * todo
+     * 채팅방 퇴장 시 unreadCnt=0으로 갱신 후, 업데이트 된 info를 해당 채팅방 유저에게 전송하기 위해 onPrivateChatRoomInfoMessage()를 호출하게 됨.
+     * 이 과정에서 unreadCnt=0였던 info가 privateChatRoomInfoService.updatePrivateChatRoomInfo()로 인해 1이 되는 버그 존재
+     */
     public void onPrivateChatRoomInfoMessage(String publishedMessage) {
         try {
             PrivateChatRoomInfoMessageDto privateChatRoomInfoMessageDto = objectMapper.readValue(publishedMessage, PrivateChatRoomInfoMessageDto.class);

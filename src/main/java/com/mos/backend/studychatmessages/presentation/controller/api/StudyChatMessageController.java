@@ -7,8 +7,10 @@ import com.mos.backend.studychatmessages.application.res.StudyChatMessageRes;
 import com.mos.backend.studychatmessages.presentation.req.StudyChatMessagePublishReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,11 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class StudyChatMessageController {
     private final StudyChatMessageService studyChatMessageService;
 
-    @MessageMapping("/study-chat-messages")
-    public void publishPrivateChatMessage(Message<?> message, StudyChatMessagePublishReq studyChatMessagePublishReq) {
+    @MessageMapping("/studies/{studyId}/messages")
+    public void publishPrivateChatMessage(Message<?> message,
+                                          @DestinationVariable Long studyId,
+                                          @Validated StudyChatMessagePublishReq studyChatMessagePublishReq) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         Long userId = StompPrincipalUtil.getUserId(accessor);
-        studyChatMessageService.publish(userId, studyChatMessagePublishReq);
+        studyChatMessageService.publish(userId, studyId, studyChatMessagePublishReq);
     }
 
     @GetMapping("/studies/{studyId}/chat-rooms/{studyChatRoomId}/messages")

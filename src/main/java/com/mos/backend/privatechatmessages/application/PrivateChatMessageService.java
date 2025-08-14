@@ -35,16 +35,16 @@ public class PrivateChatMessageService {
     private final PrivateChatRoomMemberService privateChatRoomMemberService;
 
     @Transactional
-    public void publish(Long userId, PrivateChatMessagePublishReq req) {
+    public void publish(Long userId, Long privateChatRoomId, PrivateChatMessagePublishReq req) {
         User user = entityFacade.getUser(userId);
-        PrivateChatRoom privateChatRoom = entityFacade.getPrivateChatRoom(req.getPrivateChatRoomId());
+        PrivateChatRoom privateChatRoom = entityFacade.getPrivateChatRoom(privateChatRoomId);
 
         privateChatRoom.visible();
 
         PrivateChatMessage privateChatMessage = savePrivateChatMessage(user, privateChatRoom, req.getMessage());
         redisPublisher.publishPrivateChatMessage(
                 PrivateChatMessageDto.of(
-                        user.getId(), privateChatRoom.getId(), privateChatMessage.getMessage(), privateChatMessage.getCreatedAt()
+                        user.getId(), user.getNickname(), privateChatRoom.getId(), privateChatMessage.getMessage(), privateChatMessage.getCreatedAt()
                 )
         );
 
