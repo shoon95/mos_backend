@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class PrivateChatMessageController {
     private final PrivateChatMessageService privateChatMessageService;
 
-    @MessageMapping("/privateChatRooms/{privateChatRoomId}/messages")
+    @MessageMapping("/private-chat-rooms/{privateChatRoomId}/messages")
     public void publishPrivateChatMessage(Message<?> message,
                                           @DestinationVariable Long privateChatRoomId,
                                           @Validated PrivateChatMessagePublishReq privateChatMessagePublishReq) {
