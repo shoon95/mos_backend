@@ -15,7 +15,7 @@ public class PrivateChatMessageDto implements Serializable {
     private String nickname;
     private Long privateChatRoomId;
     private String message;
-    private LocalDateTime sendTime;
+    private LocalDateTime messageCreatedAt;
 
     public static PrivateChatMessageDto of(Long userId, String nickname, Long privateChatRoomId, String message, LocalDateTime sendTime) {
         PrivateChatMessageDto privateChatMessageDto = new PrivateChatMessageDto();
@@ -23,7 +23,7 @@ public class PrivateChatMessageDto implements Serializable {
         privateChatMessageDto.nickname = nickname;
         privateChatMessageDto.privateChatRoomId = privateChatRoomId;
         privateChatMessageDto.message = message;
-        privateChatMessageDto.sendTime = sendTime;
+        privateChatMessageDto.messageCreatedAt = sendTime;
         return privateChatMessageDto;
     }
 }
