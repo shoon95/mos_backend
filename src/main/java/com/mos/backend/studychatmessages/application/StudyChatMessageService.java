@@ -37,9 +37,9 @@ public class StudyChatMessageService {
     private final EntityFacade entityFacade;
 
     @Transactional
-    public void publish(Long userId, Long studyId, StudyChatMessagePublishReq req) {
+    public void publish(Long userId, Long studyChatRoomId, StudyChatMessagePublishReq req) {
         User user = entityFacade.getUser(userId);
-        StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(studyId);
+        StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(studyChatRoomId);
 
         if (!studyMemberRepository.existsByUserAndStudy(user, studyChatRoom.getStudy()))
             throw new MosException(StudyChatRoomErrorCode.FORBIDDEN);
