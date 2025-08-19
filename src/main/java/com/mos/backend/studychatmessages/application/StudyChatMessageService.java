@@ -49,7 +49,7 @@ public class StudyChatMessageService {
         StudyChatMessageDto studyChatMessageDto = StudyChatMessageDto.of(studyChatMessage, user.getId());
         redisPublisher.publishStudyChatMessage(studyChatMessageDto);
 
-        List<StudyMember> studyMembers = studyMemberService.findAllByUserNotAndStudy(user, studyChatRoom.getStudy());
+        List<StudyMember> studyMembers = studyMemberService.findAllByAndStudy(studyChatRoom.getStudy());
         studyMembers.forEach(studyMember -> {
             StudyChatRoomInfoMessageDto studyChatRoomInfoMessageDto = StudyChatRoomInfoMessageDto.of(
                     studyMember.getUser().getId(), studyChatRoom.getId(), studyChatMessage.getMessage(), studyChatMessage.getCreatedAt()

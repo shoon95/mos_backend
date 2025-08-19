@@ -15,5 +15,5 @@ public interface PrivateChatRoomMemberJpaRepository extends JpaRepository<Privat
 
     PrivateChatRoomMember findByUserIdAndPrivateChatRoomId(Long userId, Long privateChatRoomId);
 
-    Optional<PrivateChatRoomMember> findByUserNotAndPrivateChatRoom(User user, PrivateChatRoom privateChatRoom);
+    List<PrivateChatRoomMember> findByPrivateChatRoom(PrivateChatRoom privateChatRoom);
 }

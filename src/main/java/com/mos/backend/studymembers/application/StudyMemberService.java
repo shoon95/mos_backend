@@ -137,7 +137,7 @@ public class StudyMemberService {
         studyMember.updateLastEntryAt();
     }
 
-    public List<StudyMember> findAllByUserNotAndStudy(User user, Study study) {
-        return studyMemberRepository.findAllByUserNotAndStudy(user, study);
+    public List<StudyMember> findAllByAndStudy(Study study) {
+        return studyMemberRepository.findAllByStudy(study);
     }
 }
