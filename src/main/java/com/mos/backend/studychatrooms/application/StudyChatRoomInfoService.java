@@ -56,7 +56,7 @@ public class StudyChatRoomInfoService {
                     studyChatRoomId, info.getChatName(), info.getLastMessage(), info.getLastMessageAt(), info.getUnreadCnt()
             );
         } catch (MosException e) {
-            if (e.getErrorCode() != StudyChatRoomErrorCode.INFO_NOT_FOUND) {
+            if (e.getErrorCode() == StudyChatRoomErrorCode.INFO_NOT_FOUND) {
                 StudyChatRoomInfo info = saveStudyChatRoomInfo(studyChatRoomId, userId);
                 return MyStudyChatRoomRes.of(
                         studyChatRoomId, info.getChatName(), info.getLastMessage(), info.getLastMessageAt(), info.getUnreadCnt()
