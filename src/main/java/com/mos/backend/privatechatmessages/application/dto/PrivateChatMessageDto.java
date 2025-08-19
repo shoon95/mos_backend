@@ -17,13 +17,13 @@ public class PrivateChatMessageDto implements Serializable {
     private String message;
     private LocalDateTime messageCreatedAt;
 
-    public static PrivateChatMessageDto of(Long userId, String nickname, Long privateChatRoomId, String message, LocalDateTime sendTime) {
+    public static PrivateChatMessageDto of(Long userId, String nickname, Long privateChatRoomId, String message, LocalDateTime messageCreatedAt) {
         PrivateChatMessageDto privateChatMessageDto = new PrivateChatMessageDto();
         privateChatMessageDto.userId = userId;
         privateChatMessageDto.nickname = nickname;
         privateChatMessageDto.privateChatRoomId = privateChatRoomId;
         privateChatMessageDto.message = message;
-        privateChatMessageDto.messageCreatedAt = sendTime;
+        privateChatMessageDto.messageCreatedAt = messageCreatedAt;
         return privateChatMessageDto;
     }
 }
