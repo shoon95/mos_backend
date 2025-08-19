@@ -27,5 +27,5 @@ public interface StudyMemberRepository {
 
     boolean existsByUserAndStudy(User user, Study study);
 
-    List<StudyMember> findAllByUserNotAndStudy(User user, Study study);
+    List<StudyMember> findAllByStudy(Study study);
 }

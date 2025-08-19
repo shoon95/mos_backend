@@ -37,9 +37,9 @@ public class StudyChatMessageService {
     private final EntityFacade entityFacade;
 
     @Transactional
-    public void publish(Long userId, Long studyId, StudyChatMessagePublishReq req) {
+    public void publish(Long userId, Long studyChatRoomId, StudyChatMessagePublishReq req) {
         User user = entityFacade.getUser(userId);
-        StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(studyId);
+        StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(studyChatRoomId);
 
         if (!studyMemberRepository.existsByUserAndStudy(user, studyChatRoom.getStudy()))
             throw new MosException(StudyChatRoomErrorCode.FORBIDDEN);
@@ -49,7 +49,7 @@ public class StudyChatMessageService {
         StudyChatMessageDto studyChatMessageDto = StudyChatMessageDto.of(studyChatMessage, user.getId());
         redisPublisher.publishStudyChatMessage(studyChatMessageDto);
 
-        List<StudyMember> studyMembers = studyMemberService.findAllByUserNotAndStudy(user, studyChatRoom.getStudy());
+        List<StudyMember> studyMembers = studyMemberService.findAllByAndStudy(studyChatRoom.getStudy());
         studyMembers.forEach(studyMember -> {
             StudyChatRoomInfoMessageDto studyChatRoomInfoMessageDto = StudyChatRoomInfoMessageDto.of(
                     studyMember.getUser().getId(), studyChatRoom.getId(), studyChatMessage.getMessage(), studyChatMessage.getCreatedAt()

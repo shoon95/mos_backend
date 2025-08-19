@@ -58,7 +58,7 @@ public class StudyMemberRepositoryImpl implements StudyMemberRepository{
     }
 
     @Override
-    public List<StudyMember> findAllByUserNotAndStudy(User user, Study study) {
-        return studyMemberJpaRepository.findAllByUserNotAndStudy(user, study);
+    public List<StudyMember> findAllByStudy(Study study) {
+        return studyMemberJpaRepository.findAllByStudy(study);
     }
 }
