@@ -9,4 +9,6 @@ public interface UserStudySettingRepository {
     Optional<UserStudySetting> findByStudyMember(StudyMember studyMember);
 
     void save(UserStudySetting userStudySetting);
+
+    void showNoticeForAllMembers(Long studyId);
 }
