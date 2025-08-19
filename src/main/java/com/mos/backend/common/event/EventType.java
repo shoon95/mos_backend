@@ -11,5 +11,5 @@ public enum EventType {
     STUDY_JOIN_CANCELED,
     STUDY_DELETED,
     STUDY_UPDATED,
-
+    IMPORTANT_NOTICE_CHANGED,
 }
