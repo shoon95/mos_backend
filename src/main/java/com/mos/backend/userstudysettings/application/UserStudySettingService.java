@@ -52,4 +52,11 @@ public class UserStudySettingService {
         StudyMember studyMember = entityFacade.getStudyMember(userId, studyId);
         userStudySettingRepository.save(UserStudySetting.create(studyMember));
     }
+
+    /**
+     * 스터디의 모든 멤버의 noticePined 를 true로 변경
+     */
+    public void showNoticeForAllMembers(Long studyId) {
+        userStudySettingRepository.showNoticeForAllMembers(studyId);
+    }
 }

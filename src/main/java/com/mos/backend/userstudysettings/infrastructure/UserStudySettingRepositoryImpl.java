@@ -12,6 +12,7 @@ import java.util.Optional;
 public class UserStudySettingRepositoryImpl implements UserStudySettingRepository{
 
     private final UserStudySettingJpaRepository userStudySettingJpaRepository;
+    private final UserStudySettingQueryDslRepository userStudySettingQueryDslRepository;
 
     @Override
     public Optional<UserStudySetting> findByStudyMember(StudyMember studyMember) {
@@ -21,5 +22,10 @@ public class UserStudySettingRepositoryImpl implements UserStudySettingRepositor
     @Override
     public void save(UserStudySetting userStudySetting) {
         userStudySettingJpaRepository.save(userStudySetting);
+    }
+
+    @Override
+    public void showNoticeForAllMembers(Long studyId) {
+        userStudySettingQueryDslRepository.showNoticeForAllMembers(studyId);
     }
 }
