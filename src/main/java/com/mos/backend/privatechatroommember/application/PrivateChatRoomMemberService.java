@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class PrivateChatRoomMemberService {
@@ -38,8 +40,8 @@ public class PrivateChatRoomMemberService {
     }
 
 
-    public PrivateChatRoomMember findByUserNotAndPrivateChatRoom(User user, PrivateChatRoom privateChatRoom) {
-        return privateChatRoomMemberRepository.findByUserNotAndPrivateChatRoom(user, privateChatRoom)
-                .orElseThrow(() -> new MosException(PrivateChatRoomMemberErrorCode.NOT_FOUND));
+    @Transactional(readOnly = true)
+    public List<PrivateChatRoomMember> findByPrivateChatRoom(PrivateChatRoom privateChatRoom) {
+        return privateChatRoomMemberRepository.findByPrivateChatRoom(privateChatRoom);
     }
 }

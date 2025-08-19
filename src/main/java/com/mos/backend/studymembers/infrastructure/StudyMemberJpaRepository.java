@@ -25,5 +25,5 @@ public interface StudyMemberJpaRepository extends JpaRepository<StudyMember, Lon
 
     boolean existsByUserAndStudy(User user, Study study);
 
-    List<StudyMember> findAllByUserNotAndStudy(User user, Study study);
+    List<StudyMember> findAllByStudy(Study study);
 }

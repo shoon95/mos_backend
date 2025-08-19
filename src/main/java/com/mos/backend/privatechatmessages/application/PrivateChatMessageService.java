@@ -48,11 +48,13 @@ public class PrivateChatMessageService {
                 )
         );
 
-        PrivateChatRoomMember other = privateChatRoomMemberService.findByUserNotAndPrivateChatRoom(user, privateChatRoom);
-        PrivateChatRoomInfoMessageDto privateChatRoomInfoMessageDto = PrivateChatRoomInfoMessageDto.of(
-                other.getUser().getId(), privateChatRoom.getId(), privateChatMessage.getMessage(), privateChatMessage.getCreatedAt()
-        );
-        redisPublisher.publishPrivateChatRoomInfoMessage(privateChatRoomInfoMessageDto);
+        List<PrivateChatRoomMember> chatRoomMembers = privateChatRoomMemberService.findByPrivateChatRoom(privateChatRoom);
+        chatRoomMembers.forEach(member -> {
+            PrivateChatRoomInfoMessageDto privateChatRoomInfoMessageDto = PrivateChatRoomInfoMessageDto.of(
+                    member.getUser().getId(), privateChatRoom.getId(), privateChatMessage.getMessage(), privateChatMessage.getCreatedAt()
+            );
+            redisPublisher.publishPrivateChatRoomInfoMessage(privateChatRoomInfoMessageDto);
+        });
     }
 
     private PrivateChatMessage savePrivateChatMessage(User user, PrivateChatRoom privateChatRoom, String message) {

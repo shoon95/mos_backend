@@ -6,6 +6,7 @@ import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class PrivateChatRoomMemberRepositoryImpl implements PrivateChatRoomMembe
     }
 
     @Override
-    public Optional<PrivateChatRoomMember> findByUserNotAndPrivateChatRoom(User user, PrivateChatRoom privateChatRoom) {
-        return privateChatRoomMemberJpaRepository.findByUserNotAndPrivateChatRoom(user, privateChatRoom);
+    public List<PrivateChatRoomMember> findByPrivateChatRoom(PrivateChatRoom privateChatRoom) {
+        return privateChatRoomMemberJpaRepository.findByPrivateChatRoom(privateChatRoom);
     }
 }

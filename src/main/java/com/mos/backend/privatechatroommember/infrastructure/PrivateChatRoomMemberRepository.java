@@ -4,6 +4,7 @@ import com.mos.backend.privatechatroommember.entity.PrivateChatRoomMember;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
 import com.mos.backend.users.entity.User;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PrivateChatRoomMemberRepository {
@@ -15,5 +16,5 @@ public interface PrivateChatRoomMemberRepository {
 
     PrivateChatRoomMember findByUserIdAndPrivateChatRoomId(Long userId, Long privateChatRoomId);
 
-    Optional<PrivateChatRoomMember> findByUserNotAndPrivateChatRoom(User user, PrivateChatRoom privateChatRoom);
+    List<PrivateChatRoomMember> findByPrivateChatRoom(PrivateChatRoom privateChatRoom);
 }
