@@ -26,8 +26,8 @@ public class PrivateChatMessageRepositoryImpl implements PrivateChatMessageRepos
     }
 
     @Override
-    public List<PrivateChatMessage> findAllByChatRoomIdForInfiniteScroll(Long privateChatRoomId, Long lastPrivateChatMessageId, int size) {
-        return privateChatMessageQueryDslRepository.findByChatRoomIdForInfiniteScroll(privateChatRoomId, lastPrivateChatMessageId, size);
+    public List<PrivateChatMessage> findAllByChatRoomIdForInfiniteScroll(Long privateChatRoomId, Long lastPrivateChatMessageId, int size, LocalDateTime deletedAt) {
+        return privateChatMessageQueryDslRepository.findByChatRoomIdForInfiniteScroll(privateChatRoomId, lastPrivateChatMessageId, size, deletedAt);
     }
 
     @Override

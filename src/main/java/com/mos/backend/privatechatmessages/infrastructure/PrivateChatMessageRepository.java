@@ -12,7 +12,7 @@ public interface PrivateChatMessageRepository {
 
     Optional<PrivateChatMessage> findFirstByPrivateChatRoomOrderByCreatedAtDesc(PrivateChatRoom privateChatRoom);
 
-    List<PrivateChatMessage> findAllByChatRoomIdForInfiniteScroll(Long privateChatRoomId, Long lastPrivateChatMessageId, int size);
+    List<PrivateChatMessage> findAllByChatRoomIdForInfiniteScroll(Long privateChatRoomId, Long lastPrivateChatMessageId, int size, LocalDateTime deletedAt);
 
     int countByPrivateChatRoomIdAndCreatedAtAfter(Long privateChatRoomId, LocalDateTime lastEntryAt);
 }

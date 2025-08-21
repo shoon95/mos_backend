@@ -66,9 +66,10 @@ public class PrivateChatMessageService {
     @Transactional(readOnly = true)
     public InfinityScrollRes<PrivateChatMessageRes> getPrivateChatMessages(Long userId, Long privateChatRoomId, Long lastPrivateChatMessageId, int size) {
         PrivateChatRoom privateChatRoom = entityFacade.getPrivateChatRoom(privateChatRoomId);
+        PrivateChatRoomMember privateChatRoomMember = entityFacade.getPrivateChatRoomMember(userId, privateChatRoomId);
 
         List<PrivateChatMessage> privateChatMessages = privateChatMessageRepository.findAllByChatRoomIdForInfiniteScroll(
-                privateChatRoom.getId(), lastPrivateChatMessageId, size
+                privateChatRoom.getId(), lastPrivateChatMessageId, size, privateChatRoomMember.getDeletedAt()
         );
 
         boolean hasNext = InfinityScrollUtil.hasNext(privateChatMessages, size);

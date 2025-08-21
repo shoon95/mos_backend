@@ -30,12 +30,17 @@ public class PrivateChatRoomMemberRepositoryImpl implements PrivateChatRoomMembe
     }
 
     @Override
-    public PrivateChatRoomMember findByUserIdAndPrivateChatRoomId(Long userId, Long privateChatRoomId) {
+    public Optional<PrivateChatRoomMember> findByUserIdAndPrivateChatRoomId(Long userId, Long privateChatRoomId) {
         return privateChatRoomMemberJpaRepository.findByUserIdAndPrivateChatRoomId(userId, privateChatRoomId);
     }
 
     @Override
     public List<PrivateChatRoomMember> findByPrivateChatRoom(PrivateChatRoom privateChatRoom) {
         return privateChatRoomMemberJpaRepository.findByPrivateChatRoom(privateChatRoom);
+    }
+
+    @Override
+    public void delete(PrivateChatRoomMember privateChatRoomMember) {
+        privateChatRoomMemberJpaRepository.delete(privateChatRoomMember);
     }
 }
