@@ -17,4 +17,6 @@ public interface PrivateChatRoomMemberRepository {
     Optional<PrivateChatRoomMember> findByUserIdAndPrivateChatRoomId(Long userId, Long privateChatRoomId);
 
     List<PrivateChatRoomMember> findByPrivateChatRoom(PrivateChatRoom privateChatRoom);
+
+    void delete(PrivateChatRoomMember privateChatRoomMember);
 }

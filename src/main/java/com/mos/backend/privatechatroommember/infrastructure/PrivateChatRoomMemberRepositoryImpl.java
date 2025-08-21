@@ -38,4 +38,9 @@ public class PrivateChatRoomMemberRepositoryImpl implements PrivateChatRoomMembe
     public List<PrivateChatRoomMember> findByPrivateChatRoom(PrivateChatRoom privateChatRoom) {
         return privateChatRoomMemberJpaRepository.findByPrivateChatRoom(privateChatRoom);
     }
+
+    @Override
+    public void delete(PrivateChatRoomMember privateChatRoomMember) {
+        privateChatRoomMemberJpaRepository.delete(privateChatRoomMember);
+    }
 }
