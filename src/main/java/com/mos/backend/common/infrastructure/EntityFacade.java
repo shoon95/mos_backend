@@ -8,6 +8,7 @@ import com.mos.backend.notifications.entity.NotificationLog;
 import com.mos.backend.notifications.entity.exception.NotificationLogErrorCode;
 import com.mos.backend.notifications.infrastructure.notificationlog.NotificationLogRepository;
 import com.mos.backend.privatechatroommember.entity.PrivateChatRoomMember;
+import com.mos.backend.privatechatroommember.entity.PrivateChatRoomMemberErrorCode;
 import com.mos.backend.privatechatroommember.infrastructure.PrivateChatRoomMemberRepository;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoomErrorCode;
@@ -152,6 +153,7 @@ public class EntityFacade {
     }
 
     public PrivateChatRoomMember getPrivateChatRoomMember(Long userId, Long privateChatRoomId) {
-        return privateChatRoomMemberRepository.findByUserIdAndPrivateChatRoomId(userId, privateChatRoomId);
+        return privateChatRoomMemberRepository.findByUserIdAndPrivateChatRoomId(userId, privateChatRoomId)
+                .orElseThrow(() -> new MosException(PrivateChatRoomMemberErrorCode.NOT_FOUND));
     }
 }
