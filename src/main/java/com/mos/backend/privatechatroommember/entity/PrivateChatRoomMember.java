@@ -3,16 +3,27 @@ package com.mos.backend.privatechatroommember.entity;
 import com.mos.backend.common.entity.BaseAuditableEntity;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
 import com.mos.backend.users.entity.User;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLDelete;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE private_chat_room_members SET deleted_at = NOW() WHERE private_chat_room_member_id = ?")
 @Table(name = "private_chat_room_members")
 public class PrivateChatRoomMember extends BaseAuditableEntity {
 
@@ -30,6 +41,9 @@ public class PrivateChatRoomMember extends BaseAuditableEntity {
     private User user;
 
     private LocalDateTime lastEntryAt = LocalDateTime.now();
+
+    @ColumnDefault("NULL")
+    private LocalDateTime deletedAt;
 
     public static PrivateChatRoomMember of(PrivateChatRoom privateChatRoom, User user) {
         PrivateChatRoomMember privateChatRoomMember = new PrivateChatRoomMember();

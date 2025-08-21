@@ -44,4 +44,12 @@ public class PrivateChatRoomMemberService {
     public List<PrivateChatRoomMember> findByPrivateChatRoom(PrivateChatRoom privateChatRoom) {
         return privateChatRoomMemberRepository.findByPrivateChatRoom(privateChatRoom);
     }
+
+    @Transactional
+    public void leavePrivateChatRoom(Long userId, Long privateChatRoomId) {
+        PrivateChatRoomMember privateChatRoomMember = privateChatRoomMemberRepository.findByUserIdAndPrivateChatRoomId(userId, privateChatRoomId)
+                .orElseThrow(() -> new MosException(PrivateChatRoomMemberErrorCode.NOT_FOUND));
+
+        privateChatRoomMemberRepository.delete(privateChatRoomMember);
+    }
 }
