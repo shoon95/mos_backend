@@ -1,7 +1,15 @@
 package com.mos.backend.studychatrooms.entity;
 
 import com.mos.backend.studies.entity.Study;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,9 +34,6 @@ public class StudyChatRoom {
 
     @Column(nullable = false)
     private String name;
-
-    @Enumerated(EnumType.STRING)
-    private StudyChatRoomStatus status = StudyChatRoomStatus.VISIBLE;
 
     public static StudyChatRoom create(Study study, String name) {
         StudyChatRoom studyChatRoom = new StudyChatRoom();
