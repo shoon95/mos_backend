@@ -19,7 +19,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("StudyChatRoomService 테스트")
@@ -77,7 +79,7 @@ class StudyChatRoomServiceTest {
             when(studyChatRoomRepository.findAllByUserId(userId)).thenReturn(List.of(studyChatRoom));
             when(studyChatRoom.getId()).thenReturn(1L);
             when(studyChatMessageService.getUnreadCnt(userId, studyChatRoomId)).thenReturn(unreadCount);
-            when(studyChatMessageService.getLastMessage(studyChatRoom)).thenReturn(studyChatMessage);
+            when(studyChatMessageService.getLastMessage(studyChatRoom)).thenReturn(Optional.of(studyChatMessage));
 
             // When
             studyChatRoomService.getMyStudyChatRooms(userId);

@@ -98,8 +98,7 @@ public class StudyChatMessageService {
         return studyChatMessageRepository.countByStudyChatRoomIdAndCreatedAtAfter(studyChatRoom.getId(), lastEntryAt);
     }
 
-    public StudyChatMessage getLastMessage(StudyChatRoom studyChatRoom) {
-        return studyChatMessageRepository.findFirstByStudyChatRoomOrderByCreatedAtDesc(studyChatRoom)
-                .orElseThrow(() -> new MosException(StudyChatMessageErrorCode.NOT_FOUND));
+    public Optional<StudyChatMessage> getLastMessage(StudyChatRoom studyChatRoom) {
+        return studyChatMessageRepository.findFirstByStudyChatRoomOrderByCreatedAtDesc(studyChatRoom);
     }
 }

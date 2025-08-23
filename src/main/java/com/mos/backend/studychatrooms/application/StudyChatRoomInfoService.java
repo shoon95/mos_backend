@@ -12,10 +12,12 @@ import com.mos.backend.studychatrooms.entity.StudyChatRoomErrorCode;
 import com.mos.backend.studychatrooms.entity.StudyChatRoomInfo;
 import com.mos.backend.studychatrooms.infrastructure.StudyChatRoomInfoRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -69,11 +71,13 @@ public class StudyChatRoomInfoService {
 
     public StudyChatRoomInfo saveStudyChatRoomInfo(Long studyChatRoomId, Long userId) {
         StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(studyChatRoomId);
-        StudyChatMessage studyChatMessage = studyChatMessageService.getLastMessage(studyChatRoom);
+        Optional<StudyChatMessage> studyChatMessage = studyChatMessageService.getLastMessage(studyChatRoom);
         int unreadCount = studyChatMessageService.getUnreadCnt(userId, studyChatRoom.getId());
 
-        StudyChatRoomInfo info = StudyChatRoomInfo.of(
-                studyChatRoom.getName(), studyChatMessage.getMessage(), studyChatMessage.getCreatedAt(), unreadCount
+        StudyChatRoomInfo info = studyChatMessage.map(message ->
+                StudyChatRoomInfo.of(studyChatRoom.getName(), message.getMessage(), message.getCreatedAt(), unreadCount)
+        ).orElseGet(() ->
+                StudyChatRoomInfo.of(studyChatRoom.getName(), Strings.EMPTY, null, 0)
         );
         studyChatRoomInfoRepository.save(userId, studyChatRoomId, info);
 
