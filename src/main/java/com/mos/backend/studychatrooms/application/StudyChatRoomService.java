@@ -9,10 +9,12 @@ import com.mos.backend.studychatrooms.entity.StudyChatRoom;
 import com.mos.backend.studychatrooms.infrastructure.StudyChatRoomRepository;
 import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -41,15 +43,26 @@ public class StudyChatRoomService {
                 .map(studyChatRoom -> {
                     int unreadCount = studyChatMessageService.getUnreadCnt(user.getId(), studyChatRoom.getId());
 
-                    StudyChatMessage studyChatMessage = studyChatMessageService.getLastMessage(studyChatRoom);
+                    Optional<StudyChatMessage> optionalStudyChatMessage = studyChatMessageService.getLastMessage(studyChatRoom);
 
-                    return MyStudyChatRoomRes.of(
-                            studyChatRoom.getId(),
-                            studyChatRoom.getName(),
-                            studyChatMessage.getMessage(),
-                            studyChatMessage.getCreatedAt(),
-                            unreadCount
-                    );
+                    return optionalStudyChatMessage
+                            .map(studyChatMessage ->
+                                    MyStudyChatRoomRes.of(
+                                            studyChatRoom.getId(),
+                                            studyChatRoom.getName(),
+                                            studyChatMessage.getMessage(),
+                                            studyChatMessage.getCreatedAt(),
+                                            unreadCount
+                                    )
+                            ).orElseGet(() ->
+                                    MyStudyChatRoomRes.of(
+                                            studyChatRoom.getId(),
+                                            studyChatRoom.getName(),
+                                            Strings.EMPTY,
+                                            null,
+                                            unreadCount
+                                    )
+                            );
                 })
                 .toList();
 
