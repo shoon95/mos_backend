@@ -8,7 +8,6 @@ import com.mos.backend.common.utils.InfinityScrollUtil;
 import com.mos.backend.studychatmessages.application.dto.StudyChatMessageDto;
 import com.mos.backend.studychatmessages.application.res.StudyChatMessageRes;
 import com.mos.backend.studychatmessages.entity.StudyChatMessage;
-import com.mos.backend.studychatmessages.entity.exception.StudyChatMessageErrorCode;
 import com.mos.backend.studychatmessages.infrastructure.StudyChatMessageRepository;
 import com.mos.backend.studychatmessages.presentation.req.StudyChatMessagePublishReq;
 import com.mos.backend.studychatrooms.application.dto.StudyChatRoomInfoMessageDto;
@@ -64,9 +63,9 @@ public class StudyChatMessageService {
         return studyChatMessageRepository.save(studyChatMessage);
     }
 
-    @PreAuthorize("@studySecurity.isMemberOrAdmin(#studyId)")
+    @PreAuthorize("@studyMemberSecurity.isMemberOrAdmin(#studyChatRoomId)")
     @Transactional(readOnly = true)
-    public InfinityScrollRes<StudyChatMessageRes> getStudyChatMessages(Long studyId, Long studyChatRoomId, Long lastStudyChatMessageId, Integer size) {
+    public InfinityScrollRes<StudyChatMessageRes> getStudyChatMessages(Long studyChatRoomId, Long lastStudyChatMessageId, Integer size) {
         StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(studyChatRoomId);
 
         List<StudyChatMessage> studyChatMessages = studyChatMessageRepository.findAllByChatRoomIdForInfiniteScroll(

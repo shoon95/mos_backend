@@ -30,11 +30,10 @@ public class StudyChatMessageController {
         studyChatMessageService.publish(userId, studyChatRoomId, studyChatMessagePublishReq);
     }
 
-    @GetMapping("/studies/{studyId}/chat-rooms/{studyChatRoomId}/messages")
-    public InfinityScrollRes<StudyChatMessageRes> getStudyChatMessages(@PathVariable Long studyId,
-                                                                       @PathVariable Long studyChatRoomId,
+    @GetMapping("/studies/chat-rooms/{studyChatRoomId}/messages")
+    public InfinityScrollRes<StudyChatMessageRes> getStudyChatMessages(@PathVariable Long studyChatRoomId,
                                                                        @RequestParam(required = false) Long lastStudyChatMessageId,
                                                                        @RequestParam(defaultValue = "10") Integer size) {
-        return studyChatMessageService.getStudyChatMessages(studyId, studyChatRoomId, lastStudyChatMessageId, size);
+        return studyChatMessageService.getStudyChatMessages(studyChatRoomId, lastStudyChatMessageId, size);
     }
 }
