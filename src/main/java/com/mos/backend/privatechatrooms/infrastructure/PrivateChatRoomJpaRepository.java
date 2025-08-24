@@ -22,7 +22,7 @@ public interface PrivateChatRoomJpaRepository extends JpaRepository<PrivateChatR
     @Query("""
                 select m.privateChatRoom
                 from PrivateChatRoomMember m
-                where m.user = :user and m.privateChatRoom.status = 'VISIBLE'
+                where m.user = :user and m.privateChatRoom.status = 'VISIBLE' and m.deletedAt IS NULL
             """)
     List<PrivateChatRoom> findByUserAndStatusIsVisible(@Param("user") User user);
 }

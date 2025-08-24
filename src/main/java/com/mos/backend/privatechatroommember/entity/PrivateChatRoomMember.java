@@ -56,4 +56,8 @@ public class PrivateChatRoomMember extends BaseAuditableEntity {
     public void updateLastEntryAt() {
         this.lastEntryAt = LocalDateTime.now();
     }
+
+    public void undeleteIfDeleted() {
+        this.deletedAt = null;
+    }
 }
