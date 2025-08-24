@@ -49,9 +49,10 @@ public class PrivateChatMessageService {
         );
 
         List<PrivateChatRoomMember> chatRoomMembers = privateChatRoomMemberService.findByPrivateChatRoom(privateChatRoom);
-        chatRoomMembers.forEach(member -> {
+        chatRoomMembers.forEach(privateChatRoomMember -> {
+            privateChatRoomMember.undeleteIfDeleted();
             PrivateChatRoomInfoMessageDto privateChatRoomInfoMessageDto = PrivateChatRoomInfoMessageDto.of(
-                    member.getUser().getId(), privateChatRoom.getId(), privateChatMessage.getMessage(), privateChatMessage.getCreatedAt()
+                    privateChatRoomMember.getUser().getId(), privateChatRoom.getId(), privateChatMessage.getMessage(), privateChatMessage.getCreatedAt()
             );
             redisPublisher.publishPrivateChatRoomInfoMessage(privateChatRoomInfoMessageDto);
         });
