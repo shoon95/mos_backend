@@ -33,8 +33,8 @@ public class PrivateChatMessageController {
     @GetMapping("/private-chat-rooms/{privateChatRoomId}/messages")
     public InfinityScrollRes<PrivateChatMessageRes> getPrivateChatMessages(@AuthenticationPrincipal Long userId,
                                                                            @PathVariable Long privateChatRoomId,
-                                                                           @RequestParam(required = false) Long lastPrivateChatMessageId,
+                                                                           @RequestParam(required = false) Long lastElementId,
                                                                            @RequestParam(defaultValue = "10") int size) {
-        return privateChatMessageService.getPrivateChatMessages(userId, privateChatRoomId, lastPrivateChatMessageId, size);
+        return privateChatMessageService.getPrivateChatMessages(userId, privateChatRoomId, lastElementId, size);
     }
 }
