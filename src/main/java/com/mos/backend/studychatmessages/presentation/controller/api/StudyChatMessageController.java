@@ -32,8 +32,8 @@ public class StudyChatMessageController {
 
     @GetMapping("/studies/chat-rooms/{studyChatRoomId}/messages")
     public InfinityScrollRes<StudyChatMessageRes> getStudyChatMessages(@PathVariable Long studyChatRoomId,
-                                                                       @RequestParam(required = false) Long lastStudyChatMessageId,
+                                                                       @RequestParam(required = false) Long lastElementId,
                                                                        @RequestParam(defaultValue = "10") Integer size) {
-        return studyChatMessageService.getStudyChatMessages(studyChatRoomId, lastStudyChatMessageId, size);
+        return studyChatMessageService.getStudyChatMessages(studyChatRoomId, lastElementId, size);
     }
 }
