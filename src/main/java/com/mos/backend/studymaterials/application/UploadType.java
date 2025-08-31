@@ -9,6 +9,7 @@ public enum UploadType {
     USER("user"),
     STUDY("study"),
     TEMP("temp"),
+    BANNER("banner")
     ;
 
     private final String folderPath;
