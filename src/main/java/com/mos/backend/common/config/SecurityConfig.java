@@ -72,6 +72,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/users/tokens").permitAll()
                         .requestMatchers(HttpMethod.GET, "/likes").permitAll()
                         .requestMatchers(HttpMethod.GET, "/tokens").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/banners/**").permitAll()
 
                         .anyRequest().authenticated()
                 )
