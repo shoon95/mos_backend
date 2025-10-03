@@ -28,7 +28,7 @@ public class NotificationLogRepositoryImpl implements NotificationLogRepository{
 
     @Override
     public Integer getUnreadCount(Long userId) {
-        return notificationLogJpaRepository.countNotificationLogByRecipientIdAndReadIsFalse(userId);
+        return notificationLogJpaRepository.countNotificationLogByRecipientIdAndIsReadIsFalse(userId);
     }
 
     @Override
