@@ -39,7 +39,7 @@ public class NotificationLog extends BaseTimeEntity {
     @Column(nullable = true)
     private String content;
 
-    @Column
+    @Column(nullable = false, name = "is_read")
     private boolean isRead = false;
 
     public static NotificationLog create(User recipient, EventType type,String title, String content) {
