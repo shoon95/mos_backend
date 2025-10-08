@@ -2,6 +2,7 @@ package com.mos.backend.common.config;
 
 import com.mos.backend.common.argumentresolvers.pageable.CustomPageableArgumentResolver;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
