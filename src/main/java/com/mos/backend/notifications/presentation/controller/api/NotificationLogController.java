@@ -1,6 +1,7 @@
 package com.mos.backend.notifications.presentation.controller.api;
 
 import com.mos.backend.notifications.application.NotificationLogService;
+import com.mos.backend.notifications.application.dto.NotificationListResponseDto;
 import com.mos.backend.notifications.application.dto.NotificationResponseDto;
 import com.mos.backend.notifications.application.dto.NotificationUnreadCountDto;
 import com.mos.backend.notifications.entity.NotificationReadStatus;
@@ -24,10 +25,10 @@ public class NotificationLogController {
      */
     @GetMapping("/notifications")
     @ResponseStatus(HttpStatus.OK)
-    public Page<NotificationResponseDto> getNotifications(
+    public NotificationListResponseDto getNotifications(
             @AuthenticationPrincipal Long userId,
             @RequestParam(required = false, defaultValue = "ALL") NotificationReadStatus readStatus,
-            @RequestParam Pageable pageable
+            Pageable pageable
     ) {
         return notificationLogService.getNotifications(pageable, userId, readStatus);
     }
