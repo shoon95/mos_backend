@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateStudySettingRequestDto {
+public class StudySettingUpdateRequestDto {
     @NotNull(message = "lateThresholdMinutes는 필수입니다.")
     @Positive(message = "lateThresholdMiniutes는 0보다 커야합니다.")
     private Integer lateThresholdMinutes;

@@ -23,7 +23,7 @@ public class StudySettingService {
      * @param studyId 생성할 스터디 설정의 스터디 id
      */
     @Transactional
-    public void createStudySettings(Long studyId) {
+    public void createStudySetting(Long studyId) {
         Study study = entityFacade.getStudy(studyId);
         StudySettings studySettings = StudySettings.create(study);
         studySettingRepository.save(studySettings);

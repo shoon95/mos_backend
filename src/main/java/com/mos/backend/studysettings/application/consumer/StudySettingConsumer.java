@@ -17,6 +17,6 @@ public class StudySettingConsumer {
     @TransactionalEventListener(phase = BEFORE_COMMIT)
     public void handleStudyCreatedEvent(Event<StudyCreatedEventPayload> event) {
         StudyCreatedEventPayload payload = event.getPayload();
-        studySettingService.createStudySettings(payload.getStudyId());
+        studySettingService.createStudySetting(payload.getStudyId());
     }
 }

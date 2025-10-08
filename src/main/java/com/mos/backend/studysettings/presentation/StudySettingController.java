@@ -2,7 +2,7 @@ package com.mos.backend.studysettings.presentation;
 
 import com.mos.backend.studysettings.application.StudySettingService;
 import com.mos.backend.studysettings.application.res.StudySettingRes;
-import com.mos.backend.studysettings.presentation.requestdto.UpdateStudySettingRequestDto;
+import com.mos.backend.studysettings.presentation.requestdto.StudySettingUpdateRequestDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,7 +39,7 @@ public class StudySettingController {
     @ResponseStatus(HttpStatus.OK)
     public StudySettingRes update(
             @PathVariable Long studyId,
-            @Valid @RequestBody UpdateStudySettingRequestDto requestDto
+            @Valid @RequestBody StudySettingUpdateRequestDto requestDto
     ) {
         return studySettingService.update(studyId, requestDto.getLateThresholdMinutes(), requestDto.getAbsenceThresholdMinutes());
     }
