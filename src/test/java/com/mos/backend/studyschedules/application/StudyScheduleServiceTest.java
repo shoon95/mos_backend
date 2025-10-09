@@ -11,9 +11,11 @@ import com.mos.backend.studyschedulecurriculums.application.StudyScheduleCurricu
 import com.mos.backend.studyschedulecurriculums.infrastructure.StudyScheduleCurriculumRepository;
 import com.mos.backend.studyschedules.entity.StudySchedule;
 import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
+import com.mos.backend.studyschedules.infrastructure.dto.StudyScheduleWithAttendanceDto;
 import com.mos.backend.studyschedules.presentation.req.StudyScheduleCreateReq;
 import com.mos.backend.studyschedules.presentation.req.StudyScheduleUpdateReq;
 import com.mos.backend.users.entity.User;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -26,7 +28,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("StudyScheduleService 테스트")
@@ -101,23 +109,29 @@ class StudyScheduleServiceTest {
     @Nested
     @DisplayName("스터디 일정 조회 성공 시나리오")
     class GetStudyScheduleSuccessScenario {
+        private static StudyScheduleWithAttendanceDto dto = mock(StudyScheduleWithAttendanceDto.class);
+        private static List<StudyScheduleWithAttendanceDto> dtos = List.of(dto);
+        private static final Long STUDY_SCHEDULE_ID = 1L;
+
+        @BeforeEach
+        void setUp() {
+            when(dto.getStudyScheduleId()).thenReturn(STUDY_SCHEDULE_ID);
+        }
+
         @Test
         @DisplayName("내 스터디 일정 조회 성공")
         void getMyStudySchedules_Success() {
             // Given
             Long userId = 1L;
             User user = mock(User.class);
-            Study study = mock(Study.class);
             StudySchedule studySchedule = mock(StudySchedule.class);
             List<StudySchedule> studySchedules = List.of(studySchedule);
             List<StudyCurriculum> studyCurriculums = List.of(mock(StudyCurriculum.class));
 
             when(entityFacade.getUser(userId)).thenReturn(user);
             when(user.getId()).thenReturn(userId);
-            when(studyScheduleRepository.findAllByActivatedUserId(userId)).thenReturn(studySchedules);
-            when(studySchedule.getStudy()).thenReturn(study);
-            when(studySchedule.getId()).thenReturn(1L);
-            when(studyCurriculumRepository.findAllByStudyScheduleId(studySchedule.getId())).thenReturn(studyCurriculums);
+            when(studyScheduleRepository.findAllByActivatedUserId(userId)).thenReturn(dtos);
+            when(studyCurriculumRepository.findAllByStudyScheduleId(STUDY_SCHEDULE_ID)).thenReturn(studyCurriculums);
 
             // When
             studyScheduleService.getMyStudySchedules(userId);
@@ -125,7 +139,7 @@ class StudyScheduleServiceTest {
             // Then
             verify(entityFacade).getUser(userId);
             verify(studyScheduleRepository).findAllByActivatedUserId(userId);
-            verify(studyCurriculumRepository, times(studySchedules.size())).findAllByStudyScheduleId(anyLong());
+            verify(studyCurriculumRepository, times(studySchedules.size())).findAllByStudyScheduleId(STUDY_SCHEDULE_ID);
         }
 
         @Test
@@ -141,17 +155,15 @@ class StudyScheduleServiceTest {
 
             when(entityFacade.getStudy(studyId)).thenReturn(study);
             when(study.getId()).thenReturn(studyId);
-            when(studyScheduleRepository.findByStudyId(studyId)).thenReturn(studySchedules);
-            when(studySchedule.getStudy()).thenReturn(study);
-            when(studySchedule.getId()).thenReturn(1L);
-            when(studyCurriculumRepository.findAllByStudyScheduleId(studySchedule.getId())).thenReturn(studyCurriculums);
+            when(studyScheduleRepository.findByStudyIdWithAttendance(userId, studyId)).thenReturn(dtos);
+            when(studyCurriculumRepository.findAllByStudyScheduleId(STUDY_SCHEDULE_ID)).thenReturn(studyCurriculums);
 
             // When
-            studyScheduleService.getStudySchedules(studyId);
+            studyScheduleService.getStudySchedules(userId, studyId);
 
             // Then
             verify(entityFacade).getStudy(studyId);
-            verify(studyScheduleRepository).findByStudyId(studyId);
+            verify(studyScheduleRepository).findByStudyIdWithAttendance(userId, studyId);
             verify(studyCurriculumRepository, times(studySchedules.size())).findAllByStudyScheduleId(anyLong());
         }
     }

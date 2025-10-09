@@ -1,6 +1,5 @@
 package com.mos.backend.studyschedules.application.res;
 
-import com.mos.backend.studyschedules.entity.StudySchedule;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -18,16 +17,26 @@ public class StudyScheduleRes {
 
     private Long studyId;
 
+    private String attendanceStatusDescription;
+
     private List<StudyCurriculumRes> studyCurriculumResList;
 
-    public static StudyScheduleRes of(StudySchedule studySchedule, List<StudyCurriculumRes> studyCurriculumList) {
+    public static StudyScheduleRes of(Long studyScheduleId,
+                                      String title,
+                                      String description,
+                                      LocalDateTime startDateTime,
+                                      LocalDateTime endDateTime,
+                                      Long studyId,
+                                      String attendanceStatusDescription,
+                                      List<StudyCurriculumRes> studyCurriculumList) {
         return new StudyScheduleRes(
-                studySchedule.getId(),
-                studySchedule.getTitle(),
-                studySchedule.getDescription(),
-                studySchedule.getStartDateTime(),
-                studySchedule.getEndDateTime(),
-                studySchedule.getStudy().getId(),
+                studyScheduleId,
+                title,
+                description,
+                startDateTime,
+                endDateTime,
+                studyId,
+                attendanceStatusDescription,
                 studyCurriculumList
         );
     }

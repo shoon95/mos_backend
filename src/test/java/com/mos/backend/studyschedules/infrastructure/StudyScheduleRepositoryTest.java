@@ -2,7 +2,7 @@ package com.mos.backend.studyschedules.infrastructure;
 
 import com.mos.backend.common.EntitySaver;
 import com.mos.backend.studies.entity.Study;
-import com.mos.backend.studyschedules.entity.StudySchedule;
+import com.mos.backend.studyschedules.infrastructure.dto.StudyScheduleWithAttendanceDto;
 import com.mos.backend.testconfig.AbstractTestContainer;
 import com.mos.backend.users.entity.User;
 import org.junit.jupiter.api.DisplayName;
@@ -39,12 +39,12 @@ class StudyScheduleRepositoryTest extends AbstractTestContainer {
         entitySaver.saveStudySchedule(study2);
 
         // When
-        List<StudySchedule> studySchedules = studyScheduleRepository.findAllByActivatedUserId(user.getId());
+        List<StudyScheduleWithAttendanceDto> dtos = studyScheduleRepository.findAllByActivatedUserId(user.getId());
 
         // Then
-        assertThat(studySchedules).hasSize(2);
-        assertThat(studySchedules)
-                .extracting(studySchedule -> studySchedule.getStudy().getId())
+        assertThat(dtos).hasSize(2);
+        assertThat(dtos)
+                .extracting(dto -> dto.getStudyId())
                 .containsExactlyInAnyOrder(study1.getId(), study2.getId());
     }
 }

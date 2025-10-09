@@ -1,6 +1,7 @@
 package com.mos.backend.studyschedules.infrastructure;
 
 import com.mos.backend.studyschedules.entity.StudySchedule;
+import com.mos.backend.studyschedules.infrastructure.dto.StudyScheduleWithAttendanceDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -19,12 +20,12 @@ public class StudyScheduleRepositoryImpl implements StudyScheduleRepository {
     }
 
     @Override
-    public List<StudySchedule> findByStudyId(Long studyId) {
-        return studyScheduleJpaRepository.findByStudyId(studyId);
+    public List<StudyScheduleWithAttendanceDto> findByStudyIdWithAttendance(Long userId, Long studyId) {
+        return studyScheduleJpaRepository.findByStudyIdWithAttendance(userId, studyId);
     }
 
     @Override
-    public List<StudySchedule> findAllByActivatedUserId(Long userId) {
+    public List<StudyScheduleWithAttendanceDto> findAllByActivatedUserId(Long userId) {
         return studyScheduleJpaRepository.findAllByActivatedUserId(userId);
     }
 
@@ -36,5 +37,10 @@ public class StudyScheduleRepositoryImpl implements StudyScheduleRepository {
     @Override
     public void delete(StudySchedule studySchedule) {
         studyScheduleJpaRepository.delete(studySchedule);
+    }
+
+    @Override
+    public List<StudySchedule> findByStudyId(Long studyId) {
+        return studyScheduleJpaRepository.findByStudyId(studyId);
     }
 }

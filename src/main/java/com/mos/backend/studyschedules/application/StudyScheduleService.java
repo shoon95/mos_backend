@@ -11,6 +11,7 @@ import com.mos.backend.studyschedules.application.res.StudyScheduleRes;
 import com.mos.backend.studyschedules.entity.StudySchedule;
 import com.mos.backend.studyschedules.entity.exception.StudyScheduleErrorCode;
 import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
+import com.mos.backend.studyschedules.infrastructure.dto.StudyScheduleWithAttendanceDto;
 import com.mos.backend.studyschedules.presentation.req.StudyScheduleCreateReq;
 import com.mos.backend.studyschedules.presentation.req.StudyScheduleUpdateReq;
 import com.mos.backend.users.entity.User;
@@ -56,28 +57,37 @@ public class StudyScheduleService {
     public List<StudyScheduleRes> getMyStudySchedules(Long userId) {
         User user = entityFacade.getUser(userId);
 
-        List<StudySchedule> studySchedules = studyScheduleRepository.findAllByActivatedUserId(user.getId());
+        List<StudyScheduleWithAttendanceDto> studySchedules = studyScheduleRepository.findAllByActivatedUserId(user.getId());
         return convertToRes(studySchedules);
     }
 
     @PreAuthorize("@studySecurity.isMemberOrAdmin(#studyId)")
     @Transactional(readOnly = true)
-    public List<StudyScheduleRes> getStudySchedules(Long studyId) {
+    public List<StudyScheduleRes> getStudySchedules(Long userId, Long studyId) {
         Study study = entityFacade.getStudy(studyId);
 
-        List<StudySchedule> studySchedules = studyScheduleRepository.findByStudyId(study.getId());
+        List<StudyScheduleWithAttendanceDto> studySchedules = studyScheduleRepository.findByStudyIdWithAttendance(userId, study.getId());
         return convertToRes(studySchedules);
     }
 
-    private List<StudyScheduleRes> convertToRes(List<StudySchedule> studySchedules) {
-        return studySchedules.stream().map(studySchedule -> {
-            List<StudyCurriculumRes> studyCurriculumResList = studyCurriculumRepository.findAllByStudyScheduleId(studySchedule.getId()).stream()
-                    .map(StudyCurriculumRes::from)
-                    .toList();
-            return StudyScheduleRes.of(studySchedule, studyCurriculumResList);
-        }).toList();
+    private List<StudyScheduleRes> convertToRes(List<StudyScheduleWithAttendanceDto> dtos) {
+        return dtos.stream().map(dto -> {
+                    List<StudyCurriculumRes> studyCurriculumResList = studyCurriculumRepository.findAllByStudyScheduleId(dto.getStudyScheduleId()).stream()
+                            .map(StudyCurriculumRes::from)
+                            .toList();
+                    return StudyScheduleRes.of(
+                            dto.getStudyScheduleId(),
+                            dto.getTitle(),
+                            dto.getDescription(),
+                            dto.getStartDateTime(),
+                            dto.getEndDateTime(),
+                            dto.getStudyId(),
+                            Objects.isNull(dto.getAttendanceStatus()) ? null : dto.getAttendanceStatus().getDescription(),
+                            studyCurriculumResList
+                    );
+                })
+                .toList();
     }
-
 
     @PreAuthorize("@studySecurity.isLeaderOrAdmin(#studyId)")
     @Transactional
