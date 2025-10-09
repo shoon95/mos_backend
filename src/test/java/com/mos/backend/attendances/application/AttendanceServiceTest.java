@@ -13,6 +13,7 @@ import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.studyschedules.entity.StudySchedule;
 import com.mos.backend.studyschedules.entity.exception.StudyScheduleErrorCode;
 import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
+import com.mos.backend.studysettings.entity.StudySettings;
 import com.mos.backend.users.entity.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -22,13 +23,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AttendanceService 테스트")
@@ -57,52 +61,21 @@ class AttendanceServiceTest {
             Long studyScheduleId = 1L;
             User user = mock(User.class);
             Study study = mock(Study.class);
+            StudySettings studySettings = mock(StudySettings.class);
             StudySchedule studySchedule = mock(StudySchedule.class);
             StudyMember studyMember = mock(StudyMember.class);
 
             when(entityFacade.getUser(userId)).thenReturn(user);
             when(entityFacade.getStudy(studyId)).thenReturn(study);
-            when(entityFacade.getStudySchedule(studyScheduleId)).thenReturn(studySchedule);
-            when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(studyMember));
-            when(studySchedule.isBeforePresentTime()).thenReturn(false);
-            when(study.getId()).thenReturn(studyId);
-            when(user.getId()).thenReturn(userId);
-            when(studySchedule.getStudy()).thenReturn(study);
-            when(study.isRelated(studyId)).thenReturn(true);
-            when(studySchedule.isPresentTime()).thenReturn(true);
-
-            // When
-            attendanceService.create(userId, studyId, studyScheduleId);
-
-            // Then
-            verify(entityFacade).getUser(userId);
-            verify(entityFacade).getStudy(studyId);
-            verify(entityFacade).getStudySchedule(studyScheduleId);
-            verify(studyMemberRepository).findByUserIdAndStudyId(userId, studyId);
-            verify(attendanceRepository).save(any());
-        }
-
-        @Test
-        @DisplayName("지각 생성 성공")
-        void createLateAttendance_Success() {
-            // Given
-            Long userId = 1L;
-            Long studyId = 1L;
-            Long studyScheduleId = 1L;
-            User user = mock(User.class);
-            Study study = mock(Study.class);
-            StudySchedule studySchedule = mock(StudySchedule.class);
-            StudyMember studyMember = mock(StudyMember.class);
-
-            when(entityFacade.getUser(userId)).thenReturn(user);
-            when(entityFacade.getStudy(studyId)).thenReturn(study);
+            when(entityFacade.getStudySettings(studyId)).thenReturn(studySettings);
+            when(studySchedule.getStartDateTime()).thenReturn(LocalDateTime.now());
+            when(studySchedule.getEndDateTime()).thenReturn(LocalDateTime.now());
             when(entityFacade.getStudySchedule(studyScheduleId)).thenReturn(studySchedule);
             when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(studyMember));
             when(study.getId()).thenReturn(studyId);
             when(user.getId()).thenReturn(userId);
             when(studySchedule.getStudy()).thenReturn(study);
             when(study.isRelated(studyId)).thenReturn(true);
-            when(studySchedule.isPresentTime()).thenReturn(false);
 
             // When
             attendanceService.create(userId, studyId, studyScheduleId);
@@ -119,34 +92,6 @@ class AttendanceServiceTest {
     @Nested
     @DisplayName("출석 생성 실패 시나리오")
     class CreateAttendanceFailScenario {
-        @Test
-        @DisplayName("스터디 일정의 시작 시간 이전에 출석을 시도한 경우 MosException 발생")
-        void createAttendance_Fail_BeforePresentTime() {
-            // Given
-            Long userId = 1L;
-            Long studyId = 1L;
-            Long studyScheduleId = 1L;
-            User user = mock(User.class);
-            Study study = mock(Study.class);
-            StudySchedule studySchedule = mock(StudySchedule.class);
-
-            when(entityFacade.getUser(userId)).thenReturn(user);
-            when(entityFacade.getStudy(studyId)).thenReturn(study);
-            when(entityFacade.getStudySchedule(studyScheduleId)).thenReturn(studySchedule);
-            when(user.getId()).thenReturn(userId);
-            when(study.getId()).thenReturn(studyId);
-            when(studyMemberRepository.findByUserIdAndStudyId(userId, studyId)).thenReturn(Optional.of(mock(StudyMember.class)));
-            when(studySchedule.getStudy()).thenReturn(study);
-            when(study.isRelated(studyId)).thenReturn(true);
-            when(studySchedule.isBeforePresentTime()).thenReturn(true);
-
-            // When
-            MosException exception = assertThrows(MosException.class, () -> attendanceService.create(userId, studyId, studyScheduleId));
-
-            // Then
-            assertEquals(exception.getErrorCode(), AttendanceErrorCode.NOT_PRESENT_TIME);
-        }
-
         @Test
         @DisplayName("스터디 스케줄이 완료된 경우 MosException 발생")
         void createAttendance_Fail_StudyScheduleCompleted() {

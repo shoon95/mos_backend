@@ -17,6 +17,7 @@ import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.studyschedules.entity.StudySchedule;
 import com.mos.backend.studyschedules.entity.exception.StudyScheduleErrorCode;
 import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
+import com.mos.backend.studysettings.entity.StudySettings;
 import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,7 @@ public class AttendanceService {
     public void create(Long userId, Long studyId, Long studyScheduleId) {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
+        StudySettings studySettings = entityFacade.getStudySettings(studyId);
         StudySchedule studySchedule = entityFacade.getStudySchedule(studyScheduleId);
 
         validateRelation(study, studySchedule);
@@ -49,12 +51,9 @@ public class AttendanceService {
 
         validateAlreadyExist(studySchedule, studyMember);
 
-        if (studySchedule.isBeforePresentTime())
-            throw new MosException(AttendanceErrorCode.NOT_PRESENT_TIME);
-
-        Attendance attendance = studySchedule.isPresentTime()
-                ? Attendance.createPresentAttendance(studySchedule, studyMember)
-                : Attendance.createLateAttendance(studySchedule, studyMember);
+        Attendance attendance = Attendance.createWithThreshold(
+                studySchedule, studyMember, studySettings.getLateThresholdMinutes(), studySettings.getAbsenceThresholdMinutes()
+        );
 
         attendanceRepository.save(attendance);
     }

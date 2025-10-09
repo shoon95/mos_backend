@@ -39,7 +39,7 @@ class AttendanceControllerTest {
 
     @Test
     @DisplayName("출석 성공 문서화")
-    void create_Success_Documentation() throws Exception {
+    void create_WithThreshold_WithThresholdTime_Success_Documentation() throws Exception {
         mockMvc.perform(
                         post("/studies/{studyId}/schedules/{studyScheduleId}/attendances", 1, 1, 1)
                                 .contentType(MediaType.APPLICATION_JSON)
