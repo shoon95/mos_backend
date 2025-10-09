@@ -6,6 +6,7 @@ import com.mos.backend.attendances.entity.Attendance;
 import com.mos.backend.attendances.entity.AttendanceStatus;
 import com.mos.backend.attendances.entity.exception.AttendanceErrorCode;
 import com.mos.backend.attendances.infrastructure.AttendanceRepository;
+import com.mos.backend.attendances.presentation.req.AttendanceUpdateReq;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
@@ -59,7 +60,7 @@ public class AttendanceService {
     }
 
     @Transactional
-    public void update(Long userId, Long studyId, Long studyScheduleId, String attendanceStatusDescription) {
+    public void update(Long userId, Long studyId, Long studyScheduleId, AttendanceUpdateReq req) {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
         StudySchedule studySchedule = entityFacade.getStudySchedule(studyScheduleId);
@@ -70,7 +71,7 @@ public class AttendanceService {
         StudyMember studyMember = studyMemberRepository.findByUserIdAndStudyId(user.getId(), study.getId())
                 .orElseThrow(() -> new MosException(StudyMemberErrorCode.STUDY_MEMBER_NOT_FOUND));
 
-        AttendanceStatus attendanceStatus = AttendanceStatus.fromDescription(attendanceStatusDescription);
+        AttendanceStatus attendanceStatus = AttendanceStatus.fromDescription(req.getAttendanceStatus());
 
         if (!attendanceStatus.isModifiable())
             throw new MosException(AttendanceErrorCode.UNMODIFIABLE_STATUS);

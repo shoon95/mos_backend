@@ -4,6 +4,7 @@ import com.mos.backend.attendances.entity.Attendance;
 import com.mos.backend.attendances.entity.AttendanceStatus;
 import com.mos.backend.attendances.entity.exception.AttendanceErrorCode;
 import com.mos.backend.attendances.infrastructure.AttendanceRepository;
+import com.mos.backend.attendances.presentation.req.AttendanceUpdateReq;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
@@ -220,7 +221,7 @@ class AttendanceServiceTest {
             StudyMember studyMember = mock(StudyMember.class);
             Attendance attendance = mock(Attendance.class);
             Optional<Attendance> optionalAttendance = Optional.of(attendance);
-            AttendanceStatus modifiableAttendanceStatus = AttendanceStatus.EARLY_LEAVE;
+            AttendanceUpdateReq req = new AttendanceUpdateReq(AttendanceStatus.EARLY_LEAVE.getDescription());
 
             when(entityFacade.getUser(userId)).thenReturn(user);
             when(entityFacade.getStudy(studyId)).thenReturn(study);
@@ -233,7 +234,7 @@ class AttendanceServiceTest {
             when(attendanceRepository.findByStudyScheduleAndStudyMember(studySchedule, studyMember)).thenReturn(optionalAttendance);
 
             // When
-            attendanceService.update(userId, studyId, studyScheduleId, modifiableAttendanceStatus.getDescription());
+            attendanceService.update(userId, studyId, studyScheduleId, req);
 
             // Then
             verify(entityFacade).getUser(userId);
@@ -261,7 +262,7 @@ class AttendanceServiceTest {
             StudyMember studyMember = mock(StudyMember.class);
             Attendance attendance = mock(Attendance.class);
             Optional<Attendance> optionalAttendance = Optional.of(attendance);
-            AttendanceStatus unModifiableAttendanceStatus = AttendanceStatus.EARLY_LEAVE;
+            AttendanceUpdateReq req = new AttendanceUpdateReq(AttendanceStatus.EARLY_LEAVE.getDescription());
 
             when(entityFacade.getUser(userId)).thenReturn(user);
             when(entityFacade.getStudy(studyId)).thenReturn(study);
@@ -274,7 +275,7 @@ class AttendanceServiceTest {
             when(attendanceRepository.findByStudyScheduleAndStudyMember(studySchedule, studyMember)).thenReturn(optionalAttendance);
 
             // When
-            attendanceService.update(userId, studyId, studyScheduleId, unModifiableAttendanceStatus.getDescription());
+            attendanceService.update(userId, studyId, studyScheduleId, req);
 
             // Then
             verify(entityFacade).getUser(userId);
