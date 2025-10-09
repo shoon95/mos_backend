@@ -28,7 +28,7 @@ public interface StudyScheduleJpaRepository extends JpaRepository<StudySchedule,
                 LEFT JOIN Attendance a ON a.studySchedule.id = ss.id AND a.studyMember.user.id = :userId
                 WHERE sm.user.id = :userId AND sm.status = 'ACTIVATED'
             """)
-    List<StudyScheduleWithAttendanceDto> findAllByActivatedUserId(Long userId);
+    List<StudyScheduleWithAttendanceDto> findAllByUserIdAndActivated(Long userId);
 
     List<StudySchedule> findByStudyId(Long studyId);
 }

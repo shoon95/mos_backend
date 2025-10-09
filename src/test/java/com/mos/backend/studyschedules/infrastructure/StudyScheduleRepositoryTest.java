@@ -26,9 +26,9 @@ class StudyScheduleRepositoryTest extends AbstractTestContainer {
     private StudyScheduleRepository studyScheduleRepository;
 
     @Test
-    @DisplayName("findAllByActivatedUserId 테스트")
+    @DisplayName("findAllByUserIdAndActivated 테스트")
     @DirtiesContext
-    void findAllByActivatedUserIdTest() {
+    void findAllByUserIdAndActivatedTest() {
         // Given
         User user = entitySaver.saveUser();
         Study study1 = entitySaver.saveStudy();
@@ -39,7 +39,7 @@ class StudyScheduleRepositoryTest extends AbstractTestContainer {
         entitySaver.saveStudySchedule(study2);
 
         // When
-        List<StudyScheduleWithAttendanceDto> dtos = studyScheduleRepository.findAllByActivatedUserId(user.getId());
+        List<StudyScheduleWithAttendanceDto> dtos = studyScheduleRepository.findAllByUserIdAndActivated(user.getId());
 
         // Then
         assertThat(dtos).hasSize(2);

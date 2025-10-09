@@ -11,7 +11,7 @@ public interface StudyScheduleRepository {
 
     List<StudyScheduleWithAttendanceDto> findByStudyIdWithAttendance(Long userId, Long studyId);
 
-    List<StudyScheduleWithAttendanceDto> findAllByActivatedUserId(Long userId);
+    List<StudyScheduleWithAttendanceDto> findAllByUserIdAndActivated(Long userId);
 
     Optional<StudySchedule> findById(Long studyScheduleId);
 

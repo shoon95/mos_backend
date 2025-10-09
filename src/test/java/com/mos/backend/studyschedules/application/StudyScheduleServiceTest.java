@@ -130,7 +130,7 @@ class StudyScheduleServiceTest {
 
             when(entityFacade.getUser(userId)).thenReturn(user);
             when(user.getId()).thenReturn(userId);
-            when(studyScheduleRepository.findAllByActivatedUserId(userId)).thenReturn(dtos);
+            when(studyScheduleRepository.findAllByUserIdAndActivated(userId)).thenReturn(dtos);
             when(studyCurriculumRepository.findAllByStudyScheduleId(STUDY_SCHEDULE_ID)).thenReturn(studyCurriculums);
 
             // When
@@ -138,7 +138,7 @@ class StudyScheduleServiceTest {
 
             // Then
             verify(entityFacade).getUser(userId);
-            verify(studyScheduleRepository).findAllByActivatedUserId(userId);
+            verify(studyScheduleRepository).findAllByUserIdAndActivated(userId);
             verify(studyCurriculumRepository, times(studySchedules.size())).findAllByStudyScheduleId(STUDY_SCHEDULE_ID);
         }
 

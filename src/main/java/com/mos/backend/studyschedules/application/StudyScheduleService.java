@@ -57,7 +57,7 @@ public class StudyScheduleService {
     public List<StudyScheduleRes> getMyStudySchedules(Long userId) {
         User user = entityFacade.getUser(userId);
 
-        List<StudyScheduleWithAttendanceDto> studySchedules = studyScheduleRepository.findAllByActivatedUserId(user.getId());
+        List<StudyScheduleWithAttendanceDto> studySchedules = studyScheduleRepository.findAllByUserIdAndActivated(user.getId());
         return convertToRes(studySchedules);
     }
 

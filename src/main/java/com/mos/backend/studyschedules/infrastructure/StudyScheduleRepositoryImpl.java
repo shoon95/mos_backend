@@ -25,8 +25,8 @@ public class StudyScheduleRepositoryImpl implements StudyScheduleRepository {
     }
 
     @Override
-    public List<StudyScheduleWithAttendanceDto> findAllByActivatedUserId(Long userId) {
-        return studyScheduleJpaRepository.findAllByActivatedUserId(userId);
+    public List<StudyScheduleWithAttendanceDto> findAllByUserIdAndActivated(Long userId) {
+        return studyScheduleJpaRepository.findAllByUserIdAndActivated(userId);
     }
 
     @Override
