@@ -35,7 +35,7 @@ public class Attendance extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_id", nullable = false)
+    @JoinColumn(name = "study_schedule_id", nullable = false)
     @OnDelete(action = CASCADE)
     private StudySchedule studySchedule;
 
