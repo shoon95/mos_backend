@@ -166,7 +166,7 @@ class AttendanceServiceTest {
             StudyMember studyMember = mock(StudyMember.class);
             Attendance attendance = mock(Attendance.class);
             Optional<Attendance> optionalAttendance = Optional.of(attendance);
-            AttendanceUpdateReq req = new AttendanceUpdateReq(AttendanceStatus.EARLY_LEAVE.getDescription());
+            AttendanceUpdateReq req = new AttendanceUpdateReq(AttendanceStatus.EARLY_LEAVE);
 
             when(entityFacade.getUser(userId)).thenReturn(user);
             when(entityFacade.getStudy(studyId)).thenReturn(study);
@@ -207,7 +207,7 @@ class AttendanceServiceTest {
             StudyMember studyMember = mock(StudyMember.class);
             Attendance attendance = mock(Attendance.class);
             Optional<Attendance> optionalAttendance = Optional.of(attendance);
-            AttendanceUpdateReq req = new AttendanceUpdateReq(AttendanceStatus.EARLY_LEAVE.getDescription());
+            AttendanceUpdateReq req = new AttendanceUpdateReq(AttendanceStatus.EARLY_LEAVE);
 
             when(entityFacade.getUser(userId)).thenReturn(user);
             when(entityFacade.getStudy(studyId)).thenReturn(study);

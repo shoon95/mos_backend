@@ -1,5 +1,6 @@
 package com.mos.backend.attendances.presentation.req;
 
+import com.mos.backend.attendances.entity.AttendanceStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AttendanceUpdateReq {
-    private String attendanceStatus;
+    private AttendanceStatus attendanceStatus;
 }

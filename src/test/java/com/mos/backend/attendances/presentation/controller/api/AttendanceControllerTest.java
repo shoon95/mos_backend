@@ -2,6 +2,8 @@ package com.mos.backend.attendances.presentation.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mos.backend.attendances.application.AttendanceService;
+import com.mos.backend.attendances.entity.AttendanceStatus;
+import com.mos.backend.attendances.presentation.req.AttendanceUpdateReq;
 import com.mos.backend.common.jwt.TokenUtil;
 import com.mos.backend.common.test.config.TestWebSocketConfig;
 import com.mos.backend.securityuser.WithMockCustomUser;
@@ -55,10 +57,11 @@ class AttendanceControllerTest {
     @Test
     @DisplayName("출석 수정 성공 문서화")
     void update_Success_Documentation() throws Exception {
+        AttendanceUpdateReq req = new AttendanceUpdateReq(AttendanceStatus.PRESENT);
         mockMvc.perform(
-                        put("/studies/{studyId}/schedules/{studyScheduleId}/attendances", 1, 1, 1)
+                        put("/studies/{studyId}/schedules/{studyScheduleId}/attendances", 1, 1)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString("출석"))
+                                .content(objectMapper.writeValueAsString(req))
                 )
                 .andExpect(status().isOk())
                 .andDo(document("update-attendance-success",

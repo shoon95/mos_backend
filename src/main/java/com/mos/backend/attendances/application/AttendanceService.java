@@ -70,7 +70,7 @@ public class AttendanceService {
         StudyMember studyMember = studyMemberRepository.findByUserIdAndStudyId(user.getId(), study.getId())
                 .orElseThrow(() -> new MosException(StudyMemberErrorCode.STUDY_MEMBER_NOT_FOUND));
 
-        AttendanceStatus attendanceStatus = AttendanceStatus.fromDescription(req.getAttendanceStatus());
+        AttendanceStatus attendanceStatus = req.getAttendanceStatus();
 
         if (!attendanceStatus.isModifiable())
             throw new MosException(AttendanceErrorCode.UNMODIFIABLE_STATUS);
