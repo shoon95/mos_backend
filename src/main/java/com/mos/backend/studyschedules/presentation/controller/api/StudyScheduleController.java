@@ -32,8 +32,8 @@ public class StudyScheduleController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/studies/{studyId}/schedules")
-    public List<StudyScheduleRes> getStudySchedules(@PathVariable Long studyId) {
-        return studyScheduleService.getStudySchedules(studyId);
+    public List<StudyScheduleRes> getStudySchedules(@AuthenticationPrincipal Long userId, @PathVariable Long studyId) {
+        return studyScheduleService.getStudySchedules(userId, studyId);
     }
 
     @ResponseStatus(HttpStatus.OK)
