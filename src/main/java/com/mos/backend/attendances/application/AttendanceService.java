@@ -6,6 +6,7 @@ import com.mos.backend.attendances.entity.Attendance;
 import com.mos.backend.attendances.entity.AttendanceStatus;
 import com.mos.backend.attendances.entity.exception.AttendanceErrorCode;
 import com.mos.backend.attendances.infrastructure.AttendanceRepository;
+import com.mos.backend.attendances.presentation.req.AttendanceUpdateReq;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
@@ -16,6 +17,7 @@ import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.studyschedules.entity.StudySchedule;
 import com.mos.backend.studyschedules.entity.exception.StudyScheduleErrorCode;
 import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
+import com.mos.backend.studysettings.entity.StudySettings;
 import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,7 @@ public class AttendanceService {
     public void create(Long userId, Long studyId, Long studyScheduleId) {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
+        StudySettings studySettings = entityFacade.getStudySettings(studyId);
         StudySchedule studySchedule = entityFacade.getStudySchedule(studyScheduleId);
 
         validateRelation(study, studySchedule);
@@ -48,18 +51,15 @@ public class AttendanceService {
 
         validateAlreadyExist(studySchedule, studyMember);
 
-        if (studySchedule.isBeforePresentTime())
-            throw new MosException(AttendanceErrorCode.NOT_PRESENT_TIME);
-
-        Attendance attendance = studySchedule.isPresentTime()
-                ? Attendance.createPresentAttendance(studySchedule, studyMember)
-                : Attendance.createLateAttendance(studySchedule, studyMember);
+        Attendance attendance = Attendance.createWithThreshold(
+                studySchedule, studyMember, studySettings.getLateThresholdMinutes(), studySettings.getAbsenceThresholdMinutes()
+        );
 
         attendanceRepository.save(attendance);
     }
 
     @Transactional
-    public void update(Long userId, Long studyId, Long studyScheduleId, String attendanceStatusDescription) {
+    public void update(Long userId, Long studyId, Long studyScheduleId, AttendanceUpdateReq req) {
         User user = entityFacade.getUser(userId);
         Study study = entityFacade.getStudy(studyId);
         StudySchedule studySchedule = entityFacade.getStudySchedule(studyScheduleId);
@@ -70,7 +70,7 @@ public class AttendanceService {
         StudyMember studyMember = studyMemberRepository.findByUserIdAndStudyId(user.getId(), study.getId())
                 .orElseThrow(() -> new MosException(StudyMemberErrorCode.STUDY_MEMBER_NOT_FOUND));
 
-        AttendanceStatus attendanceStatus = AttendanceStatus.fromDescription(attendanceStatusDescription);
+        AttendanceStatus attendanceStatus = req.getAttendanceStatus();
 
         if (!attendanceStatus.isModifiable())
             throw new MosException(AttendanceErrorCode.UNMODIFIABLE_STATUS);

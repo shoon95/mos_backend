@@ -3,6 +3,7 @@ package com.mos.backend.attendances.presentation.controller.api;
 import com.mos.backend.attendances.application.AttendanceService;
 import com.mos.backend.attendances.application.res.StudyMemberAttendanceRes;
 import com.mos.backend.attendances.application.res.StudyScheduleAttendanceRateRes;
+import com.mos.backend.attendances.presentation.req.AttendanceUpdateReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,8 +29,8 @@ public class AttendanceController {
     public void update(@AuthenticationPrincipal Long userId,
                        @PathVariable Long studyId,
                        @PathVariable Long studyScheduleId,
-                       @RequestBody String attendanceStatus) {
-        attendanceService.update(userId, studyId, studyScheduleId, attendanceStatus);
+                       @RequestBody AttendanceUpdateReq attendanceUpdateReq) {
+        attendanceService.update(userId, studyId, studyScheduleId, attendanceUpdateReq);
     }
 
     @ResponseStatus(HttpStatus.OK)

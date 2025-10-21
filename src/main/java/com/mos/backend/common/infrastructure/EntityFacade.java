@@ -40,6 +40,9 @@ import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
 import com.mos.backend.studyschedules.entity.StudySchedule;
 import com.mos.backend.studyschedules.entity.exception.StudyScheduleErrorCode;
 import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
+import com.mos.backend.studysettings.entity.StudySettings;
+import com.mos.backend.studysettings.entity.exception.StudySettingsErrorCode;
+import com.mos.backend.studysettings.infrastructure.StudySettingRepository;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.users.entity.exception.UserErrorCode;
 import com.mos.backend.users.infrastructure.respository.UserRepository;
@@ -73,6 +76,7 @@ public class EntityFacade {
     private final PrivateChatRoomMemberRepository privateChatRoomMemberRepository;
     private final StudyChatRoomRepository studyChatRoomRepository;
     private final UserStudySettingRepository userStudySettingRepository;
+    private final StudySettingRepository studySettingRepository;
 
     public User getUser(Long userId) {
         return userRepository.findById(userId)
@@ -155,5 +159,10 @@ public class EntityFacade {
     public PrivateChatRoomMember getPrivateChatRoomMember(Long userId, Long privateChatRoomId) {
         return privateChatRoomMemberRepository.findByUserIdAndPrivateChatRoomId(userId, privateChatRoomId)
                 .orElseThrow(() -> new MosException(PrivateChatRoomMemberErrorCode.NOT_FOUND));
+    }
+
+    public StudySettings getStudySettings(Long studyId) {
+        return studySettingRepository.findByStudyId(studyId)
+                .orElseThrow(() -> new MosException(StudySettingsErrorCode.NOT_FOUND));
     }
 }
