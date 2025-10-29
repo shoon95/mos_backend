@@ -7,6 +7,9 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.notifications.entity.NotificationLog;
 import com.mos.backend.notifications.entity.exception.NotificationLogErrorCode;
 import com.mos.backend.notifications.infrastructure.notificationlog.NotificationLogRepository;
+import com.mos.backend.privatechatroommember.entity.PrivateChatRoomMember;
+import com.mos.backend.privatechatroommember.entity.PrivateChatRoomMemberErrorCode;
+import com.mos.backend.privatechatroommember.infrastructure.PrivateChatRoomMemberRepository;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoom;
 import com.mos.backend.privatechatrooms.entity.PrivateChatRoomErrorCode;
 import com.mos.backend.privatechatrooms.infrastructure.PrivateChatRoomRepository;
@@ -37,12 +40,18 @@ import com.mos.backend.studyquestions.infrastructure.StudyQuestionRepository;
 import com.mos.backend.studyschedules.entity.StudySchedule;
 import com.mos.backend.studyschedules.entity.exception.StudyScheduleErrorCode;
 import com.mos.backend.studyschedules.infrastructure.StudyScheduleRepository;
+import com.mos.backend.studysettings.entity.StudySettings;
+import com.mos.backend.studysettings.entity.exception.StudySettingsErrorCode;
+import com.mos.backend.studysettings.infrastructure.StudySettingRepository;
 import com.mos.backend.users.entity.User;
 import com.mos.backend.users.entity.exception.UserErrorCode;
 import com.mos.backend.users.infrastructure.respository.UserRepository;
 import com.mos.backend.userschedules.entity.UserSchedule;
 import com.mos.backend.userschedules.entity.UserScheduleErrorCode;
 import com.mos.backend.userschedules.infrastructure.UserScheduleRepository;
+import com.mos.backend.userstudysettings.entity.UserStudySetting;
+import com.mos.backend.userstudysettings.entity.UserStudySettingErrorCode;
+import com.mos.backend.userstudysettings.infrastructure.UserStudySettingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +73,10 @@ public class EntityFacade {
     private final StudyMaterialRepository studyMaterialRepository;
     private final NotificationLogRepository notificationLogRepository;
     private final PrivateChatRoomRepository privateChatRoomRepository;
+    private final PrivateChatRoomMemberRepository privateChatRoomMemberRepository;
     private final StudyChatRoomRepository studyChatRoomRepository;
+    private final UserStudySettingRepository userStudySettingRepository;
+    private final StudySettingRepository studySettingRepository;
 
     public User getUser(Long userId) {
         return userRepository.findById(userId)
@@ -139,4 +151,18 @@ public class EntityFacade {
                 .orElseThrow(() -> new MosException(StudyChatRoomErrorCode.NOT_FOUND));
     }
 
+    public UserStudySetting getUserStudySetting(Long userId, Long studyId) {
+        return userStudySettingRepository.findByStudyMember(this.getStudyMember(userId, studyId))
+                .orElseThrow(() -> new MosException(UserStudySettingErrorCode.NOT_FOUND));
+    }
+
+    public PrivateChatRoomMember getPrivateChatRoomMember(Long userId, Long privateChatRoomId) {
+        return privateChatRoomMemberRepository.findByUserIdAndPrivateChatRoomId(userId, privateChatRoomId)
+                .orElseThrow(() -> new MosException(PrivateChatRoomMemberErrorCode.NOT_FOUND));
+    }
+
+    public StudySettings getStudySettings(Long studyId) {
+        return studySettingRepository.findByStudyId(studyId)
+                .orElseThrow(() -> new MosException(StudySettingsErrorCode.NOT_FOUND));
+    }
 }

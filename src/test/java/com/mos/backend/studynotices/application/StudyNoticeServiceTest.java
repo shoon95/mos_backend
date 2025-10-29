@@ -1,8 +1,11 @@
 package com.mos.backend.studynotices.application;
 
+import com.mos.backend.common.event.Event;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
+import com.mos.backend.studies.application.event.StudyCreatedEventPayload;
 import com.mos.backend.studies.entity.Study;
+import com.mos.backend.studynotices.application.event.ImportantNoticeChangedEventPayload;
 import com.mos.backend.studynotices.application.responsedto.StudyNoticeResponseDto;
 import com.mos.backend.studynotices.entity.StudyNotice;
 import com.mos.backend.studynotices.entity.StudyNoticeErrorCode;
@@ -12,9 +15,12 @@ import com.mos.backend.users.entity.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Optional;
 
@@ -37,6 +43,12 @@ class StudyNoticeServiceTest {
 
     @Mock
     private EntityFacade entityFacade;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
+    @Captor
+    private ArgumentCaptor<Event<ImportantNoticeChangedEventPayload>> eventCaptor;
 
 
     @Test
@@ -70,6 +82,9 @@ class StudyNoticeServiceTest {
         StudyNoticeResponseDto studyNoticeResponseDto = studyNoticeService.create(studyId, currentUserId, title, content, pinned, important);
 
         // then
+        verify(eventPublisher).publishEvent(eventCaptor.capture());
+        Event<ImportantNoticeChangedEventPayload> event = eventCaptor.getValue();
+        assertThat(event.getPayload().getStudyId()).isEqualTo(studyId);
         assertThat(studyNoticeResponseDto.getStudyId()).isEqualTo(studyId);
         assertThat(studyNoticeResponseDto.getCreatorId()).isEqualTo(currentUserId);
         assertThat(studyNoticeResponseDto.getTitle()).isEqualTo(title);
@@ -114,6 +129,9 @@ class StudyNoticeServiceTest {
         studyNoticeService.create(studyId, currentUserId, "new title", "new content", false, true);
 
         // then
+        verify(eventPublisher).publishEvent(eventCaptor.capture());
+        Event<ImportantNoticeChangedEventPayload> event = eventCaptor.getValue();
+        assertThat(event.getPayload().getStudyId()).isEqualTo(studyId);
         assertThat(oldImportantNotice.isImportant()).isFalse(); // 기존 공지가 해제되었는지 확인
         verify(studyNoticeRepository).save(any(StudyNotice.class));
     }
@@ -163,6 +181,7 @@ class StudyNoticeServiceTest {
         StudyNoticeResponseDto updatedNotice = studyNoticeService.update(studyId, studyNoticeId, updateTitle, updateContent, updatePinned, updateImportant);
 
         // then
+        verify(eventPublisher, times(0)).publishEvent(any());
         assertThat(updatedNotice.getTitle()).isEqualTo(updateTitle);
         assertThat(updatedNotice.getContent()).isEqualTo(updateContent);
         assertThat(updatedNotice.isPinned()).isEqualTo(updatePinned);

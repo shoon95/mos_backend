@@ -1,6 +1,6 @@
 package com.mos.backend.studies.application.responsedto;
 
-import com.mos.backend.studies.entity.Study;
+import com.mos.backend.studies.entity.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,37 +14,40 @@ public class StudyResponseDto {
     private String title;
     private String subNotice;
     private String content;
-    private int currentStudyMemberCount;
-    private int maxStudyMemberCount;
+    private Long currentStudyMemberCount;
+    private Integer maxStudyMemberCount;
     private String category;
     private String schedule;
     private LocalDate recruitmentStartDate;
     private LocalDate recruitmentEndDate;
-    private int viewCount;
+    private Integer viewCount;
     private String recruitmentStatus;
     private String progressStatus;
     private String meetingType;
     private List<String> tags;
+    private Long likedCount;
+    private Boolean isLiked;
 
-    public static StudyResponseDto from(Study study, int currentStudyMemberCount) {
-        StudyResponseDto studyResponseDto = new StudyResponseDto();
-        studyResponseDto.id = study.getId();
-        studyResponseDto.title = study.getTitle();
-        studyResponseDto.subNotice = study.getNotice();
-        studyResponseDto.content = study.getContent();
-        studyResponseDto.currentStudyMemberCount = currentStudyMemberCount;
-        studyResponseDto.maxStudyMemberCount = study.getMaxStudyMemberCount();
-        studyResponseDto.category = study.getCategory().getDescription();
-        studyResponseDto.schedule = study.getSchedule();
-        studyResponseDto.recruitmentStartDate = study.getRecruitmentStartDate();
-        studyResponseDto.recruitmentEndDate = study.getRecruitmentEndDate();
-        studyResponseDto.viewCount = study.getViewCount();
-        studyResponseDto.recruitmentStatus = study.getRecruitmentStatus().getDescription();
-        studyResponseDto.progressStatus = study.getProgressStatus().getDescription();
-        studyResponseDto.meetingType = study.getMeetingType().getDescription();
-        studyResponseDto.tags = study.getTags().toList();
-        return studyResponseDto;
+    public StudyResponseDto(Long studyId, String title, String notice, String content, Long currentStudyMemberCount, Integer maxStudyMemberCount, Category category, String schedule,
+                            LocalDate recruitmentStartDate, LocalDate recruitmentEndDate, Integer viewCount, RecruitmentStatus recruitmentStatus, ProgressStatus progressStatus, MeetingType meetingType,
+                            StudyTag tags, Long likedCount, Boolean isLiked) {
+        this.id = studyId;
+        this.title = title;
+        this.subNotice = notice;
+        this.content = content;
+        this.currentStudyMemberCount = currentStudyMemberCount;
+        this.maxStudyMemberCount = maxStudyMemberCount;
+        this.category = category.getDescription();
+        this.schedule = schedule;
+        this.recruitmentStartDate = recruitmentStartDate;
+        this.recruitmentEndDate = recruitmentEndDate;
+        this.viewCount = viewCount;
+        this.recruitmentStatus = recruitmentStatus.getDescription();
+        this.progressStatus = progressStatus.getDescription();
+        this.meetingType = meetingType.getDescription();
+        this.tags = tags.toList();
+        this.likedCount = likedCount;
+        this.isLiked = isLiked;
     }
-
 }
 

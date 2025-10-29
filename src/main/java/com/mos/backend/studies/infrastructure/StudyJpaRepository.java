@@ -9,5 +9,5 @@ import org.springframework.data.repository.query.Param;
 public interface StudyJpaRepository extends JpaRepository<Study, Long> {
     @Query("update Study s set s.viewCount = s.viewCount + 1 where s.id = :studyId")
     @Modifying
-    void increaseViewCount(@Param("studyId") long studyId);
+    void increaseViewCount(@Param("studyId") Long studyId);
 }

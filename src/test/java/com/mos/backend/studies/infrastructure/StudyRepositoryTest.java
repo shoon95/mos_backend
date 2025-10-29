@@ -109,7 +109,7 @@ class StudyRepositoryTest extends AbstractTestContainer{
 
         // when
         LocalDateTime start = LocalDateTime.now();
-        Page<StudiesResponseDto> findStudies = studyRepository.findStudies(pageRequest, category, null, null, null);
+        Page<StudiesResponseDto> findStudies = studyRepository.findStudies(null, pageRequest, category, null, null, null, false);
         LocalDateTime end = LocalDateTime.now();
         Duration between = Duration.between(start, end);
         System.out.printf("time1 : %d ms \n", between.toMillis());

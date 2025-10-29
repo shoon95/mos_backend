@@ -1,6 +1,7 @@
 package com.mos.backend.studies.infrastructure;
 
 import com.mos.backend.studies.application.responsedto.StudiesResponseDto;
+import com.mos.backend.studies.application.responsedto.StudyResponseDto;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.users.application.responsedto.UserStudiesResponseDto;
 import com.mos.backend.users.entity.User;
@@ -19,7 +20,6 @@ public class StudyRepositoryImpl implements StudyRepository{
     private final StudyJpaRepository studyJpaRepository;
     private final StudyQueryDslRepository studyQueryDSLRepository;
 
-
     @Override
     public Study save(Study study) {
         return studyJpaRepository.save(study);
@@ -31,13 +31,13 @@ public class StudyRepositoryImpl implements StudyRepository{
     }
 
     @Override
-    public void increaseViewCount(long studyId) {
+    public void increaseViewCount(Long studyId) {
         studyJpaRepository.increaseViewCount(studyId);
     }
 
     @Override
-    public Page<StudiesResponseDto> findStudies(Pageable pageable, String categoryCond, String meetingTypeCond, String recruitmentStatusCond, String progressStatusCond) {
-        return studyQueryDSLRepository.findStudies(pageable, categoryCond, meetingTypeCond, recruitmentStatusCond, progressStatusCond);
+    public Page<StudiesResponseDto> findStudies(Long currentUserId, Pageable pageable, String categoryCond, String meetingTypeCond, String recruitmentStatusCond, String progressStatusCond, boolean liked) {
+        return studyQueryDSLRepository.findStudies(currentUserId, pageable, categoryCond, meetingTypeCond, recruitmentStatusCond, progressStatusCond, liked);
     }
 
     @Override
@@ -46,12 +46,22 @@ public class StudyRepositoryImpl implements StudyRepository{
     }
 
     @Override
-    public void delete(Study study) {
-        studyJpaRepository.delete(study);
+    public void delete(Long studyId) {
+        studyJpaRepository.deleteById(studyId);
     }
 
     @Override
     public List<UserStudiesResponseDto> readUserStudies(User user, String progressStatusCond, String participationStatusCond) {
         return studyQueryDSLRepository.readUserStudies(user, progressStatusCond, participationStatusCond);
+    }
+
+    @Override
+    public StudyResponseDto getStudyDetails(Long studyId, Long currentUserId) {
+        return studyQueryDSLRepository.getStudyDetails(studyId, currentUserId);
+    }
+
+    @Override
+    public StudiesResponseDto getHotStudyDetails(Long studyId, Long currentUserId) {
+        return studyQueryDSLRepository.getHotStudyDetails(studyId, currentUserId);
     }
 }

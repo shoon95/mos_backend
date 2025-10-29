@@ -4,22 +4,33 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.privatechatmessages.application.dto.PrivateChatMessageDto;
+import com.mos.backend.privatechatmessages.application.dto.PrivateChatRoomInfoMessageDto;
 import com.mos.backend.privatechatmessages.entity.PrivateChatMessageErrorCode;
+import com.mos.backend.privatechatrooms.application.PrivateChatRoomInfoService;
+import com.mos.backend.privatechatrooms.application.res.MyPrivateChatRoomRes;
 import com.mos.backend.studychatmessages.application.dto.StudyChatMessageDto;
 import com.mos.backend.studychatmessages.entity.exception.StudyChatMessageErrorCode;
+import com.mos.backend.studychatrooms.application.StudyChatRoomInfoService;
+import com.mos.backend.studychatrooms.application.dto.StudyChatRoomInfoMessageDto;
+import com.mos.backend.studychatrooms.application.res.MyStudyChatRoomRes;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class RedisSubscriber {
 
     private final ObjectMapper objectMapper;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final PrivateChatRoomInfoService privateChatRoomInfoService;
+    private final StudyChatRoomInfoService studyChatRoomInfoService;
 
-    private final String PRIVATE_CHAT_FORMAT = "/sub/private-chat-room/%d";
-    private final String STUDY_CHAT_FORMAT = "/sub/study-chat-room/%d";
+    private final String USER_CHAT_ROOMS_DESTINATION = "/sub/chat-rooms";
+    private final String PRIVATE_CHAT_FORMAT = "/sub/private-chat-rooms/%d";
+    private final String STUDY_CHAT_FORMAT = "/sub/study-chat-rooms/%d";
 
     public void onPrivateChatMessage(String publishedMessage) {
         try {
@@ -37,6 +48,35 @@ public class RedisSubscriber {
             String destinationPath = generateStudyDestinationPath(studyChatMessageDto.getStudyChatRoomId());
             simpMessagingTemplate.convertAndSend(destinationPath, studyChatMessageDto);
         } catch (JsonProcessingException e) {
+            throw new MosException(StudyChatMessageErrorCode.DESERIALIZATION_FAILED);
+        }
+    }
+
+    /**
+     * todo
+     * 채팅방 퇴장 시 unreadCnt=0으로 갱신 후, 업데이트 된 info를 해당 채팅방 유저에게 전송하기 위해 onPrivateChatRoomInfoMessage()를 호출하게 됨.
+     * 이 과정에서 unreadCnt=0였던 info가 privateChatRoomInfoService.updatePrivateChatRoomInfo()로 인해 1이 되는 버그 존재
+     */
+    public void onPrivateChatRoomInfoMessage(String publishedMessage) {
+        try {
+            PrivateChatRoomInfoMessageDto privateChatRoomInfoMessageDto = objectMapper.readValue(publishedMessage, PrivateChatRoomInfoMessageDto.class);
+            String userId = privateChatRoomInfoMessageDto.getToUserId().toString();
+            MyPrivateChatRoomRes res = privateChatRoomInfoService.updatePrivateChatRoomInfo(privateChatRoomInfoMessageDto);
+
+            simpMessagingTemplate.convertAndSendToUser(userId, USER_CHAT_ROOMS_DESTINATION, res);
+        } catch (Exception e) {
+            throw new MosException(PrivateChatMessageErrorCode.DESERIALIZATION_FAILED);
+        }
+    }
+
+    public void onStudyChatRoomInfoMessage(String publishedMessage) {
+        try {
+            StudyChatRoomInfoMessageDto studyChatRoomInfoMessageDto = objectMapper.readValue(publishedMessage, StudyChatRoomInfoMessageDto.class);
+            String userId = studyChatRoomInfoMessageDto.getToUserId().toString();
+            MyStudyChatRoomRes res = studyChatRoomInfoService.updateStudyChatRoomInfo(studyChatRoomInfoMessageDto);
+
+            simpMessagingTemplate.convertAndSendToUser(userId, USER_CHAT_ROOMS_DESTINATION, res);
+        } catch (Exception e) {
             throw new MosException(StudyChatMessageErrorCode.DESERIALIZATION_FAILED);
         }
     }

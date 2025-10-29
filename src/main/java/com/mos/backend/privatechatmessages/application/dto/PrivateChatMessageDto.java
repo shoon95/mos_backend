@@ -1,6 +1,5 @@
 package com.mos.backend.privatechatmessages.application.dto;
 
-import com.mos.backend.privatechatmessages.entity.PrivateChatMessage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,16 +12,18 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class PrivateChatMessageDto implements Serializable {
     private Long userId;
+    private String nickname;
     private Long privateChatRoomId;
     private String message;
-    private LocalDateTime sendTime;
+    private LocalDateTime messageCreatedAt;
 
-    public static PrivateChatMessageDto of(PrivateChatMessage privateChatMessage, Long userId) {
+    public static PrivateChatMessageDto of(Long userId, String nickname, Long privateChatRoomId, String message, LocalDateTime messageCreatedAt) {
         PrivateChatMessageDto privateChatMessageDto = new PrivateChatMessageDto();
         privateChatMessageDto.userId = userId;
-        privateChatMessageDto.privateChatRoomId = privateChatMessage.getPrivateChatRoom().getId();
-        privateChatMessageDto.message = privateChatMessage.getMessage();
-        privateChatMessageDto.sendTime = privateChatMessage.getCreatedAt();
+        privateChatMessageDto.nickname = nickname;
+        privateChatMessageDto.privateChatRoomId = privateChatRoomId;
+        privateChatMessageDto.message = message;
+        privateChatMessageDto.messageCreatedAt = messageCreatedAt;
         return privateChatMessageDto;
     }
 }

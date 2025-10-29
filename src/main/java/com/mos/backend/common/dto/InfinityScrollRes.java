@@ -1,5 +1,6 @@
 package com.mos.backend.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -23,6 +24,7 @@ public class InfinityScrollRes<T> {
         return infinityScrollRes;
     }
 
+    @JsonProperty("hasNext")
     public boolean hasNext() {
         return hasNext;
     }

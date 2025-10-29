@@ -39,8 +39,12 @@ public class StudyController {
 
     @GetMapping("/{studyId}")
     @ResponseStatus(HttpStatus.OK)
-    public StudyResponseDto get(@PathVariable Long studyId, HttpServletRequest httpServletRequest) {
-        return studyService.get(studyId, httpServletRequest);
+    public StudyResponseDto get(
+            @PathVariable Long studyId,
+            HttpServletRequest httpServletRequest,
+            @AuthenticationPrincipal Long currentUserId
+    ) {
+        return studyService.get(studyId, httpServletRequest, currentUserId);
     }
 
     /**
@@ -51,13 +55,14 @@ public class StudyController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public StudyCardListResponseDto findStudies(
+            @AuthenticationPrincipal Long currentUserId,
             Pageable pageable,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String meetingType,
             @RequestParam(required = false) String recruitmentStatus,
             @RequestParam(required = false) String progressStatus,
-            @RequestParam(required = false) Boolean liked) {
-        return studyService.findStudies(pageable, category, meetingType, recruitmentStatus, progressStatus);
+            @RequestParam(required = false, defaultValue = "false") Boolean liked) {
+        return studyService.findStudies(currentUserId, pageable, category, meetingType, recruitmentStatus, progressStatus, liked);
     }
 
     /**
@@ -66,8 +71,9 @@ public class StudyController {
 
     @GetMapping("/hots")
     @ResponseStatus(HttpStatus.OK)
-    public List<StudiesResponseDto> getHotStudyList() {
-        return studyService.readHotStudies();
+    public List<StudiesResponseDto> getHotStudyList(
+            @AuthenticationPrincipal Long currentUserId) {
+        return studyService.readHotStudies(currentUserId);
     }
 
     /**
@@ -94,8 +100,12 @@ public class StudyController {
      */
     @PostMapping("/{studyId}/sub-notice")
     @ResponseStatus(HttpStatus.OK)
-    public StudyResponseDto updateSubNotice(@PathVariable Long studyId, @RequestBody StudySubNoticeRequestDto requestDto) {
-        return studyService.updateSubNotice(studyId, requestDto.getSubNotice());
+    public StudyResponseDto updateSubNotice(
+            @PathVariable Long studyId,
+            @RequestBody StudySubNoticeRequestDto requestDto,
+            @AuthenticationPrincipal Long currentUserId
+    ) {
+        return studyService.updateSubNotice(studyId, requestDto.getSubNotice(), currentUserId);
     }
 
     /**

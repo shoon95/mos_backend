@@ -7,6 +7,7 @@ import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
 import com.mos.backend.studies.entity.exception.StudyErrorCode;
+import com.mos.backend.studychatrooms.entity.StudyChatRoom;
 import com.mos.backend.studymembers.application.res.StudyMemberRes;
 import com.mos.backend.studymembers.entity.ParticipationStatus;
 import com.mos.backend.studymembers.entity.StudyMember;
@@ -14,6 +15,7 @@ import com.mos.backend.studymembers.entity.StudyMemberRoleType;
 import com.mos.backend.studymembers.entity.exception.StudyMemberErrorCode;
 import com.mos.backend.studymembers.infrastructure.StudyMemberRepository;
 import com.mos.backend.users.entity.User;
+import com.mos.backend.userstudysettings.application.UserStudySettingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class StudyMemberService {
     private final AttendanceService attendanceService;
+    private final UserStudySettingService userStudySettingService;
     private final StudyMemberRepository studyMemberRepository;
     private final AttendanceRepository attendanceRepository;
     private final EntityFacade entityFacade;
@@ -43,6 +46,7 @@ public class StudyMemberService {
             throw new MosException(StudyMemberErrorCode.STUDY_LEADER_ALREADY_EXIST);
 
         studyMemberRepository.save(StudyMember.createStudyLeader(study, user));
+        userStudySettingService.create(studyId, userId);
     }
 
     @Transactional
@@ -62,6 +66,7 @@ public class StudyMemberService {
             throw new MosException(StudyMemberErrorCode.CONFLICT);
 
         studyMemberRepository.save(StudyMember.createStudyMember(study, user));
+        userStudySettingService.create(studyId, userId);
     }
 
     @Transactional(readOnly = true)
@@ -122,5 +127,17 @@ public class StudyMemberService {
         Study study = entityFacade.getStudy(studyId);
         List<ParticipationStatus> currentParticipationStatusList = Arrays.asList(ParticipationStatus.ACTIVATED, ParticipationStatus.COMPLETED);
         return studyMemberRepository.countByStudyAndStatusIn(study, currentParticipationStatusList);
+    }
+
+    @Transactional
+    public void updateLastEntryAt(Long userId, Long studyChatRoomId) {
+        StudyChatRoom studyChatRoom = entityFacade.getStudyChatRoom(studyChatRoomId);
+        StudyMember studyMember = entityFacade.getStudyMember(userId, studyChatRoom.getStudy().getId());
+
+        studyMember.updateLastEntryAt();
+    }
+
+    public List<StudyMember> findAllByAndStudy(Study study) {
+        return studyMemberRepository.findAllByStudy(study);
     }
 }

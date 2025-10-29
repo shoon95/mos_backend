@@ -23,9 +23,11 @@ public class StudiesResponseDto {
     private Integer maxStudyMembers;
     private Integer viewCount;
     private List<String> tags;
+    private Long likedCount;
+    private Boolean isLiked;
 
     public StudiesResponseDto(Long studyId, String title, Category category, MeetingType meetingType, ProgressStatus progressStatus,
-                              RecruitmentStatus recruitmentStatus, String  content, LocalDate recruitmentStartDate, LocalDate recruitmentEndDate, Long currentStudyMembers, Integer maxStudyMembers, Integer viewCount, StudyTag tags) {
+                              RecruitmentStatus recruitmentStatus, String  content, LocalDate recruitmentStartDate, LocalDate recruitmentEndDate, Long currentStudyMembers, Integer maxStudyMembers, Integer viewCount, StudyTag tags, Long likedCount, Boolean isLikedByMe) {
         this.id = studyId;
         this.title = title;
         this.category = category.getDescription();
@@ -39,9 +41,11 @@ public class StudiesResponseDto {
         this.maxStudyMembers = maxStudyMembers;
         this.viewCount = viewCount;
         this.tags = tags.toList();
+        this.likedCount = likedCount;
+        this.isLiked = isLikedByMe;
     }
 
-    public static StudiesResponseDto from(Study study, Long currentStudyMembers) {
+    public static StudiesResponseDto from(Study study, Long currentStudyMembers, Long likedCount, Boolean isLikedByMe) {
         StudiesResponseDto studiesResponseDto = new StudiesResponseDto();
         studiesResponseDto.id = study.getId();
         studiesResponseDto.title = study.getTitle();
@@ -56,6 +60,8 @@ public class StudiesResponseDto {
         studiesResponseDto.maxStudyMembers = study.getMaxStudyMemberCount();
         studiesResponseDto.viewCount = study.getViewCount();
         studiesResponseDto.tags = study.getTags().toList();
+        studiesResponseDto.likedCount = likedCount;
+        studiesResponseDto.isLiked = isLikedByMe;
         return studiesResponseDto;
     }
 

@@ -1,8 +1,11 @@
 package com.mos.backend.studynotices.application;
 
+import com.mos.backend.common.event.Event;
+import com.mos.backend.common.event.EventType;
 import com.mos.backend.common.exception.MosException;
 import com.mos.backend.common.infrastructure.EntityFacade;
 import com.mos.backend.studies.entity.Study;
+import com.mos.backend.studynotices.application.event.ImportantNoticeChangedEventPayload;
 import com.mos.backend.studynotices.application.responsedto.StudyNoticeResponseDto;
 import com.mos.backend.studynotices.entity.StudyNotice;
 import com.mos.backend.studynotices.entity.StudyNoticeErrorCode;
@@ -10,6 +13,7 @@ import com.mos.backend.studynotices.infrastructure.StudyNoticeRepository;
 import com.mos.backend.users.application.UserService;
 import com.mos.backend.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +31,7 @@ public class StudyNoticeService {
     private final StudyNoticeRepository studyNoticeRepository;
     private final UserService userService;
     private final EntityFacade entityFacade;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 공지 생성
@@ -38,8 +43,8 @@ public class StudyNoticeService {
         // 중요 공지로 설정했을 때 중요 공지가 이미 존재하다면 기존 중요 공지 마크 해제
         if (important) {
             studyNoticeRepository.findByStudyIdAndImportantIsTrue(studyId).ifPresent(StudyNotice::unmarkAsImportant);
+            eventPublisher.publishEvent(new Event<>(EventType.IMPORTANT_NOTICE_CHANGED, new ImportantNoticeChangedEventPayload(studyId)));
         }
-
         Study study = entityFacade.getStudy(studyId);
         User currentUser = entityFacade.getUser(currentUserId);
 
@@ -58,6 +63,7 @@ public class StudyNoticeService {
         // 중요 공지로 설정했을 때 중요 공지가 이미 존재하다면 기존 중요 공지 마크 해제
         if (important) {
             studyNoticeRepository.findByStudyIdAndImportantIsTrue(studyId).ifPresent(StudyNotice::unmarkAsImportant);
+            eventPublisher.publishEvent(new Event<>(EventType.IMPORTANT_NOTICE_CHANGED, new ImportantNoticeChangedEventPayload(studyId)));
         }
 
         StudyNotice studyNotice = findByIdWithUser(studyNoticeId);

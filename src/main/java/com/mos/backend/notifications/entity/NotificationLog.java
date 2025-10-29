@@ -6,11 +6,13 @@ import com.mos.backend.users.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
+import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 
 @Entity
 @Table(name = "notification_logs")
@@ -24,6 +26,7 @@ public class NotificationLog extends BaseTimeEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "recipient_id", nullable = false)
+    @OnDelete(action = CASCADE)
     private User recipient;
 
     @Enumerated(value = STRING)
@@ -36,7 +39,7 @@ public class NotificationLog extends BaseTimeEntity {
     @Column(nullable = true)
     private String content;
 
-    @Column
+    @Column(nullable = false, name = "is_read")
     private boolean isRead = false;
 
     public static NotificationLog create(User recipient, EventType type,String title, String content) {

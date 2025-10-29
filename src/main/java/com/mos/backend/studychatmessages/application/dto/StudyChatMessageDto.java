@@ -12,14 +12,14 @@ public class StudyChatMessageDto {
     private Long userId;
     private Long studyChatRoomId;
     private String message;
-    private LocalDateTime sendTime;
+    private LocalDateTime messageCreatedAt;
 
     public static StudyChatMessageDto of(StudyChatMessage studyChatMessage, Long userId) {
         StudyChatMessageDto studyChatMessageDto = new StudyChatMessageDto();
         studyChatMessageDto.userId = userId;
         studyChatMessageDto.studyChatRoomId = studyChatMessage.getStudyChatRoom().getId();
         studyChatMessageDto.message = studyChatMessage.getMessage();
-        studyChatMessageDto.sendTime = studyChatMessage.getCreatedAt();
+        studyChatMessageDto.messageCreatedAt = studyChatMessage.getCreatedAt();
         return studyChatMessageDto;
     }
 }
